@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خشکبار آریانا | خرید آنلاین آجیل، خشکبار و محصولات طبیعی</title>
+<meta name="description" content="خشکبار آریانا؛ فروشگاه اینترنتی تخصصی آجیل، پسته، بادام، گردو، میوه خشک، خرما، زعفران و پک‌های هدیه. تضمین تازگی، بسته‌بندی بهداشتی و ارسال سریع به سراسر کشور.">
+<meta name="theme-color" content="#3a2818">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --brown-900:#2b1d13;
+  --brown-800:#3a2818;
+  --brown-700:#4a3323;
+  --brown-600:#5f422c;
+  --gold:#c2a15a;
+  --gold-2:#dcc28a;
+  --gold-3:#efe0bd;
+  --cream:#fdfaf3;
+  --cream-2:#f6efe2;
+  --cream-3:#efe4d0;
+  --olive:#74804f;
+  --olive-dark:#586239;
+  --brick:#b4552d;
+  --brick-2:#fdeee6;
+  --ink:#2f231a;
+  --muted:#8a7866;
+  --line:rgba(58,40,24,.12);
+  --line-2:rgba(58,40,24,.07);
+  --radius:18px;
+  --radius-lg:26px;
+  --shadow-sm:0 2px 10px rgba(58,40,24,.06);
+  --shadow:0 10px 30px rgba(58,40,24,.10);
+  --shadow-lg:0 24px 60px rgba(58,40,24,.18);
+  --container:1280px;
+  --header-h:auto;
+  --gold-rgb:194,161,90;
+  --brown-900-rgb:43,29,19;
+  --brown-800-rgb:58,40,24;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:130px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:'Vazirmatn',Tahoma,system-ui,-apple-system,sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.75;
+  font-size:14px;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+ul{list-style:none;margin:0;padding:0}
+h1,h2,h3,h4,p{margin:0}
+svg{display:block}
+::selection{background:var(--gold-2);color:var(--brown-900)}
+
+.container{width:min(100% - 28px,var(--container));margin-inline:auto}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 22px;border-radius:999px;font-weight:600;font-size:13.5px;
+  transition:transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+  white-space:nowrap;border:1.5px solid transparent;
+}
+.btn:active{transform:scale(.97)}
+.btn-gold{background:linear-gradient(135deg,var(--gold-2),var(--gold));color:var(--brown-900);box-shadow:0 8px 20px rgba(var(--gold-rgb),.35)}
+.btn-gold:hover{box-shadow:0 12px 28px rgba(var(--gold-rgb),.5);transform:translateY(-2px)}
+.btn-brown{background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f7ecd8}
+.btn-brown:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(var(--brown-900-rgb),.32)}
+.btn-ghost{border-color:rgba(255,255,255,.4);color:#f4e8d2;background:rgba(255,255,255,.06)}
+.btn-ghost:hover{background:rgba(255,255,255,.14)}
+.btn-outline{border-color:var(--line);color:var(--brown-700);background:#fff}
+.btn-outline:hover{border-color:var(--gold);color:var(--brown-900);background:var(--cream-2)}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar{
+  background:linear-gradient(90deg,var(--brown-900),var(--brown-700) 55%,var(--brown-900));
+  color:#f0e2c8;font-size:12px;letter-spacing:.1px;
+}
+.topbar .container{display:flex;align-items:center;justify-content:center;height:38px;position:relative;overflow:hidden}
+.tb-msg{display:flex;align-items:center;gap:8px;transition:opacity .4s ease, transform .4s ease;text-align:center}
+.tb-msg.hide{opacity:0;transform:translateY(-6px)}
+.tb-msg svg{width:15px;height:15px;stroke:var(--gold-2);fill:none;stroke-width:1.7;flex:none}
+.tb-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);display:inline-block}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header{
+  position:sticky;top:0;z-index:300;
+  background:rgba(253,250,243,.94);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-2);
+  transition:box-shadow .3s ease;
+}
+.site-header.scrolled{box-shadow:0 6px 24px rgba(var(--brown-800-rgb),.09)}
+.header-top{display:flex;align-items:center;gap:12px;padding:11px 0}
+
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  border:1px solid var(--line);background:#fff;color:var(--brown-700);flex:none;
+  transition:.2s;
+}
+.icon-btn:hover{border-color:var(--gold);color:var(--brown-900)}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.only-mobile{display:grid}
+@media(min-width:900px){.only-mobile{display:none!important}}
+
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand-mark{
+  width:46px;height:46px;border-radius:15px;flex:none;
+  background:radial-gradient(circle at 32% 25%,var(--brown-600),var(--brown-900));
+  display:grid;place-items:center;position:relative;
+  box-shadow:0 6px 16px rgba(var(--brown-900-rgb),.28), inset 0 0 0 1.5px rgba(var(--gold-rgb),.55);
+}
+.brand-mark svg{width:26px;height:26px}
+.brand-text{display:flex;flex-direction:column;line-height:1.25}
+.brand-text strong{font-size:16px;font-weight:800;color:var(--brown-900);letter-spacing:-.2px}
+.brand-text small{font-size:10.5px;color:var(--gold);font-weight:600;letter-spacing:.6px}
+@media(max-width:420px){
+  .brand-text strong{font-size:14px}
+  .brand-mark{width:40px;height:40px;border-radius:13px}
+  .brand-mark svg{width:22px;height:22px}
+}
+
+.search-box{flex:1;max-width:520px;height:46px;position:relative;display:none}
+@media(min-width:900px){.search-box{display:block}}
+.search-box input{
+  width:100%;height:100%;border-radius:999px;border:1.5px solid var(--line);
+  background:var(--cream-2);padding:0 46px 0 18px;font-size:13px;outline:none;
+  transition:.25s;
+}
+.search-box input::placeholder{color:#a89a8a}
+.search-box input:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 4px rgba(var(--gold-rgb),.14)}
+.search-box button{
+  position:absolute;inset-inline-end:6px;top:6px;width:34px;height:34px;border-radius:50%;
+  display:grid;place-items:center;background:var(--brown-800);color:#f3e6cf;transition:.2s;
+}
+.search-box button:hover{background:var(--gold);color:var(--brown-900)}
+.search-box button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+.header-actions{display:flex;align-items:center;gap:4px;margin-inline-start:auto}
+.action{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  min-width:52px;padding:6px 8px;border-radius:12px;color:var(--brown-700);
+  font-size:10.5px;font-weight:600;transition:.2s;line-height:1.3;
+}
+.action:hover{background:var(--cream-2);color:var(--brown-900)}
+.action svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.action .lbl{display:none}
+@media(min-width:1080px){.action .lbl{display:block}}
+.count{
+  position:absolute;top:2px;inset-inline-end:6px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:999px;background:var(--brick);color:#fff;font-size:10px;font-weight:700;
+  display:grid;place-items:center;font-style:normal;line-height:1;
+  box-shadow:0 0 0 2px var(--cream);
+}
+.cart-btn{background:var(--cream-2);border:1px solid var(--line)}
+.cart-btn:hover{background:var(--gold-3);border-color:var(--gold)}
+.cart-total{display:none;font-size:11px;font-weight:700;color:var(--brown-800)}
+@media(min-width:1080px){.cart-total{display:block}}
+@media(max-width:899px){
+  .action{min-width:42px;padding:5px}
+  .action svg{width:20px;height:20px}
+}
+
+/* ============================================================
+   CATEGORY NAV + MEGA MENU
+   ============================================================ */
+.cat-nav{display:none;position:relative;border-top:1px solid var(--line-2)}
+@media(min-width:900px){.cat-nav{display:block}}
+.nav-inner{display:flex;align-items:center;gap:6px;height:50px}
+.nav-mega-btn{
+  display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:11px;
+  background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f5e9d4;
+  font-size:13px;font-weight:700;flex:none;transition:.2s;box-shadow:0 4px 12px rgba(var(--brown-900-rgb),.2);
+}
+.nav-mega-btn:hover{box-shadow:0 8px 20px rgba(var(--brown-900-rgb),.3)}
+.nav-mega-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav-mega-btn .chev{transition:transform .25s}
+.cat-nav.mega-open .nav-mega-btn .chev{transform:rotate(180deg)}
+.nav-links{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  padding:8px 11px;border-radius:9px;font-size:13px;font-weight:500;color:var(--brown-700);
+  white-space:nowrap;transition:.18s;
+}
+.nav-links a:hover{background:var(--cream-2);color:var(--brown-900)}
+.nav-links a.hot{color:var(--brick);font-weight:700}
+
+.mega-panel{
+  position:absolute;top:100%;inset-inline:0;
+  background:#fff;border-top:1px solid var(--line-2);
+  box-shadow:0 26px 50px rgba(var(--brown-800-rgb),.14);
+  padding:26px 0 30px;
+  opacity:0;visibility:hidden;transform:translateY(-10px);
+  transition:opacity .25s, transform .25s, visibility .25s;
+  z-index:250;
+}
+.cat-nav.mega-open .mega-panel{opacity:1;visibility:visible;transform:translateY(0)}
+.mega-grid{display:grid;grid-template-columns:repeat(4,1fr) 1.15fr;gap:22px}
+.mega-col h4{
+  font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.4px;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.mega-col h4::after{content:"";flex:1;height:1px;background:var(--line-2)}
+.mega-col a{
+  display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:8px;
+  font-size:12.8px;color:var(--brown-700);transition:.16s;
+}
+.mega-col a:hover{background:var(--cream-2);color:var(--brown-900);padding-inline-start:12px}
+.mega-col a::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold-2);flex:none;transition:.16s}
+.mega-col a:hover::before{background:var(--brick);transform:scale(1.3)}
+.mega-promo{
+  border-radius:18px;overflow:hidden;position:relative;min-height:220px;
+  background:linear-gradient(150deg,var(--brown-800),var(--brown-600));
+  display:flex;flex-direction:column;justify-content:flex-end;padding:20px;color:#f6ead4;
+}
+.mega-promo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.34}
+.mega-promo .mp-body{position:relative;z-index:2}
+.mega-promo span{font-size:11px;color:var(--gold-2);font-weight:700}
+.mega-promo strong{display:block;font-size:16px;margin:4px 0 10px;line-height:1.5}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{padding:20px 0 6px}
+.hero-slider{
+  position:relative;border-radius:var(--radius-lg);overflow:hidden;
+  background:radial-gradient(120% 140% at 85% 15%,var(--brown-600) 0%,var(--brown-800) 45%,var(--brown-900) 100%);
+  box-shadow:0 26px 60px rgba(var(--brown-900-rgb),.24);
+}
+.hero-slider::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 15% 90%,rgba(var(--gold-rgb),.16),transparent 55%);
+}
+.hero-track{display:flex;direction:ltr;transition:transform .65s cubic-bezier(.65,.05,.36,1)}
+.hero-slide{
+  direction:rtl;flex:0 0 100%;min-width:100%;
+  display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:26px;
+  padding:46px 48px;
+}
+.hero-text{color:#fbf1de;position:relative;z-index:2;max-width:560px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(var(--gold-rgb),.14);border:1px solid rgba(var(--gold-rgb),.38);
+  color:var(--gold-2);font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:999px;
+  margin-bottom:16px;letter-spacing:.3px;
+}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(var(--gold-rgb),.22)}
+.hero-text h1{
+  font-size:clamp(25px,3.4vw,42px);line-height:1.42;font-weight:800;letter-spacing:-.6px;
+  margin-bottom:12px;color:#fff8ec;
+}
+.hero-text h1 em{font-style:normal;color:var(--gold-2);position:relative;white-space:nowrap}
+.hero-text p{font-size:13.5px;line-height:2;color:#e2d3ba;margin-bottom:22px;max-width:460px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+.hero-stats{display:flex;gap:26px;margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.12)}
+.hero-stats div{display:flex;flex-direction:column}
+.hero-stats b{font-size:19px;color:var(--gold-2);font-weight:800;line-height:1.3}
+.hero-stats span{font-size:11px;color:#c9b89c}
+
+.hero-art{position:relative;display:grid;place-items:center;z-index:1}
+.hero-art .ring{
+  width:min(340px,34vw);aspect-ratio:1;border-radius:50%;overflow:hidden;position:relative;
+  box-shadow:0 26px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(var(--gold-rgb),.35), 0 0 0 10px rgba(var(--gold-rgb),.09);
+}
+.hero-art .ring img{width:100%;height:100%;object-fit:cover}
+.hero-art .float-badge{
+  position:absolute;background:rgba(253,250,243,.96);color:var(--brown-800);
+  border-radius:14px;padding:8px 13px;font-size:11.5px;font-weight:700;
+  box-shadow:0 12px 28px rgba(0,0,0,.28);display:flex;align-items:center;gap:7px;
+  animation:floaty 4.5s ease-in-out infinite;
+}
+.hero-art .fb1{top:6%;left:-4%}
+.hero-art .fb2{bottom:8%;right:-2%;animation-delay:-2.2s}
+.hero-art .float-badge i{width:7px;height:7px;border-radius:50%;background:var(--olive);font-style:normal}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.hero-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:5}
+.hero-dots button{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.32);transition:.3s}
+.hero-dots button.active{width:26px;background:var(--gold)}
+.hero-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(253,250,243,.14);border:1px solid rgba(255,255,255,.2);
+  color:#f7ecd8;transition:.22s;backdrop-filter:blur(6px);
+}
+.hero-arrow:hover{background:var(--gold);color:var(--brown-900);border-color:var(--gold)}
+.hero-arrow svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-arrow.prev{right:14px}
+.hero-arrow.next{left:14px}
+
+@media(max-width:900px){
+  .hero-slide{grid-template-columns:1fr;padding:30px 22px 46px;text-align:center;justify-items:center}
+  .hero-text{max-width:100%}
+  .hero-text p{margin-inline:auto}
+  .hero-actions{justify-content:center}
+  .hero-stats{justify-content:center;gap:20px;width:100%}
+  .hero-art .ring{width:min(220px,52vw);margin-bottom:6px}
+  .hero-art{order:-1}
+  .hero-art .fb1,.hero-art .fb2{display:none}
+  .hero-arrow{display:none}
+  .hero-dots{bottom:14px}
+}
+
+/* ============================================================
+   TRUST STRIP
+   ============================================================ */
+.trust-strip{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px;
+}
+@media(min-width:760px){.trust-strip{grid-template-columns:repeat(4,1fr);gap:14px}}
+.trust-item{
+  display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line-2);
+  border-radius:15px;padding:12px 14px;transition:.22s;
+}
+.trust-item:hover{border-color:var(--gold-2);box-shadow:var(--shadow-sm);transform:translateY(-2px)}
+.trust-item .ti-ico{
+  width:38px;height:38px;border-radius:12px;flex:none;display:grid;place-items:center;
+  background:var(--cream-2);color:var(--olive-dark);
+}
+.trust-item .ti-ico svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.trust-item b{display:block;font-size:12.5px;font-weight:700;color:var(--brown-800);line-height:1.5}
+.trust-item span{font-size:10.5px;color:var(--muted)}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section{padding:40px 0}
+.section.tight{padding:28px 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px}
+.sec-head .sh-r{display:flex;flex-direction:column;gap:3px}
+.sec-eyebrow{
+  font-size:11.5px;font-weight:700;color:var(--gold);letter-spacing:.5px;
+  display:flex;align-items:center;gap:7px;
+}
+.sec-eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.sec-head h2{font-size:clamp(18px,2.3vw,26px);font-weight:800;color:var(--brown-900);letter-spacing:-.4px;line-height:1.5}
+.sec-head p.sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.sec-link{
+  font-size:12.5px;font-weight:700;color:var(--brown-700);display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;transition:.2s;flex:none;
+}
+.sec-link:hover{background:var(--brown-800);color:#f7ecd8;border-color:var(--brown-800)}
+.sec-link svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============================================================
+   CATEGORY CARDS
+   ============================================================ */
+.cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+@media(min-width:620px){.cat-grid{grid-template-columns:repeat(4,1fr);gap:14px}}
+@media(min-width:1024px){.cat-grid{grid-template-columns:repeat(8,1fr)}}
+.cat-card{
+  background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:16px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  text-align:center;position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:"";position:absolute;inset:auto 0 0;height:0;
+  background:linear-gradient(180deg,transparent,rgba(var(--gold-rgb),.10));transition:height .3s;
+}
+.cat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--gold-2)}
+.cat-card:hover::before{height:100%}
+.cat-thumb{
+  width:76px;height:76px;border-radius:50%;overflow:hidden;flex:none;position:relative;
+  box-shadow:0 6px 16px rgba(var(--brown-800-rgb),.14), inset 0 0 0 2px rgba(var(--gold-rgb),.35);
+  transition:transform .3s;
+}
+.cat-card:hover .cat-thumb{transform:scale(1.07) rotate(-3deg)}
+.cat-thumb img{width:100%;height:100%;object-fit:cover}
+.cat-card b{font-size:12.5px;font-weight:700;color:var(--brown-800);position:relative;z-index:1;line-height:1.5}
+.cat-card span{font-size:10.5px;color:var(--muted);position:relative;z-index:1}
+
+/* ============================================================
+   PRODUCT CARDS
+   ============================================================ */
+.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+@media(min-width:620px){.product-grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+@media(min-width:960px){.product-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1240px){.product-grid.cols-5{grid-template-columns:repeat(5,1fr)}}
+
+.product-card{
+  background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+.product-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--gold-2)}
+.pc-media{position:relative;aspect-ratio:1/1;background:var(--cream-2);overflow:hidden}
+.pc-media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.product-card:hover .pc-media img{transform:scale(1.06)}
+.pc-badge{
+  position:absolute;top:9px;inset-inline-start:9px;z-index:2;
+  background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f6ead4;
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;
+  box-shadow:0 4px 12px rgba(var(--brown-900-rgb),.25);letter-spacing:.2px;
+}
+.pc-badge.is-off{background:linear-gradient(135deg,#c9603a,var(--brick));box-shadow:0 4px 12px rgba(180,85,45,.35)}
+.pc-wish{
+  position:absolute;top:8px;inset-inline-end:8px;z-index:2;
+  width:31px;height:31px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.92);color:#b5a595;transition:.22s;backdrop-filter:blur(4px);
+  box-shadow:0 3px 10px rgba(var(--brown-800-rgb),.1);
+}
+.pc-wish svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+.pc-wish:hover{background:#fff;color:var(--brick);transform:scale(1.08)}
+.pc-wish.active{color:#fff;background:var(--brick)}
+.pc-wish.active svg{fill:currentColor;stroke:currentColor}
+
+.pc-body{padding:11px 11px 12px;display:flex;flex-direction:column;gap:7px;flex:1}
+.pc-cat{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.4px}
+.pc-title{font-size:13px;font-weight:700;line-height:1.6;color:var(--brown-900)}
+.pc-title a:hover{color:var(--brick)}
+.pc-rate{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}
+.pc-rate .stars{color:#e0a92e;letter-spacing:-1px;font-size:11.5px;line-height:1}
+.pc-weights{display:flex;flex-wrap:wrap;gap:5px;margin-top:1px}
+.w-chip{
+  font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:8px;
+  border:1px solid var(--line);background:var(--cream);color:var(--muted);transition:.18s;white-space:nowrap;
+}
+.w-chip:hover{border-color:var(--gold-2);color:var(--brown-800)}
+.w-chip.active{background:var(--brown-800);border-color:var(--brown-800);color:#f7ecd8}
+.pc-price{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-top:auto;min-height:24px}
+.pc-price .now{font-size:14.5px;font-weight:800;color:var(--brown-900);line-height:1.3}
+.pc-price .now small{font-size:10.5px;font-weight:500;color:var(--muted)}
+.pc-price .old{font-size:10.5px;color:#b0a294;text-decoration:line-through}
+.pc-price .off{font-size:10px;font-weight:700;background:var(--brick-2);color:var(--brick);padding:1px 7px;border-radius:999px}
+.pc-actions{margin-top:6px}
+.btn-add{
+  width:100%;height:36px;border-radius:11px;font-size:12.5px;font-weight:700;
+  background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f7ecd8;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:.22s;
+}
+.btn-add:hover{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:var(--brown-900);box-shadow:0 8px 18px rgba(var(--gold-rgb),.35)}
+.btn-add svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round}
+.qty-stepper{
+  display:flex;align-items:center;justify-content:space-between;gap:4px;height:36px;
+  border-radius:11px;background:var(--cream-2);border:1px solid var(--line);padding:0 5px;
+}
+.q-btn{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  background:#fff;color:var(--brown-800);border:1px solid var(--line);font-size:16px;font-weight:700;
+  line-height:1;transition:.18s;
+}
+.q-btn:hover{background:var(--brown-800);color:#fff;border-color:var(--brown-800)}
+.q-val{font-size:13px;font-weight:800;color:var(--brown-900);min-width:22px;text-align:center}
+.qty-stepper .q-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+
+/* ============================================================
+   OFFERS SECTION
+   ============================================================ */
+.offers-wrap{
+  background:linear-gradient(165deg,#fbf5ea,#f4ead8);
+  border:1px solid var(--line-2);border-radius:var(--radius-lg);
+  padding:26px 18px 24px;position:relative;overflow:hidden;
+}
+.offers-wrap::before{
+  content:"";position:absolute;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(var(--gold-rgb),.16),transparent 70%);
+  top:-160px;inset-inline-start:-100px;pointer-events:none;
+}
+.countdown{display:flex;align-items:center;gap:6px;flex:none}
+.cd-box{
+  background:var(--brown-800);color:#f7ecd8;border-radius:10px;padding:5px 9px;
+  min-width:42px;text-align:center;box-shadow:0 6px 16px rgba(var(--brown-900-rgb),.22);
+}
+.cd-box b{display:block;font-size:14px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums}
+.cd-box span{display:block;font-size:9px;color:#c9b89c;line-height:1.3}
+.cd-sep{color:var(--brown-600);font-weight:800;font-size:14px;padding-bottom:10px}
+
+/* ============================================================
+   GIFT BANNER
+   ============================================================ */
+.gift-banner{
+  border-radius:var(--radius-lg);overflow:hidden;position:relative;
+  background:linear-gradient(115deg,var(--brown-900) 0%,var(--brown-700) 48%,var(--brown-600) 100%);
+  color:#fbf1de;padding:34px 30px;display:grid;grid-template-columns:1.05fr .95fr;
+  align-items:center;gap:26px;box-shadow:0 22px 50px rgba(var(--brown-900-rgb),.2);
+}
+.gift-banner::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 88% 12%,rgba(var(--gold-rgb),.2),transparent 55%);
+}
+.gift-text{position:relative;z-index:2}
+.gift-text .eyebrow{margin-bottom:12px}
+.gift-text h2{font-size:clamp(19px,2.6vw,30px);font-weight:800;line-height:1.5;margin-bottom:10px;color:#fff8ec}
+.gift-text p{font-size:13px;color:#ddccb1;line-height:2;margin-bottom:18px;max-width:440px}
+.gift-art{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:2}
+.gift-art .g-item{
+  border-radius:16px;overflow:hidden;aspect-ratio:1/1;position:relative;
+  box-shadow:0 12px 28px rgba(0,0,0,.28);transition:transform .3s;
+}
+.gift-art .g-item:hover{transform:translateY(-4px) scale(1.02)}
+.gift-art .g-item img{width:100%;height:100%;object-fit:cover}
+.gift-art .g-item span{
+  position:absolute;inset-inline:0;bottom:0;padding:16px 8px 6px;font-size:10.5px;font-weight:700;
+  background:linear-gradient(transparent,rgba(30,20,12,.85));color:#f7ecd8;text-align:center;
+}
+@media(max-width:860px){
+  .gift-banner{grid-template-columns:1fr;padding:26px 20px;text-align:center}
+  .gift-text p{margin-inline:auto}
+  .gift-art{max-width:340px;margin-inline:auto}
+}
+
+/* ============================================================
+   WHY US
+   ============================================================ */
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+@media(min-width:900px){.why-grid{grid-template-columns:repeat(4,1fr);gap:16px}}
+.why-card{
+  background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:22px 16px;text-align:center;transition:.28s;position:relative;overflow:hidden;
+}
+.why-card::after{
+  content:"";position:absolute;inset:auto 0 0;height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--olive));transform:scaleX(0);transition:transform .3s;
+}
+.why-card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.why-card:hover::after{transform:scaleX(1)}
+.why-ico{
+  width:56px;height:56px;border-radius:18px;margin:0 auto 13px;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--cream-2),var(--cream-3));color:var(--brown-700);
+  box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),.3);
+}
+.why-ico svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.why-card b{display:block;font-size:13.5px;font-weight:700;color:var(--brown-900);margin-bottom:5px}
+.why-card p{font-size:11.5px;color:var(--muted);line-height:1.9}
+
+/* ============================================================
+   BRAND STORY
+   ============================================================ */
+.story{display:grid;grid-template-columns:1fr;gap:24px;align-items:center}
+@media(min-width:900px){.story{grid-template-columns:.95fr 1.05fr;gap:44px}}
+.story-media{position:relative;border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:4/3;box-shadow:var(--shadow)}
+.story-media img{width:100%;height:100%;object-fit:cover}
+.story-media .badge-float{
+  position:absolute;bottom:14px;inset-inline-start:14px;background:rgba(253,250,243,.96);
+  border-radius:14px;padding:10px 16px;box-shadow:0 12px 28px rgba(0,0,0,.18);
+  display:flex;align-items:center;gap:10px;
+}
+.story-media .badge-float b{font-size:18px;font-weight:800;color:var(--brown-900);line-height:1.2}
+.story-media .badge-float span{font-size:10.5px;color:var(--muted)}
+.story-text h2{font-size:clamp(18px,2.3vw,27px);font-weight:800;color:var(--brown-900);line-height:1.55;margin:6px 0 12px}
+.story-text p{font-size:13px;color:#6f6055;line-height:2.1;margin-bottom:12px}
+.story-points{display:grid;gap:9px;margin-top:16px}
+.story-points li{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--brown-800);font-weight:600}
+.story-points li svg{width:18px;height:18px;stroke:var(--olive);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testi-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:760px){.testi-grid{grid-template-columns:repeat(3,1fr);gap:16px}}
+.testi-card{
+  background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);padding:20px;
+  position:relative;transition:.25s;
+}
+.testi-card:hover{box-shadow:var(--shadow);transform:translateY(-4px);border-color:var(--gold-2)}
+.testi-card .quote{
+  position:absolute;top:14px;inset-inline-end:18px;font-size:44px;color:var(--cream-3);
+  font-family:Georgia,serif;line-height:1;pointer-events:none;
+}
+.testi-stars{color:#e0a92e;font-size:13px;letter-spacing:1px;margin-bottom:9px}
+.testi-card p{font-size:12.5px;color:#6f6055;line-height:2.05;margin-bottom:16px;min-height:80px}
+.testi-user{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line-2);padding-top:12px}
+.testi-avatar{
+  width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--brown-700),var(--brown-900));color:var(--gold-2);
+  font-weight:800;font-size:14px;
+}
+.testi-user b{display:block;font-size:12.5px;font-weight:700;color:var(--brown-900);line-height:1.4}
+.testi-user span{font-size:10.5px;color:var(--muted)}
+
+/* ============================================================
+   NEWSLETTER
+   ============================================================ */
+.newsletter{
+  border-radius:var(--radius-lg);padding:34px 24px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(140deg,var(--brown-900),var(--brown-700) 60%,var(--brown-600));
+  color:#fbf1de;box-shadow:0 22px 50px rgba(var(--brown-900-rgb),.2);
+}
+.newsletter::before{
+  content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(var(--gold-rgb),.22),transparent 68%);
+  top:-220px;inset-inline-start:50%;transform:translateX(50%);pointer-events:none;
+}
+.newsletter h2{font-size:clamp(17px,2.2vw,24px);font-weight:800;margin-bottom:8px;position:relative}
+.newsletter p{font-size:12.5px;color:#ddccb1;margin-bottom:20px;position:relative;max-width:520px;margin-inline:auto}
+.nl-form{display:flex;gap:8px;max-width:460px;margin:0 auto;position:relative;flex-wrap:wrap}
+.nl-form input{
+  flex:1;min-width:180px;height:46px;border-radius:999px;border:1.5px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.09);padding:0 20px;color:#fff;outline:none;font-size:13px;transition:.2s;
+}
+.nl-form input::placeholder{color:#bfae95}
+.nl-form input:focus{border-color:var(--gold);background:rgba(255,255,255,.14)}
+.nl-form button{height:46px;padding:0 26px;border-radius:999px;background:linear-gradient(135deg,var(--gold-2),var(--gold));color:var(--brown-900);font-weight:800;font-size:13px;transition:.22s;flex:1 1 auto}
+.nl-form button:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(var(--gold-rgb),.4)}
+.nl-note{font-size:10.5px;color:#a89a80;margin-top:12px;position:relative}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.site-footer{background:var(--brown-900);color:#c9b89c;margin-top:44px;position:relative;overflow:hidden}
+.site-footer::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 12% 0%,rgba(var(--gold-rgb),.13),transparent 50%);
+}
+.footer-top{display:grid;grid-template-columns:1fr;gap:28px;padding:44px 0 34px;position:relative}
+@media(min-width:700px){.footer-top{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.footer-top{grid-template-columns:1.5fr 1fr 1fr 1.2fr}}
+.f-brand .brand-text strong{color:#f6ead4}
+.f-brand p{font-size:12px;line-height:2.05;margin:14px 0 16px;color:#a89a80;max-width:320px}
+.f-contact{display:grid;gap:9px}
+.f-contact a,.f-contact span{display:flex;align-items:center;gap:9px;font-size:12px;color:#c9b89c;transition:.2s}
+.f-contact a:hover{color:var(--gold-2)}
+.f-contact svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.f-col h4{font-size:13px;font-weight:800;color:#f6ead4;margin-bottom:14px;position:relative;padding-bottom:9px}
+.f-col h4::after{content:"";position:absolute;bottom:0;inset-inline-start:0;width:26px;height:2px;border-radius:2px;background:var(--gold)}
+.f-col ul{display:grid;gap:8px}
+.f-col a{font-size:12px;color:#a89a80;transition:.18s;display:inline-flex;align-items:center;gap:6px}
+.f-col a:hover{color:var(--gold-2);transform:translateX(-3px)}
+.f-social{display:flex;gap:8px;margin-top:16px}
+.f-social a{
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#c9b89c;transition:.22s;
+}
+.f-social a:hover{background:var(--gold);color:var(--brown-900);border-color:var(--gold);transform:translateY(-3px)}
+.f-social svg{width:17px;height:17px;fill:currentColor}
+.trust-badges{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.trust-badge{
+  width:66px;height:66px;border-radius:13px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;text-align:center;
+  font-size:8.5px;color:#a89a80;line-height:1.5;padding:5px;transition:.2s;
+}
+.trust-badge:hover{border-color:var(--gold);color:var(--gold-2)}
+.trust-badge svg{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:1.5;margin-bottom:3px}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.08);padding:16px 0;display:flex;flex-wrap:wrap;
+  align-items:center;justify-content:space-between;gap:10px;font-size:11.5px;color:#8f8069;position:relative;
+}
+.footer-bottom .fb-links{display:flex;gap:16px;flex-wrap:wrap}
+.footer-bottom a:hover{color:var(--gold-2)}
+
+/* ============================================================
+   CART DRAWER
+   ============================================================ */
+.overlay{
+  position:fixed;inset:0;background:rgba(30,20,12,.5);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:.3s;z-index:900;
+}
+.overlay.show{opacity:1;visibility:visible}
+
+.drawer{
+  position:fixed;top:0;bottom:0;width:min(400px,100%);background:var(--cream);z-index:950;
+  display:flex;flex-direction:column;box-shadow:var(--shadow-lg);transition:transform .38s cubic-bezier(.5,.05,.3,1);
+}
+.drawer-left{left:0;transform:translateX(-100%)}
+.drawer-left.open{transform:translateX(0)}
+.drawer-right{right:0;transform:translateX(100%)}
+.drawer-right.open{transform:translateX(0)}
+
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:16px 18px;border-bottom:1px solid var(--line);background:#fff;flex:none;
+}
+.drawer-head h3{font-size:15px;font-weight:800;color:var(--brown-900);display:flex;align-items:center;gap:8px}
+.drawer-head h3 .pill{background:var(--cream-2);color:var(--brown-700);font-size:11px;padding:1px 9px;border-radius:999px;font-weight:700}
+.close-btn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--cream-2);color:var(--brown-700);transition:.2s}
+.close-btn:hover{background:var(--brick);color:#fff}
+.close-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+
+.drawer-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.drawer-body::-webkit-scrollbar{width:6px}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--cream-3);border-radius:9px}
+
+.cart-item{
+  display:flex;gap:11px;background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:10px;
+}
+.cart-item .ci-img{width:70px;height:70px;border-radius:11px;overflow:hidden;flex:none;background:var(--cream-2)}
+.cart-item .ci-img img{width:100%;height:100%;object-fit:cover}
+.cart-item .ci-body{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.cart-item .ci-title{font-size:12.5px;font-weight:700;color:var(--brown-900);line-height:1.5}
+.cart-item .ci-meta{font-size:10.5px;color:var(--muted)}
+.cart-item .ci-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.cart-item .ci-price{font-size:12.5px;font-weight:800;color:var(--brown-900)}
+.cart-item .ci-price small{font-size:10px;font-weight:500;color:var(--muted)}
+.ci-stepper{display:flex;align-items:center;gap:6px;background:var(--cream-2);border-radius:9px;padding:2px}
+.ci-stepper button{width:24px;height:24px;border-radius:7px;background:#fff;border:1px solid var(--line);color:var(--brown-800);font-weight:800;font-size:14px;line-height:1;display:grid;place-items:center;transition:.16s}
+.ci-stepper button:hover{background:var(--brown-800);color:#fff;border-color:var(--brown-800)}
+.ci-stepper span{font-size:12px;font-weight:800;min-width:20px;text-align:center}
+.ci-del{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#c0b2a3;transition:.2s}
+.ci-del:hover{background:var(--brick-2);color:var(--brick)}
+.ci-del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 20px;text-align:center;color:var(--muted)}
+.cart-empty svg{width:64px;height:64px;stroke:var(--cream-3);fill:none;stroke-width:1.3}
+.cart-empty b{font-size:14px;color:var(--brown-800)}
+.cart-empty span{font-size:12px}
+
+.drawer-foot{
+  padding:14px 16px 18px;border-top:1px solid var(--line);background:#fff;flex:none;
+}
+.cf-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.cf-row.total{font-size:15px;font-weight:800;color:var(--brown-900);margin:10px 0 14px;padding-top:10px;border-top:1px dashed var(--line)}
+.cf-row.total span:last-child{color:var(--brick)}
+.cf-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cf-actions .btn{width:100%;height:44px;padding:0}
+
+.mm-search{padding:12px 14px;border-bottom:1px solid var(--line);background:#fff}
+.mm-search input{width:100%;height:42px;border-radius:11px;border:1px solid var(--line);background:var(--cream-2);padding:0 14px;font-size:13px;outline:none}
+.mm-search input:focus{border-color:var(--gold);background:#fff}
+.mm-list{padding:10px;display:grid;gap:3px}
+.mm-list a{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 13px;border-radius:11px;font-size:13px;font-weight:600;color:var(--brown-800);transition:.18s;
+}
+.mm-list a:hover{background:var(--cream-2)}
+.mm-list a svg{width:15px;height:15px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mm-list .divider{height:1px;background:var(--line-2);margin:8px 4px}
+.mm-foot{padding:14px;border-top:1px solid var(--line);display:grid;gap:8px}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:1200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:92vw}
+.toast{
+  display:flex;align-items:center;gap:9px;background:var(--brown-900);color:#f7ecd8;
+  padding:11px 20px;border-radius:999px;font-size:12.5px;font-weight:600;
+  box-shadow:0 14px 34px rgba(var(--brown-900-rgb),.35);animation:toastIn .35s cubic-bezier(.2,.9,.3,1.3);
+  border:1px solid rgba(var(--gold-rgb),.32);
+}
+.toast.out{animation:toastOut .3s forwards}
+.toast svg{width:16px;height:16px;stroke:var(--gold-2);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.toast.err{border-color:rgba(180,85,45,.6)}
+.toast.err svg{stroke:#e2885f}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(12px) scale(.95)}}
+
+/* ============================================================
+   SHOP TOOLBAR
+   ============================================================ */
+.shop-toolbar{
+  background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
+  padding:14px;display:grid;gap:12px;margin-bottom:18px;
+}
+.tb-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;flex:1}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--cream);
+  font-size:12px;font-weight:600;color:var(--brown-700);white-space:nowrap;transition:.2s;
+}
+.chip:hover{border-color:var(--gold-2);color:var(--brown-900)}
+.chip.active{background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f7ecd8;border-color:var(--brown-800)}
+.tb-select{
+  height:38px;border-radius:10px;border:1px solid var(--line);background:var(--cream);
+  padding:0 12px;font-size:12.5px;font-weight:600;color:var(--brown-800);outline:none;cursor:pointer;
+}
+.tb-select:focus{border-color:var(--gold)}
+.range-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:210px}
+.range-wrap label{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.range-wrap input[type=range]{
+  -webkit-appearance:none;appearance:none;flex:1;height:5px;border-radius:5px;
+  background:linear-gradient(90deg,var(--gold) var(--fill,100%),var(--cream-3) var(--fill,100%));outline:none;
+}
+.range-wrap input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+  background:var(--brown-800);border:2.5px solid #fff;box-shadow:0 2px 8px rgba(var(--brown-900-rgb),.3);cursor:pointer;
+}
+.range-wrap input[type=range]::-moz-range-thumb{
+  width:17px;height:17px;border-radius:50%;background:var(--brown-800);border:2.5px solid #fff;cursor:pointer;
+}
+.range-val{font-size:11.5px;font-weight:700;color:var(--brown-800);white-space:nowrap;min-width:96px;text-align:center;background:var(--cream-2);padding:5px 10px;border-radius:9px}
+.result-count{font-size:12px;color:var(--muted);white-space:nowrap}
+.result-count b{color:var(--brown-900)}
+.empty-state{grid-column:1/-1;text-align:center;padding:50px 16px;color:var(--muted);font-size:13px}
+.empty-state b{display:block;color:var(--brown-800);font-size:15px;margin-bottom:6px}
+
+@media(max-width:640px){
+  .section{padding:28px 0}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .sec-head .sec-link{align-self:flex-start}
+  .countdown{transform:scale(.92);transform-origin:right center}
+  .offers-wrap{padding:18px 12px 16px}
+}
+
+/* ============================================================
+   THEME CUSTOMIZER
+   ============================================================ */
+.theme-fab{
+  position:fixed;bottom:20px;left:20px;z-index:800;
+  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--brown-700),var(--brown-900));color:#f7ecd8;
+  box-shadow:0 12px 30px rgba(var(--brown-900-rgb),.35),0 0 0 1px rgba(var(--gold-rgb),.35);
+  transition:transform .25s,box-shadow .25s;cursor:pointer;
+}
+.theme-fab:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(var(--brown-900-rgb),.45)}
+.theme-fab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:640px){.theme-fab{bottom:16px;left:16px;width:46px;height:46px}.theme-fab svg{width:21px;height:21px}}
+
+.theme-panel{
+  position:fixed;bottom:84px;left:20px;z-index:850;
+  width:318px;max-width:calc(100vw - 32px);
+  background:#fff;border-radius:20px;border:1px solid var(--line);
+  box-shadow:0 26px 60px rgba(var(--brown-900-rgb),.28);
+  padding:18px;opacity:0;visibility:hidden;transform:translateY(14px) scale(.96);
+  transform-origin:bottom left;transition:.32s cubic-bezier(.4,.05,.3,1.1);
+  max-height:calc(100vh - 120px);overflow-y:auto;
+}
+.theme-panel.show{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+@media(max-width:640px){.theme-panel{bottom:74px;left:12px;right:12px;width:auto;padding:16px}}
+.theme-panel h3{font-size:14px;font-weight:800;color:var(--brown-900);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.theme-panel h3 svg{width:17px;height:17px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.theme-panel .tp-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.85}
+.theme-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.theme-swatch{
+  border:2px solid var(--line);border-radius:13px;padding:8px 5px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  transition:.2s;background:var(--cream);cursor:pointer;
+}
+.theme-swatch:hover{border-color:var(--gold);transform:translateY(-2px)}
+.theme-swatch.active{border-color:var(--brown-800);background:var(--cream-2);box-shadow:0 4px 12px rgba(var(--brown-900-rgb),.12)}
+.theme-swatch .sw-dots{display:flex;gap:3px}
+.theme-swatch .sw-dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.08)}
+.theme-swatch span{font-size:9.5px;font-weight:700;color:var(--brown-800);text-align:center;line-height:1.35}
+.theme-divider{height:1px;background:var(--line-2);margin:15px 0 13px}
+.theme-custom{display:grid;gap:11px}
+.theme-custom label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600;color:var(--brown-800);cursor:pointer}
+.theme-custom .tc-hex{font-style:normal;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace;direction:ltr;font-weight:500;margin-inline-start:5px}
+.theme-custom input[type=color]{
+  -webkit-appearance:none;appearance:none;width:46px;height:32px;border:1px solid var(--line);border-radius:9px;padding:2px;background:#fff;cursor:pointer;flex:none;
+}
+.theme-custom input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.theme-custom input[type=color]::-webkit-color-swatch{border:none;border-radius:6px}
+.theme-custom input[type=color]::-moz-color-swatch{border:none;border-radius:6px}
+.theme-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+.theme-actions .btn{height:38px;font-size:12px;padding:0}
+.theme-note{font-size:10px;color:var(--muted);margin-top:11px;line-height:1.8;display:flex;gap:5px;align-items:flex-start}
+.theme-note svg{width:13px;height:13px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex:none;margin-top:3px}
+</style>
+</head>
+<body>
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="container">
+    <span class="tb-msg" id="tbMsg">
+      <svg viewBox="0 0 24 24"><path d="M3 7h13v9H3zM16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg>
+      <span id="tbText">ارسال رایگان برای خریدهای بالای ۱٫۵۰۰٫۰۰۰ تومان</span>
+    </span>
+  </div>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-top">
+    <button class="icon-btn only-mobile" id="menuBtn" aria-label="باز کردن منو">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+
+    <a href="#" class="brand" aria-label="خشکبار آریانا - صفحه اصلی">
+      <span class="brand-mark">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <ellipse cx="16" cy="17" rx="7.5" ry="9.5" style="fill:var(--gold-2)"/>
+          <ellipse cx="16" cy="17" rx="3.4" ry="6" style="fill:var(--brown-700)" opacity=".55"/>
+          <path d="M16 5.5c-2.6 1.6-4 4-4 6.2" style="stroke:var(--gold-3)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <circle cx="10" cy="10" r="1.6" style="fill:var(--gold)"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <strong>خشکبار آریانا</strong>
+        <small>طعم اصالت</small>
+      </span>
+    </a>
+
+    <form class="search-box" id="searchForm" role="search">
+      <input type="search" id="searchInput" placeholder="جستجوی محصول، دسته‌بندی یا برند..." aria-label="جستجوی محصولات">
+      <button type="submit" aria-label="جستجو">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      <a href="#" class="action" aria-label="ورود و ثبت‌نام">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+        <span class="lbl">ورود / ثبت‌نام</span>
+      </a>
+      <button class="action" id="wishBtn" aria-label="علاقه‌مندی‌ها">
+        <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.5-7 9-7 9z"/></svg>
+        <span class="lbl">علاقه‌مندی</span>
+        <i class="count" id="wishCount">۰</i>
+      </button>
+      <button class="action cart-btn" id="cartBtn" aria-label="سبد خرید">
+        <svg viewBox="0 0 24 24"><path d="M6 7h14l-1.4 9.5H7.4z"/><circle cx="9.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M6 7 5 3.5H2"/></svg>
+        <span class="cart-total" id="cartTotal">۰ تومان</span>
+        <i class="count" id="cartCount">۰</i>
+      </button>
+    </div>
+  </div>
+
+  <nav class="cat-nav" id="catNav" aria-label="دسته‌بندی محصولات">
+    <div class="container nav-inner">
+      <button class="nav-mega-btn" id="megaBtn" aria-expanded="false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
+        همه دسته‌بندی‌ها
+        <svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="nav-links">
+        <a href="#shop" data-cat="nuts">آجیل و مغزها</a>
+        <a href="#shop" data-cat="pistachio">پسته</a>
+        <a href="#shop" data-cat="almond">بادام</a>
+        <a href="#shop" data-cat="walnut">گردو</a>
+        <a href="#shop" data-cat="seeds">تخمه و مغز تخمه</a>
+        <a href="#shop" data-cat="dried">میوه خشک</a>
+        <a href="#shop" data-cat="raisin">کشمش و مویز</a>
+        <a href="#shop" data-cat="date">خرما و رطب</a>
+        <a href="#shop" data-cat="fig">توت خشک و انجیر</a>
+        <a href="#shop" data-cat="saffron">زعفران و ادویه</a>
+        <a href="#shop" data-cat="herbal">دمنوش و طبیعی</a>
+        <a href="#shop" data-cat="gift" class="hot">پک‌های هدیه</a>
+      </div>
+    </div>
+
+    <div class="mega-panel" id="megaPanel">
+      <div class="container mega-grid">
+        <div class="mega-col">
+          <h4>آجیل و مغزها</h4>
+          <a href="#shop" data-cat="nuts">آجیل مخلوط</a>
+          <a href="#shop" data-cat="pistachio">پسته</a>
+          <a href="#shop" data-cat="almond">بادام</a>
+          <a href="#shop" data-cat="walnut">گردو</a>
+          <a href="#shop" data-cat="hazelnut">فندق</a>
+        </div>
+        <div class="mega-col">
+          <h4>خشکبار سنتی</h4>
+          <a href="#shop" data-cat="fig">انجیر خشک</a>
+          <a href="#shop" data-cat="fig">توت خشک</a>
+          <a href="#shop" data-cat="raisin">کشمش و مویز</a>
+          <a href="#shop" data-cat="date">خرما و رطب</a>
+          <a href="#shop" data-cat="dried">برگه و آلو خشک</a>
+        </div>
+        <div class="mega-col">
+          <h4>دانه و مغز تخمه</h4>
+          <a href="#shop" data-cat="seeds">تخمه کدو</a>
+          <a href="#shop" data-cat="seeds">تخمه آفتابگردان</a>
+          <a href="#shop" data-cat="seeds">مغز تخمه</a>
+          <a href="#shop" data-cat="herbal">دمنوش گیاهی</a>
+          <a href="#shop" data-cat="saffron">زعفران</a>
+        </div>
+        <div class="mega-col">
+          <h4>هدیه و مناسبت</h4>
+          <a href="#shop" data-cat="gift">پک شب یلدا</a>
+          <a href="#shop" data-cat="gift">پک عید نوروز</a>
+          <a href="#shop" data-cat="gift">جعبه هدیه لوکس</a>
+          <a href="#shop" data-cat="gift">سفارش سازمانی</a>
+        </div>
+        <div class="mega-promo">
+          <img data-svg="gift|77" alt="پک هدیه آجیل">
+          <div class="mp-body">
+            <span>پیشنهاد ویژه مناسبت‌ها</span>
+            <strong>پک‌های هدیه خشکبار لوکس با بسته‌بندی اختصاصی</strong>
+            <a href="#gift" class="btn btn-gold" style="padding:8px 18px;font-size:12px">مشاهده پک‌ها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-track" id="heroTrack">
+
+          <div class="hero-slide">
+            <div class="hero-text">
+              <span class="eyebrow">خشکبار ممتاز آریانا</span>
+              <h1>طعم اصالت، <em>کیفیت</em> در هر دانه</h1>
+              <p>انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.</p>
+              <div class="hero-actions">
+                <a href="#shop" class="btn btn-gold">مشاهده محصولات</a>
+                <a href="#offers" class="btn btn-ghost">پیشنهادهای ویژه</a>
+              </div>
+              <div class="hero-stats">
+                <div><b>۲۴۰+</b><span>محصول تازه</span></div>
+                <div><b>۱۸ سال</b><span>سابقه اصالت</span></div>
+                <div><b>٪۹۸</b><span>رضایت مشتریان</span></div>
+              </div>
+            </div>
+            <div class="hero-art">
+              <div class="ring"><img data-svg="pistachio|12" alt="پسته ممتاز آریانا"></div>
+              <div class="float-badge fb1"><i></i> تازه‌رسیده امروز</div>
+              <div class="float-badge fb2"><i style="background:var(--brick)"></i> ارسال سریع</div>
+            </div>
+          </div>
+
+          <div class="hero-slide">
+            <div class="hero-text">
+              <span class="eyebrow">جشنواره تخفیف پاییزه</span>
+              <h1>تا <em>٪۲۵ تخفیف</em> روی آجیل ممتاز</h1>
+              <p>پسته اکبری، بادام درختی، مغز گردو و فندق خام با قیمت‌های ویژه و بسته‌بندی تازه؛ فرصت را از دست ندهید.</p>
+              <div class="hero-actions">
+                <a href="#offers" class="btn btn-gold">خرید با تخفیف</a>
+                <a href="#shop" class="btn btn-ghost">همه محصولات</a>
+              </div>
+              <div class="hero-stats">
+                <div><b>٪۲۵</b><span>حداکثر تخفیف</span></div>
+                <div><b>۲۴ ساعت</b><span>ارسال سریع</span></div>
+                <div><b>۱۰۰٪</b><span>تضمین تازگی</span></div>
+              </div>
+            </div>
+            <div class="hero-art">
+              <div class="ring"><img data-svg="almond|23" alt="بادام درختی خام"></div>
+              <div class="float-badge fb1"><i></i> تخفیف محدود</div>
+              <div class="float-badge fb2"><i style="background:var(--brick)"></i> ٪۲۵ آف</div>
+            </div>
+          </div>
+
+          <div class="hero-slide">
+            <div class="hero-text">
+              <span class="eyebrow">هدیه‌ای از دل طبیعت</span>
+              <h1>پک‌های هدیه خشکبار با <em>بسته‌بندی لوکس</em></h1>
+              <p>برای شب یلدا، عید نوروز و مناسبت‌های سازمانی؛ جعبه‌هایی که ارزش هدیه شما را دوچندان می‌کنند.</p>
+              <div class="hero-actions">
+                <a href="#gift" class="btn btn-gold">مشاهده پک‌های هدیه</a>
+                <a href="#shop" class="btn btn-ghost">سفارش سازمانی</a>
+              </div>
+              <div class="hero-stats">
+                <div><b>۲۴</b><span>نوع پک هدیه</span></div>
+                <div><b>رایگان</b><span>کارت تبریک</span></div>
+                <div><b>سفارشی</b><span>چاپ لوگو</span></div>
+              </div>
+            </div>
+            <div class="hero-art">
+              <div class="ring"><img data-svg="gift|41" alt="پک هدیه خشکبار لوکس"></div>
+              <div class="float-badge fb1"><i></i> بسته‌بندی لوکس</div>
+              <div class="float-badge fb2"><i style="background:var(--brick)"></i> کارت تبریک رایگان</div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="hero-arrow prev" id="heroPrev" aria-label="اسلاید قبلی">
+          <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg>
+        </button>
+        <button class="hero-arrow next" id="heroNext" aria-label="اسلاید بعدی">
+          <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <div class="hero-dots" id="heroDots"></div>
+      </div>
+
+      <div class="trust-strip">
+        <div class="trust-item">
+          <div class="ti-ico"><svg viewBox="0 0 24 24"><path d="M3 7h13v9H3zM16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg></div>
+          <div><b>ارسال سریع</b><span>به سراسر کشور</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-ico"><svg viewBox="0 0 24 24"><path d="m12 3 7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div><b>تضمین تازگی</b><span>کیفیت تضمین‌شده</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-ico"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M4 8V5h16v3M9 12h6"/></svg></div>
+          <div><b>بسته‌بندی بهداشتی</b><span>استاندارد و مطمئن</span></div>
+        </div>
+        <div class="trust-item">
+          <div class="ti-ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 15h3"/></svg></div>
+          <div><b>پرداخت امن</b><span>درگاه بانکی معتبر</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CATEGORIES ================= -->
+  <section class="section" id="categories">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">دسته‌بندی‌ها</span>
+          <h2>محبوب‌ترین دسته‌بندی‌ها</h2>
+          <p class="sub">از پسته ممتاز تا پک‌های هدیه؛ هر چه می‌خواهید یک‌جا پیدا کنید.</p>
+        </div>
+        <a href="#shop" class="sec-link">همه دسته‌ها
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </a>
+      </div>
+      <div class="cat-grid">
+        <a href="#shop" class="cat-card" data-cat="nuts"><div class="cat-thumb"><img data-svg="almond|5" alt="آجیل و مغزها"></div><b>آجیل و مغزها</b><span>۲۴ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="pistachio"><div class="cat-thumb"><img data-svg="pistachio|11" alt="پسته"></div><b>پسته</b><span>۹ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="almond"><div class="cat-thumb"><img data-svg="almond|18" alt="بادام"></div><b>بادام</b><span>۷ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="walnut"><div class="cat-thumb"><img data-svg="walnut|22" alt="گردو"></div><b>گردو</b><span>۵ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="dried"><div class="cat-thumb"><img data-svg="driedfruit|31" alt="میوه خشک"></div><b>میوه خشک</b><span>۱۲ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="date"><div class="cat-thumb"><img data-svg="date|44" alt="خرما و کشمش"></div><b>خرما و کشمش</b><span>۱۰ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="seeds"><div class="cat-thumb"><img data-svg="seed|53" alt="تخمه و دانه‌ها"></div><b>تخمه و دانه‌ها</b><span>۸ محصول</span></a>
+        <a href="#shop" class="cat-card" data-cat="gift"><div class="cat-thumb"><img data-svg="gift|66" alt="پک‌های هدیه"></div><b>پک‌های هدیه</b><span>۶ محصول</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OFFERS ================= -->
+  <section class="section tight" id="offers">
+    <div class="container">
+      <div class="offers-wrap">
+        <div class="sec-head" style="margin-bottom:18px">
+          <div class="sh-r">
+            <span class="sec-eyebrow">فرصت محدود</span>
+            <h2>پیشنهادهای ویژه امروز</h2>
+            <p class="sub">تخفیف‌های اختصاصی روی محصولات پرفروش؛ تا پایان زمان شمارش معکوس.</p>
+          </div>
+          <div class="countdown" id="countdown" aria-label="زمان باقی‌مانده تا پایان تخفیف">
+            <div class="cd-box"><b id="cdD">۰۰</b><span>روز</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><b id="cdH">۰۰</b><span>ساعت</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><b id="cdM">۰۰</b><span>دقیقه</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><b id="cdS">۰۰</b><span>ثانیه</span></div>
+          </div>
+        </div>
+        <div class="product-grid" id="offersGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BEST SELLERS ================= -->
+  <section class="section" id="bestsellers">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">انتخاب مشتریان</span>
+          <h2>پرفروش‌ترین محصولات</h2>
+          <p class="sub">محصولاتی که بیشترین سفارش و بالاترین رضایت را داشته‌اند.</p>
+        </div>
+        <a href="#shop" class="sec-link">مشاهده همه
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </a>
+      </div>
+      <div class="product-grid" id="bestGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= SPECIAL / FRESH ================= -->
+  <section class="section tight" id="special">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">انتخاب سردبیر</span>
+          <h2>محصولات ویژه و تازه</h2>
+          <p class="sub">محصولات ممتاز، سنتی و کم‌یاب که دست‌چین شده‌اند.</p>
+        </div>
+        <a href="#shop" class="sec-link">مشاهده همه
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </a>
+      </div>
+      <div class="product-grid cols-5" id="specialGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= SHOP ================= -->
+  <section class="section" id="shop">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">فروشگاه</span>
+          <h2>همه محصولات</h2>
+          <p class="sub">جستجو، فیلتر و مرتب‌سازی کنید و محصول دلخواهتان را با وزن دلخواه سفارش دهید.</p>
+        </div>
+      </div>
+
+      <div class="shop-toolbar">
+        <div class="tb-row">
+          <div class="chips" id="catChips"></div>
+        </div>
+        <div class="tb-row">
+          <div class="range-wrap">
+            <label for="priceRange">حداکثر قیمت:</label>
+            <input type="range" id="priceRange" min="0" max="1200000" step="50000" value="1200000" aria-label="فیلتر بازه قیمت">
+            <span class="range-val" id="rangeVal">۱٫۲۰۰٫۰۰۰ تومان</span>
+          </div>
+          <select class="tb-select" id="sortSelect" aria-label="مرتب‌سازی">
+            <option value="default">مرتب‌سازی: پیش‌فرض</option>
+            <option value="cheap">ارزان‌ترین</option>
+            <option value="expensive">گران‌ترین</option>
+            <option value="discount">بیشترین تخفیف</option>
+            <option value="rating">محبوب‌ترین</option>
+          </select>
+          <span class="result-count" id="resultCount"></span>
+        </div>
+      </div>
+
+      <div class="product-grid" id="shopGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= GIFT BANNER ================= -->
+  <section class="section tight" id="gift">
+    <div class="container">
+      <div class="gift-banner">
+        <div class="gift-text">
+          <span class="eyebrow">هدیه‌ای ماندگار</span>
+          <h2>پک‌های هدیه خشکبار؛ ارزشمند مثل هدیه‌دهنده</h2>
+          <p>جعبه‌های چوبی و مقوایی لوکس با انتخاب دستی بهترین مغزها و میوه‌های خشک. مناسب شب یلدا، نوروز، مناسبت‌های سازمانی و هدایای تبلیغاتی با امکان چاپ لوگو.</p>
+          <div class="hero-actions">
+            <a href="#shop" class="btn btn-gold">سفارش پک هدیه</a>
+            <a href="#" class="btn btn-ghost" id="giftConsultBtn">مشاوره سفارش سازمانی</a>
+          </div>
+        </div>
+        <div class="gift-art">
+          <div class="g-item"><img data-svg="gift|81" alt="پک آجیل شب یلدا"><span>پک شب یلدا</span></div>
+          <div class="g-item"><img data-svg="gift|92" alt="پک آجیل عید نوروز"><span>پک عید نوروز</span></div>
+          <div class="g-item"><img data-svg="gift|103" alt="جعبه هدیه خشکبار لوکس"><span>جعبه لوکس</span></div>
+          <div class="g-item"><img data-svg="gift|114" alt="پک سازمانی"><span>پک سازمانی</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHY US ================= -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">اعتماد شما</span>
+          <h2>چرا از آریانا خرید کنید؟</h2>
+        </div>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-ico"><svg viewBox="0 0 24 24"><path d="m12 3 7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <b>تضمین کیفیت و تازگی</b>
+          <p>هر بسته پیش از ارسال بازرسی و توزین می‌شود؛ در صورت نارضایتی مرجوعی بدون قید و شرط.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M4 8h16v11H4z"/><path d="M4 8V5h16v3M9 12h6"/></svg></div>
+          <b>بسته‌بندی بهداشتی</b>
+          <p>بسته‌بندی وکیوم و زیپ‌لاک با رعایت کامل اصول بهداشتی و مجوزهای استاندارد.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico"><svg viewBox="0 0 24 24"><path d="M3 7h13v9H3zM16 10h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg></div>
+          <b>ارسال سریع کشوری</b>
+          <p>ارسال به سراسر کشور با پست پیشتاز و تیپاکس؛ تحویل در تهران کمتر از ۲۴ ساعت.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.8 1.8 0 0 1 0 3.6h-3a1.8 1.8 0 0 0 0 3.6h4"/></svg></div>
+          <b>قیمت منصفانه و شفاف</b>
+          <p>حذف واسطه‌ها و خرید مستقیم از باغدار؛ قیمت‌ها بدون هزینه پنهان و کاملاً شفاف.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BRAND STORY ================= -->
+  <section class="section tight" id="story">
+    <div class="container">
+      <div class="story">
+        <div class="story-media">
+          <img data-svg="walnut|137" alt="داستان برند خشکبار آریانا">
+          <div class="badge-float">
+            <b>۱۸ سال</b>
+            <span>تجربه در انتخاب<br>بهترین محصولات</span>
+          </div>
+        </div>
+        <div class="story-text">
+          <span class="sec-eyebrow">داستان ما</span>
+          <h2>از دل باغ‌های ایران، تا سفره‌های شما</h2>
+          <p>خشکبار آریانا با یک باور ساده آغاز شد: اینکه طعم اصیل ایرانی نباید در پیچیدگی بازار گم شود. ما سال‌هاست مستقیم از باغداران کرمان، آذربایجان، استهبان و خراسان خرید می‌کنیم؛ بدون واسطه، بدون انبار طولانی‌مدت.</p>
+          <p>هر محصول در کارگاه خودمان دست‌چین، پاک‌سازی، توزین و بسته‌بندی می‌شود. نتیجه، دانه‌هایی است که همان تازگی روز برداشت را در خانه شما زنده می‌کنند.</p>
+          <ul class="story-points">
+            <li><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg> خرید مستقیم از باغداران و تعاونی‌های محلی</li>
+            <li><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg> کنترل کیفیت سه‌مرحله‌ای پیش از بسته‌بندی</li>
+            <li><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg> بسته‌بندی تازه به‌اندازه سفارش، بدون انبار ماندگی</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <section class="section" id="testimonials">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sh-r">
+          <span class="sec-eyebrow">تجربه خریداران</span>
+          <h2>نظرات مشتریان ما</h2>
+        </div>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <span class="quote">”</span>
+          <div class="testi-stars">★★★★★</div>
+          <p>پسته اکبری‌ای که فرستادید واقعاً درشت و خندان بود، کاملاً تازه و بدون هیچ دانه پوک. بسته‌بندی هم خیلی مرتب و بهداشتی بود. قطعاً دوباره سفارش می‌دم.</p>
+          <div class="testi-user">
+            <div class="testi-avatar">م</div>
+            <div><b>مریم رضایی</b><span>تهران — خریدار پسته اکبری</span></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <span class="quote">”</span>
+          <div class="testi-stars">★★★★★</div>
+          <p>برای شب یلدا دو تا پک هدیه سفارش دادم. کیفیت جعبه و تنوع آجیل‌ها عالی بود، مهمان‌ها فکر می‌کردند از یک برند خارجی خریدم! ارسال هم سر وقت رسید.</p>
+          <div class="testi-user">
+            <div class="testi-avatar">ا</div>
+            <div><b>امیر حسینی</b><span>اصفهان — خریدار پک هدیه</span></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <span class="quote">”</span>
+          <div class="testi-stars">★★★★☆</div>
+          <p>انجیر استهبان و توت خشکشون بی‌نظیره، طعمش کاملاً با بازار فرق داره. تنها نکته اینکه قیمت‌ها کمی بالاست ولی در ازای این کیفیت واقعاً ارزشش رو داره.</p>
+          <div class="testi-user">
+            <div class="testi-avatar">س</div>
+            <div><b>سارا کریمی</b><span>شیراز — خریدار خشکبار سنتی</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEWSLETTER ================= -->
+  <section class="section tight">
+    <div class="container">
+      <div class="newsletter">
+        <h2>عضویت در خبرنامه آریانا</h2>
+        <p>اولین نفری باشید که از تخفیف‌های ویژه، محصولات تازه و پیشنهادهای فصلی باخبر می‌شود.</p>
+        <form class="nl-form" id="nlForm">
+          <input type="text" id="nlInput" placeholder="شماره موبایل یا ایمیل خود را وارد کنید" aria-label="شماره موبایل یا ایمیل">
+          <button type="submit">عضویت در خبرنامه</button>
+        </form>
+        <div class="nl-note">با عضویت، با قوانین حریم خصوصی و شرایط فروشگاه موافقت می‌کنید.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="f-brand">
+        <a href="#" class="brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <ellipse cx="16" cy="17" rx="7.5" ry="9.5" style="fill:var(--gold-2)"/>
+              <ellipse cx="16" cy="17" rx="3.4" ry="6" style="fill:var(--brown-700)" opacity=".55"/>
+              <path d="M16 5.5c-2.6 1.6-4 4-4 6.2" style="stroke:var(--gold-3)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              <circle cx="10" cy="10" r="1.6" style="fill:var(--gold)"/>
+            </svg>
+          </span>
+          <span class="brand-text"><strong>خشکبار آریانا</strong><small>طعم اصالت</small></span>
+        </a>
+        <p>فروشگاه اینترنتی تخصصی آجیل، مغزها، میوه خشک، خرما و محصولات طبیعی. با ۱۸ سال تجربه در انتخاب و بسته‌بندی محصولات ممتاز ایرانی، همراه سفره‌های شما هستیم.</p>
+        <div class="f-contact">
+          <a href="tel:02191001234"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg> ۰۲۱ - ۹۱۰۰ ۱۲۳۴</a>
+          <span><svg viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> تهران، خیابان ولیعصر، برج آریانا، طبقه ۵</span>
+          <span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg> info@ariana-nuts.ir</span>
+        </div>
+        <div class="f-social">
+          <a href="#" aria-label="اینستاگرام"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.5.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .5 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.5 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.5-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.5-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.5-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.5 1.3-.1 1.7-.1 4.9-.1zm0 5.1a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zm0 7.7a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm6-7.9a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z"/></svg></a>
+          <a href="#" aria-label="تلگرام"><svg viewBox="0 0 24 24"><path d="M21.6 4.3 2.9 11.5c-1 .4-1 1.7.1 2l4.6 1.4 1.7 5.4c.2.7 1 .8 1.5.3l2.5-2.4 4.7 3.5c.7.5 1.6.1 1.8-.7l3-14.7c.2-.9-.7-1.6-1.2-2zM8.9 14.3l8.2-5.2c.3-.2.6.2.3.4l-6.7 6.4-.3 3-1.5-4.6z"/></svg></a>
+          <a href="#" aria-label="واتساپ"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.5-.7-2.1-1.5-.5-.6-.8-1.2-.9-1.4-.1-.2 0-.4.1-.5l.5-.6c.1-.2.2-.3.3-.5 0-.2 0-.3-.1-.4l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.7 4.2 3.7 1.5.6 2 .7 2.7.6.4-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1-.1-.2-.2-.2-.4-.3z"/></svg></a>
+        </div>
+      </div>
+
+      <div class="f-col">
+        <h4>دسته‌بندی محصولات</h4>
+        <ul>
+          <li><a href="#shop" data-cat="nuts">آجیل و مغزها</a></li>
+          <li><a href="#shop" data-cat="pistachio">پسته و مغز پسته</a></li>
+          <li><a href="#shop" data-cat="almond">بادام درختی و هندی</a></li>
+          <li><a href="#shop" data-cat="walnut">گردو و فندق</a></li>
+          <li><a href="#shop" data-cat="dried">میوه خشک و برگه</a></li>
+          <li><a href="#shop" data-cat="date">خرما، کشمش و مویز</a></li>
+          <li><a href="#shop" data-cat="gift">پک‌های هدیه</a></li>
+        </ul>
+      </div>
+
+      <div class="f-col">
+        <h4>راهنمای خرید</h4>
+        <ul>
+          <li><a href="#">نحوه ثبت سفارش</a></li>
+          <li><a href="#">شیوه‌های پرداخت</a></li>
+          <li><a href="#">شرایط ارسال و تحویل</a></li>
+          <li><a href="#">رویه بازگشت کالا</a></li>
+          <li><a href="#">سوالات متداول</a></li>
+          <li><a href="#">قوانین و مقررات</a></li>
+          <li><a href="#">حریم خصوصی</a></li>
+        </ul>
+      </div>
+
+      <div class="f-col">
+        <h4>تماس و اعتماد</h4>
+        <ul>
+          <li><a href="tel:02191001234">۰۲۱-۹۱۰۰۱۲۳۴ (۹ صبح تا ۹ شب)</a></li>
+          <li><a href="#">پاسخگویی واتساپ</a></li>
+          <li><a href="#">پیگیری سفارش</a></li>
+          <li><a href="#">همکاری با ما</a></li>
+        </ul>
+        <div class="trust-badges">
+          <div class="trust-badge"><div><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.4-8 9.8C7.5 20.4 4 17 4 12V6z"/><path d="m9 12 2 2 4-4"/></svg></div>نماد اعتماد</div>
+          <div class="trust-badge"><div><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>ساماندهی</div>
+          <div class="trust-badge"><div><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg></div>درگاه امن</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© ۱۴۰۳ خشکبار آریانا — تمامی حقوق محفوظ است.</span>
+      <div class="fb-links">
+        <a href="#">شرایط استفاده</a>
+        <a href="#">حریم خصوصی</a>
+        <a href="#">نقشه سایت</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= CART DRAWER ================= -->
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer drawer-left" id="cartDrawer" aria-label="سبد خرید">
+  <div class="drawer-head">
+    <h3>سبد خرید <span class="pill" id="cartDrawerCount">۰ کالا</span></h3>
+    <button class="close-btn" id="cartClose" aria-label="بستن سبد خرید">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot" id="cartFoot"></div>
+</aside>
+
+<!-- ================= MOBILE MENU ================= -->
+<aside class="drawer drawer-right" id="menuDrawer" aria-label="منوی موبایل">
+  <div class="drawer-head">
+    <h3>منوی فروشگاه</h3>
+    <button class="close-btn" id="menuClose" aria-label="بستن منو">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="mm-search">
+    <input type="search" id="mmSearch" placeholder="جستجوی محصول..." aria-label="جستجوی محصول در منو">
+  </div>
+  <div class="drawer-body" style="padding:0">
+    <div class="mm-list" id="mmList">
+      <a href="#shop" data-cat="all">همه محصولات <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <div class="divider"></div>
+      <a href="#shop" data-cat="nuts">آجیل و مغزها <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="pistachio">پسته <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="almond">بادام <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="walnut">گردو <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="hazelnut">فندق <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="seeds">تخمه و مغز تخمه <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="dried">میوه خشک <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="raisin">کشمش و مویز <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="date">خرما و رطب <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="fig">توت خشک و انجیر <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="saffron">زعفران و ادویه <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="herbal">دمنوش و محصولات طبیعی <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#shop" data-cat="gift">آجیل و پک‌های هدیه <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <div class="divider"></div>
+      <a href="#offers">پیشنهادهای ویژه <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#story">داستان برند <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+      <a href="#">تماس با ما <svg viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></a>
+    </div>
+  </div>
+  <div class="mm-foot">
+    <a href="tel:02191001234" class="btn btn-outline">۰۲۱-۹۱۰۰۱۲۳۴</a>
+    <a href="#shop" class="btn btn-brown">مشاهده فروشگاه</a>
+  </div>
+</aside>
+
+<!-- ================= THEME CUSTOMIZER ================= -->
+<button class="theme-fab" id="themeFab" aria-label="تغییر تم رنگی" aria-expanded="false">
+  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18 4.5 4.5 0 0 1 0-9 4.5 4.5 0 0 0 0-9z"/></svg>
+</button>
+
+<div class="theme-panel" id="themePanel" aria-label="تنظیمات تم رنگی">
+  <h3>
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18 4.5 4.5 0 0 1 0-9 4.5 4.5 0 0 0 0-9z"/></svg>
+    تغییر تم رنگی
+  </h3>
+  <p class="tp-sub">یک تم آماده انتخاب کنید یا رنگ دلخواه خود را بسازید. تغییرات به‌صورت خودکار ذخیره می‌شود.</p>
+  <div class="theme-presets" id="themePresets"></div>
+  <div class="theme-divider"></div>
+  <div class="theme-custom">
+    <label>
+      <span>رنگ اصلی برند <em class="tc-hex" id="themePrimaryHex">#3a2818</em></span>
+      <input type="color" id="themePrimary" value="#3a2818" aria-label="انتخاب رنگ اصلی">
+    </label>
+    <label>
+      <span>رنگ تأکید (طلایی) <em class="tc-hex" id="themeAccentHex">#c2a15a</em></span>
+      <input type="color" id="themeAccent" value="#c2a15a" aria-label="انتخاب رنگ تأکید">
+    </label>
+  </div>
+  <div class="theme-actions">
+    <button type="button" class="btn btn-outline" id="themeReset">بازنشانی</button>
+    <button type="button" class="btn btn-brown" id="themeClose">بستن</button>
+  </div>
+  <div class="theme-note">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+    <span>برای خوانایی بهتر، رنگ‌های تیره و متوسط (مثل قهوه‌ای، زیتونی، سرمه‌ای) پیشنهاد می‌شود.</span>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   UTIL
+   ============================================================ */
+const nf = new Intl.NumberFormat('fa-IR');
+const fa = n => nf.format(n);
+const money = n => nf.format(Math.round(n));
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+/* ============================================================
+   SVG PRODUCT IMAGE GENERATOR
+   ============================================================ */
+const PALETTES = {
+  pistachio:{bg:['#f2ecd8','#e2d8bb'], nut:['#bccb72','#778e3d'], kind:'pistachio'},
+  almond:   {bg:['#f7eee2','#e8d5bd'], nut:['#e2b98a','#a97846'], kind:'almond'},
+  walnut:   {bg:['#f2e9dc','#dfcdb2'], nut:['#cb9c6d','#815733'], kind:'walnut'},
+  hazelnut: {bg:['#f5ebdc','#e5d1b2'], nut:['#cd9355','#8b592b'], kind:'circle'},
+  seed:     {bg:['#f1f0e5','#dbd9c4'], nut:['#e5dfc8','#a1966f'], kind:'almond'},
+  raisin:   {bg:['#f2e7d9','#dcc4a6'], nut:['#6d4b30','#382515'], kind:'raisin'},
+  raisinG:  {bg:['#f0f2e0','#d9ddc1'], nut:['#aabb66','#6b7a33'], kind:'raisin'},
+  date:     {bg:['#f4e7d3','#e0c9a2'], nut:['#8d5c2c','#482b12'], kind:'date'},
+  fig:      {bg:['#f3e8d5','#ddc9a4'], nut:['#bd9560','#77562d'], kind:'circle'},
+  saffron:  {bg:['#fbf1df','#efd7ac'], nut:['#e4682c','#a63710'], kind:'strand'},
+  herbal:   {bg:['#eef0e4','#d5dcc0'], nut:['#91a26c','#5b6b3c'], kind:'leaf'},
+  gift:     {bg:['#f7ecdf','#e5cdb0'], nut:['#c9a227','#8a6a14'], kind:'circle'},
+  driedfruit:{bg:['#f9ecdc','#ecd0ad'], nut:['#eba452','#b96a1e'], kind:'almond'}
+};
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function nutShape(kind){
+  const hi = '<ellipse cx="-3" cy="-5" rx="3.1" ry="4.3" fill="rgba(255,255,255,.34)"/>';
+  switch(kind){
+    case 'pistachio':
+      return '<ellipse rx="11" ry="15" fill="url(#nut)" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>' +
+             '<ellipse cx="1" cy="0" rx="4.4" ry="8.6" fill="rgba(120,150,60,.5)"/>' + hi;
+    case 'almond':
+      return '<path d="M0,-19 C13,-10 13,10 0,19 C-13,10 -13,-10 0,-19Z" fill="url(#nut)" stroke="rgba(0,0,0,.14)" stroke-width=".8"/>' + hi;
+    case 'walnut':
+      return '<circle r="14" fill="url(#nut)" stroke="rgba(0,0,0,.14)" stroke-width=".8"/>' +
+             '<path d="M0,-10 C6,-4 6,4 0,10 M-7,-7 C-1,-2 -1,2 -7,7 M7,-7 C1,-2 1,2 7,7" stroke="rgba(0,0,0,.2)" stroke-width="1.2" fill="none"/>' + hi;
+    case 'circle':
+      return '<circle r="12" fill="url(#nut)" stroke="rgba(0,0,0,.14)" stroke-width=".8"/>' + hi;
+    case 'raisin':
+      return '<ellipse rx="8.5" ry="14" fill="url(#nut)" stroke="rgba(0,0,0,.2)" stroke-width=".8"/>' +
+             '<ellipse cx="0" cy="0" rx="4" ry="9" fill="rgba(255,255,255,.1)"/>' + hi;
+    case 'date':
+      return '<ellipse rx="9" ry="19" fill="url(#nut)" stroke="rgba(0,0,0,.2)" stroke-width=".8"/>' +
+             '<ellipse cx="0" cy="0" rx="4" ry="12" fill="rgba(255,255,255,.09)"/>' + hi;
+    case 'strand':
+      return '<path d="M-14,6 C-4,-7 4,7 14,-6" stroke="url(#nut)" stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+    case 'leaf':
+      return '<path d="M0,-14 C10,-6 10,6 0,14 C-10,6 -10,-6 0,-14Z" fill="url(#nut)" stroke="rgba(0,0,0,.12)" stroke-width=".7"/>' +
+             '<path d="M0,-10 L0,10" stroke="rgba(0,0,0,.16)" stroke-width="1"/>';
+    default:
+      return '<ellipse rx="11" ry="11" fill="url(#nut)"/>';
+  }
+}
+
+function svgDataURI(pal, seed){
+  const rand = mulberry32((seed * 2654435761) % 2147483647 + 7);
+  const items = [];
+  const total = pal.kind === 'strand' ? 18 : 30;
+  for(let i = 0; i < total; i++){
+    const ang = rand() * Math.PI * 2;
+    const rad = Math.pow(rand(), 0.55) * 118;
+    items.push({
+      x: 200 + Math.cos(ang) * rad * 1.03,
+      y: 205 + Math.sin(ang) * rad * 0.92,
+      rot: rand() * 200 - 100,
+      s: 0.8 + rand() * 0.6,
+      z: 0
+    });
+    items[i].z = items[i].y;
+  }
+  items.sort((a, b) => a.z - b.z);
+  let body = '';
+  for(const it of items){
+    body += '<g transform="translate(' + it.x.toFixed(1) + ',' + it.y.toFixed(1) + ') rotate(' + it.rot.toFixed(1) + ') scale(' + it.s.toFixed(2) + ')">' + nutShape(pal.kind) + '</g>';
+  }
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">' +
+      '<defs>' +
+        '<radialGradient id="bg" cx="34%" cy="24%" r="92%">' +
+          '<stop offset="0%" stop-color="' + pal.bg[0] + '"/><stop offset="100%" stop-color="' + pal.bg[1] + '"/>' +
+        '</radialGradient>' +
+        '<linearGradient id="nut" x1="0" y1="0" x2="0.35" y2="1">' +
+          '<stop offset="0%" stop-color="' + pal.nut[0] + '"/><stop offset="100%" stop-color="' + pal.nut[1] + '"/>' +
+        '</linearGradient>' +
+        '<radialGradient id="vig" cx="50%" cy="45%" r="68%">' +
+          '<stop offset="58%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(40,26,14,.18)"/>' +
+        '</radialGradient>' +
+      '</defs>' +
+      '<rect width="400" height="400" fill="url(#bg)"/>' +
+      body +
+      '<rect width="400" height="400" fill="url(#vig)"/>' +
+    '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function hydrateImages(root){
+  (root || document).querySelectorAll('img[data-svg]').forEach(img => {
+    if(img.dataset.done) return;
+    const parts = img.dataset.svg.split('|');
+    const pal = PALETTES[parts[0]] || PALETTES.pistachio;
+    img.src = svgDataURI(pal, parseInt(parts[1], 10) || 1);
+    img.dataset.done = '1';
+  });
+}
+
+/* ============================================================
+   DATA
+   ============================================================ */
+const CATS = [
+  {key:'all',       label:'همه محصولات'},
+  {key:'nuts',      label:'آجیل و مغزها'},
+  {key:'pistachio', label:'پسته'},
+  {key:'almond',    label:'بادام'},
+  {key:'walnut',    label:'گردو'},
+  {key:'hazelnut',  label:'فندق'},
+  {key:'seeds',     label:'تخمه و مغز تخمه'},
+  {key:'dried',     label:'میوه خشک'},
+  {key:'raisin',    label:'کشمش و مویز'},
+  {key:'date',      label:'خرما و رطب'},
+  {key:'fig',       label:'توت خشک و انجیر'},
+  {key:'saffron',   label:'زعفران و ادویه'},
+  {key:'herbal',    label:'دمنوش و طبیعی'},
+  {key:'gift',      label:'پک‌های هدیه'}
+];
+const CAT_LABEL = Object.fromEntries(CATS.map(c => [c.key, c.label]));
+
+const W4 = [250, 500, 1000, 2000];
+
+const PRODUCTS = [
+  {id:1,  name:'پسته اکبری ممتاز',        cat:'pistachio', pal:'pistachio', price:1480000, weights:W4, discount:15, rating:4.9, reviews:214, badge:'ممتاز',   desc:'پسته اکبری درشت و خندان با مغز سبز و طعمی ماندگار.'},
+  {id:2,  name:'پسته احمدآقایی',           cat:'pistachio', pal:'pistachio', price:1290000, weights:W4, discount:0,  rating:4.7, reviews:132, badge:'',        desc:'پسته احمدآقایی با پوست روشن و مغز کشیده، مناسب پذیرایی.'},
+  {id:3,  name:'مغز پسته سبز',             cat:'pistachio', pal:'pistachio', price:2150000, weights:[250,500,1000], discount:0, rating:4.8, reviews:88, badge:'ویژه',  desc:'مغز پسته خام و سبز، بدون پوست و آماده مصرف.'},
+  {id:4,  name:'بادام درختی خام',          cat:'almond',    pal:'almond',    price:890000,  weights:W4, discount:10, rating:4.6, reviews:176, badge:'',        desc:'بادام درختی خام و درشت با مغز پر و تازه.'},
+  {id:5,  name:'بادام هندی شور',           cat:'almond',    pal:'almond',    price:1150000, weights:W4, discount:0,  rating:4.5, reviews:98, badge:'',         desc:'بادام هندی بوداده و شور با طعمی غنی و بافتی ترد.'},
+  {id:6,  name:'گردوی مغز شده',            cat:'walnut',    pal:'walnut',    price:1680000, weights:W4, discount:8,  rating:4.9, reviews:203, badge:'پرفروش',  desc:'مغز گردوی تازه و روغنی، بدون پوست و آماده مصرف.'},
+  {id:7,  name:'فندق خام',                 cat:'hazelnut',  pal:'hazelnut',  price:1320000, weights:W4, discount:0,  rating:4.6, reviews:74, badge:'',         desc:'فندق خام با مغز پر و پوست نازک، مناسب آجیل و شیرینی.'},
+  {id:8,  name:'تخمه کدو گوشتی',           cat:'seeds',     pal:'seed',      price:620000,  weights:W4, discount:20, rating:4.8, reviews:311, badge:'پرفروش',  desc:'تخمه کدو گوشتی و شور، تازه و خوش‌طعم.'},
+  {id:9,  name:'کشمش سبز قلمی',            cat:'raisin',    pal:'raisinG',   price:480000,  weights:W4, discount:0,  rating:4.5, reviews:121, badge:'',        desc:'کشمش سبز قلمی، بدون هسته و شیرینی طبیعی.'},
+  {id:10, name:'مویز بدون هسته',           cat:'raisin',    pal:'raisin',    price:540000,  weights:W4, discount:10, rating:4.6, reviews:87, badge:'',         desc:'مویز درشت و سیاه، بدون هسته با طعمی ملایم.'},
+  {id:11, name:'خرمای پیارم',              cat:'date',      pal:'date',      price:420000,  weights:W4, discount:0,  rating:4.9, reviews:265, badge:'ممتاز',   desc:'خرمای پیارم هرمزگان با بافتی نرم و شیرینی عسلی.'},
+  {id:12, name:'خرمای مضافتی',             cat:'date',      pal:'date',      price:260000,  weights:W4, discount:15, rating:4.4, reviews:143, badge:'',        desc:'خرمای مضافتی بم، تیره و نرم با شیرینی طبیعی.'},
+  {id:13, name:'انجیر خشک استهبان',        cat:'fig',       pal:'fig',       price:1180000, weights:W4, discount:0,  rating:4.9, reviews:198, badge:'ویژه',    desc:'انجیر خشک استهبان، درجه یک و کاملاً طبیعی.'},
+  {id:14, name:'توت خشک',                  cat:'fig',       pal:'fig',       price:760000,  weights:W4, discount:5,  rating:4.7, reviews:109, badge:'',        desc:'توت خشک شیرین و طبیعی، بدون شکر افزوده.'},
+  {id:15, name:'برگه زردآلو',              cat:'dried',     pal:'driedfruit',price:690000,  weights:W4, discount:12, rating:4.6, reviews:154, badge:'',        desc:'برگه زردآلوی خوش‌رنگ و نرم، بدون گوگرد.'},
+  {id:16, name:'آلو خشک',                  cat:'dried',     pal:'driedfruit',price:620000,  weights:W4, discount:0,  rating:4.3, reviews:62, badge:'',         desc:'آلو خشک با طعم ملس، مناسب مصرف روزانه.'},
+  {id:17, name:'چیپس میوه',                cat:'dried',     pal:'driedfruit',price:880000,  weights:W4, discount:18, rating:4.7, reviews:176, badge:'تازه',    desc:'ترکیب چیپس سیب، موز، کیوی و آناناس، بدون روغن.'},
+  {id:18, name:'زعفران ممتاز سرگل',        cat:'saffron',   pal:'saffron',   price:98000000, weights:[1,2,5,10], discount:0, rating:5.0, reviews:342, badge:'ممتاز', desc:'زعفران سرگل قائنات، با رنگ و عطر استثنایی.'},
+  {id:19, name:'بادام زمینی شور',          cat:'nuts',      pal:'almond',    price:380000,  weights:W4, discount:0,  rating:4.4, reviews:231, badge:'',        desc:'بادام زمینی بوداده و شور، تازه و ترد.'},
+  {id:20, name:'آجیل مخلوط شب یلدا',       cat:'gift',      pal:'gift',      price:980000,  weights:[500,1000,2000], discount:15, rating:4.8, reviews:189, badge:'ویژه', desc:'ترکیب پسته، بادام، فندق، گردو و میوه خشک.'},
+  {id:21, name:'پک هدیه آجیل لوکس',        cat:'gift',      pal:'gift',      price:1850000, weights:[1000,2000], discount:10, rating:4.9, reviews:97, badge:'لوکس',   desc:'جعبه چوبی لوکس با ۶ نوع آجیل ممتاز و کارت تبریک.'},
+  {id:22, name:'تخمه آفتابگردان',          cat:'seeds',     pal:'seed',      price:320000,  weights:W4, discount:0,  rating:4.2, reviews:118, badge:'',         desc:'تخمه آفتابگردان شور و تازه، مناسب دورهمی.'},
+  {id:23, name:'مغز بادام درختی',          cat:'almond',    pal:'almond',    price:1420000, weights:W4, discount:8,  rating:4.8, reviews:143, badge:'',         desc:'مغز بادام درختی خام، پرانرژی و مقوی.'},
+  {id:24, name:'مغز گردو تازه',            cat:'walnut',    pal:'walnut',    price:1750000, weights:W4, discount:0,  rating:4.9, reviews:221, badge:'تازه',    desc:'مغز گردوی تازه امسال، با طعمی غنی و روغنی.'},
+  {id:25, name:'خرما رطب',                 cat:'date',      pal:'date',      price:340000,  weights:W4, discount:0,  rating:4.5, reviews:96, badge:'',         desc:'رطب تازه و نرم، با شیرینی ملایم و طبیعی.'},
+  {id:26, name:'دمنوش آرامش‌بخش',           cat:'herbal',    pal:'herbal',    price:450000,  weights:[100,250,500], discount:12, rating:4.6, reviews:78, badge:'', desc:'ترکیب بهارنارنج، بابونه و اسطوخودوس.'}
+];
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function defaultWeight(p){
+  return p.weights.includes(500) ? 500 : p.weights[0];
+}
+function weightLabel(w){
+  return w >= 1000 ? fa(w / 1000) + ' کیلوگرم' : fa(w) + ' گرم';
+}
+function unitPrice(p, w){ return p.price * w / 1000; }
+function finalPrice(p, w){ return unitPrice(p, w) * (1 - (p.discount || 0) / 100); }
+function stars(rating){
+  const full = Math.round(rating);
+  let s = '';
+  for(let i = 0; i < 5; i++) s += i < full ? '★' : '☆';
+  return s;
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const LS_CART = 'ariana_cart_v1';
+const LS_WISH = 'ariana_wish_v1';
+
+function loadJSON(key, fb){
+  try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fb; }
+  catch(e){ return fb; }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+const state = {
+  cart: loadJSON(LS_CART, []),
+  wish: loadJSON(LS_WISH, []),
+  filter: { q:'', cat:'all', max: 1200000, sort:'default' }
+};
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+const ICON_CHECK = '<svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg>';
+const ICON_INFO  = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>';
+
+function toast(msg, type){
+  const wrap = $('#toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'err' ? ' err' : '');
+  el.innerHTML = (type === 'err' ? ICON_INFO : ICON_CHECK) + '<span>' + msg + '</span>';
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 320);
+  }, 2400);
+}
+
+/* ============================================================
+   CARD RENDER
+   ============================================================ */
+const ICON_HEART = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.5-7 9-7 9z"/></svg>';
+const ICON_PLUS  = '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+const ICON_MINUS = '<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>';
+
+function priceHTML(p, w){
+  const now = finalPrice(p, w);
+  const old = unitPrice(p, w);
+  let html = '<span class="now">' + money(now) + '<small> تومان</small></span>';
+  if(p.discount > 0){
+    html += '<span class="old">' + money(old) + '</span>';
+    html += '<span class="off">' + fa(p.discount) + '٪ تخفیف</span>';
+  }
+  return html;
+}
+
+function actionsHTML(p, w){
+  const key = p.id + '@' + w;
+  const item = state.cart.find(i => i.key === key);
+  if(item){
+    return '<div class="qty-stepper" data-key="' + key + '">' +
+      '<button class="q-btn" data-act="dec" aria-label="کاهش تعداد">' + ICON_MINUS + '</button>' +
+      '<span class="q-val">' + fa(item.qty) + '</span>' +
+      '<button class="q-btn" data-act="inc" aria-label="افزایش تعداد">' + ICON_PLUS + '</button>' +
+    '</div>';
+  }
+  return '<button class="btn-add" data-add="' + p.id + '">' + ICON_PLUS + ' افزودن به سبد</button>';
+}
+
+function cardHTML(p){
+  const w0 = defaultWeight(p);
+  const wishActive = state.wish.includes(p.id);
+  let badgeHTML = '';
+  if(p.discount > 0){
+    badgeHTML = '<span class="pc-badge is-off">' + fa(p.discount) + '٪</span>';
+  }else if(p.badge){
+    badgeHTML = '<span class="pc-badge">' + p.badge + '</span>';
+  }
+
+  const weightChips = p.weights.map(w =>
+    '<button class="w-chip' + (w === w0 ? ' active' : '') + '" data-w="' + w + '">' + weightLabel(w) + '</button>'
+  ).join('');
+
+  return '<article class="product-card" data-pid="' + p.id + '" data-w="' + w0 + '">' +
+    '<div class="pc-media">' +
+      '<img data-svg="' + p.pal + '|' + (p.id * 13 + 5) + '" alt="' + p.name + '" loading="lazy">' +
+      badgeHTML +
+      '<button class="pc-wish' + (wishActive ? ' active' : '') + '" data-wish="' + p.id + '" aria-label="افزودن به علاقه‌مندی‌ها">' + ICON_HEART + '</button>' +
+    '</div>' +
+    '<div class="pc-body">' +
+      '<span class="pc-cat">' + CAT_LABEL[p.cat] + '</span>' +
+      '<h3 class="pc-title"><a href="#" data-noop>' + p.name + '</a></h3>' +
+      '<div class="pc-rate"><span class="stars">' + stars(p.rating) + '</span><span>(' + fa(p.reviews) + ')</span></div>' +
+      '<div class="pc-weights">' + weightChips + '</div>' +
+      '<div class="pc-price">' + priceHTML(p, w0) + '</div>' +
+      '<div class="pc-actions">' + actionsHTML(p, w0) + '</div>' +
+    '</div>' +
+  '</article>';
+}
+
+function renderGrid(el, list){
+  if(!el) return;
+  if(!list.length){
+    el.innerHTML = '<div class="empty-state"><b>محصولی یافت نشد</b>فیلترها را تغییر دهید یا عبارت دیگری جستجو کنید.</div>';
+    return;
+  }
+  el.innerHTML = list.map(cardHTML).join('');
+  hydrateImages(el);
+}
+
+/* ============================================================
+   CART LOGIC
+   ============================================================ */
+function addToCart(pid, w, qty){
+  qty = qty || 1;
+  const p = PRODUCTS.find(x => x.id === pid);
+  if(!p) return;
+  const key = pid + '@' + w;
+  const found = state.cart.find(i => i.key === key);
+  if(found) found.qty += qty;
+  else state.cart.push({ key: key, id: pid, w: w, qty: qty });
+  saveJSON(LS_CART, state.cart);
+  renderCart();
+  refreshCards();
+  toast('«' + p.name + '» به سبد خرید اضافه شد');
+}
+
+function changeQty(key, delta){
+  const item = state.cart.find(i => i.key === key);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) state.cart = state.cart.filter(i => i.key !== key);
+  saveJSON(LS_CART, state.cart);
+  renderCart();
+  refreshCards();
+}
+
+function removeItem(key){
+  state.cart = state.cart.filter(i => i.key !== key);
+  saveJSON(LS_CART, state.cart);
+  renderCart();
+  refreshCards();
+  toast('محصول از سبد خرید حذف شد');
+}
+
+function cartTotals(){
+  let count = 0, total = 0;
+  state.cart.forEach(i => {
+    const p = PRODUCTS.find(x => x.id === i.id);
+    if(!p) return;
+    count += i.qty;
+    total += finalPrice(p, i.w) * i.qty;
+  });
+  return { count: count, total: total };
+}
+
+const ICON_TRASH = '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>';
+const ICON_CART_BIG = '<svg viewBox="0 0 24 24"><path d="M6 7h14l-1.4 9.5H7.4z"/><circle cx="9.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M6 7 5 3.5H2"/></svg>';
+
+function renderCart(){
+  const t = cartTotals();
+  $('#cartCount').textContent = fa(t.count);
+  $('#wishCount').textContent = fa(state.wish.length);
+  $('#cartTotal').textContent = money(t.total) + ' تومان';
+  $('#cartDrawerCount').textContent = fa(t.count) + ' کالا';
+
+  const body = $('#cartBody');
+  const foot = $('#cartFoot');
+
+  if(!state.cart.length){
+    body.innerHTML = '<div class="cart-empty">' + ICON_CART_BIG +
+      '<b>سبد خرید شما خالی است</b>' +
+      '<span>از میان محصولات تازه و ممتاز ما انتخاب کنید.</span>' +
+      '<a href="#shop" class="btn btn-outline" id="emptyShopBtn" style="margin-top:6px">رفتن به فروشگاه</a>' +
+    '</div>';
+    foot.innerHTML = '';
+    return;
+  }
+
+  body.innerHTML = state.cart.map(i => {
+    const p = PRODUCTS.find(x => x.id === i.id);
+    if(!p) return '';
+    const unit = finalPrice(p, i.w);
+    return '<div class="cart-item">' +
+      '<div class="ci-img"><img data-svg="' + p.pal + '|' + (p.id * 13 + 5) + '" alt="' + p.name + '"></div>' +
+      '<div class="ci-body">' +
+        '<div class="ci-title">' + p.name + '</div>' +
+        '<div class="ci-meta">' + weightLabel(i.w) + ' · ' + money(unit) + ' تومان</div>' +
+        '<div class="ci-row">' +
+          '<div class="ci-stepper">' +
+            '<button data-cq="dec" data-key="' + i.key + '" aria-label="کاهش">−</button>' +
+            '<span>' + fa(i.qty) + '</span>' +
+            '<button data-cq="inc" data-key="' + i.key + '" aria-label="افزایش">+</button>' +
+          '</div>' +
+          '<div class="ci-price">' + money(unit * i.qty) + '<small> تومان</small></div>' +
+          '<button class="ci-del" data-remove="' + i.key + '" aria-label="حذف">' + ICON_TRASH + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  hydrateImages(body);
+
+  const shipping = t.total >= 1500000 ? 0 : 60000;
+  foot.innerHTML =
+    '<div class="cf-row"><span>مجموع کالاها (' + fa(t.count) + ' عدد)</span><span>' + money(t.total) + ' تومان</span></div>' +
+    '<div class="cf-row"><span>هزینه ارسال</span><span>' + (shipping === 0 ? '<b style="color:var(--olive)">رایگان</b>' : money(shipping) + ' تومان') + '</span></div>' +
+    '<div class="cf-row total"><span>مبلغ قابل پرداخت</span><span>' + money(t.total + shipping) + ' تومان</span></div>' +
+    '<div class="cf-actions">' +
+      '<button class="btn btn-outline" id="continueShop">ادامه خرید</button>' +
+      '<button class="btn btn-brown" id="checkoutBtn">تسویه حساب</button>' +
+    '</div>';
+}
+
+function refreshCards(){
+  $$('.product-card').forEach(card => {
+    const pid = +card.dataset.pid;
+    const w = +card.dataset.w;
+    const p = PRODUCTS.find(x => x.id === pid);
+    if(!p) return;
+    const priceEl = $('.pc-price', card);
+    const actEl = $('.pc-actions', card);
+    if(priceEl) priceEl.innerHTML = priceHTML(p, w);
+    if(actEl) actEl.innerHTML = actionsHTML(p, w);
+    const wishBtn = $('.pc-wish', card);
+    if(wishBtn) wishBtn.classList.toggle('active', state.wish.includes(pid));
+  });
+}
+
+/* ============================================================
+   DRAWERS
+   ============================================================ */
+const overlay = $('#overlay');
+function openDrawer(el){
+  el.classList.add('open');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawers(){
+  $$('.drawer').forEach(d => d.classList.remove('open'));
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+/* ============================================================
+   FILTERING / SHOP
+   ============================================================ */
+function filteredProducts(){
+  let list = PRODUCTS.slice();
+  const f = state.filter;
+
+  if(f.cat !== 'all') list = list.filter(p => p.cat === f.cat);
+
+  if(f.q.trim()){
+    const q = f.q.trim().toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (CAT_LABEL[p.cat] || '').toLowerCase().includes(q) ||
+      (p.desc || '').toLowerCase().includes(q)
+    );
+  }
+
+  list = list.filter(p => finalPrice(p, defaultWeight(p)) <= f.max);
+
+  switch(f.sort){
+    case 'cheap':     list.sort((a, b) => finalPrice(a, defaultWeight(a)) - finalPrice(b, defaultWeight(b))); break;
+    case 'expensive': list.sort((a, b) => finalPrice(b, defaultWeight(b)) - finalPrice(a, defaultWeight(a))); break;
+    case 'discount':  list.sort((a, b) => b.discount - a.discount); break;
+    case 'rating':    list.sort((a, b) => b.rating - a.rating); break;
+    default: break;
+  }
+  return list;
+}
+
+function renderShop(){
+  const list = filteredProducts();
+  renderGrid($('#shopGrid'), list);
+  $('#resultCount').innerHTML = '<b>' + fa(list.length) + '</b> محصول';
+}
+
+function renderChips(){
+  const el = $('#catChips');
+  el.innerHTML = CATS.map(c =>
+    '<button class="chip' + (state.filter.cat === c.key ? ' active' : '') + '" data-filter-cat="' + c.key + '">' + c.label + '</button>'
+  ).join('');
+}
+
+function setCategory(cat){
+  state.filter.cat = cat;
+  renderChips();
+  renderShop();
+}
+
+/* ============================================================
+   HERO SLIDER
+   ============================================================ */
+let heroIndex = 0;
+let heroTimer = null;
+const heroTrack = $('#heroTrack');
+const heroSlides = $$('.hero-slide');
+const heroDots = $('#heroDots');
+
+function buildDots(){
+  heroDots.innerHTML = heroSlides.map((_, i) =>
+    '<button aria-label="اسلاید ' + (i + 1) + '" class="' + (i === 0 ? 'active' : '') + '"></button>'
+  ).join('');
+  $$('button', heroDots).forEach((d, i) => d.addEventListener('click', () => goSlide(i)));
+}
+function goSlide(i){
+  heroIndex = (i + heroSlides.length) % heroSlides.length;
+  heroTrack.style.transform = 'translateX(' + (-heroIndex * 100) + '%)';
+  $$('button', heroDots).forEach((d, k) => d.classList.toggle('active', k === heroIndex));
+  restartHeroTimer();
+}
+function restartHeroTimer(){
+  clearInterval(heroTimer);
+  heroTimer = setInterval(() => goSlide(heroIndex + 1), 6000);
+}
+
+/* ============================================================
+   COUNTDOWN
+   ============================================================ */
+const deadline = Date.now() + (26 * 60 * 60 * 1000) + (42 * 60 * 1000);
+function pad2(n){ return String(n).padStart(2, '0'); }
+function tickCountdown(){
+  let diff = Math.max(0, deadline - Date.now());
+  const d = Math.floor(diff / 86400000); diff -= d * 86400000;
+  const h = Math.floor(diff / 3600000);  diff -= h * 3600000;
+  const m = Math.floor(diff / 60000);    diff -= m * 60000;
+  const s = Math.floor(diff / 1000);
+  $('#cdD').textContent = fa(pad2(d));
+  $('#cdH').textContent = fa(pad2(h));
+  $('#cdM').textContent = fa(pad2(m));
+  $('#cdS').textContent = fa(pad2(s));
+}
+
+/* ============================================================
+   TOPBAR ROTATOR
+   ============================================================ */
+const TB_MESSAGES = [
+  'ارسال رایگان برای خریدهای بالای ۱٫۵۰۰٫۰۰۰ تومان',
+  'تضمین تازگی و کیفیت محصولات؛ مرجوعی بدون قید و شرط',
+  'تخفیف ویژه خرید عمده و سفارش‌های سازمانی'
+];
+let tbIndex = 0;
+
+/* ============================================================
+   THEME CUSTOMIZER
+   ============================================================ */
+const LS_THEME = 'ariana_theme_v1';
+
+const THEME_PRESETS = [
+  { key:'classic',     name:'قهوه‌ای کلاسیک', primary:'#3a2818', accent:'#c2a15a' },
+  { key:'olive',       name:'زیتونی طبیعی',   primary:'#3f4a2a', accent:'#b9a25b' },
+  { key:'pomegranate', name:'اناری',          primary:'#6e1f2a', accent:'#d4a24a' },
+  { key:'teal',        name:'آبی نفتی',       primary:'#1f3f47', accent:'#c9a96a' },
+  { key:'plum',        name:'بنفش اسطوخودوس', primary:'#3d2a4a', accent:'#c9a86b' },
+  { key:'gray',        name:'طوسی مدرن',      primary:'#2f3338', accent:'#c9a45e' }
+];
+
+function hexToRgbStr(hex){
+  hex = String(hex).replace('#','');
+  if(hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.slice(0,2),16);
+  const g = parseInt(hex.slice(2,4),16);
+  const b = parseInt(hex.slice(4,6),16);
+  return r + ',' + g + ',' + b;
+}
+
+function hexToHsl(hex){
+  hex = String(hex).replace('#','');
+  if(hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.slice(0,2),16) / 255;
+  const g = parseInt(hex.slice(2,4),16) / 255;
+  const b = parseInt(hex.slice(4,6),16) / 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if(max !== min){
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch(max){
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      default: h = (r - g) / d + 4;
+    }
+    h *= 60;
+  }
+  return { h: h, s: s * 100, l: l * 100 };
+}
+
+function hslToHex(h, s, l){
+  h = ((h % 360) + 360) % 360;
+  s = Math.max(0, Math.min(100, s)) / 100;
+  l = Math.max(0, Math.min(100, l)) / 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+  if(h < 60){ r = c; g = x; }
+  else if(h < 120){ r = x; g = c; }
+  else if(h < 180){ g = c; b = x; }
+  else if(h < 240){ g = x; b = c; }
+  else if(h < 300){ r = x; b = c; }
+  else { r = c; b = x; }
+  const toHex = v => Math.max(0, Math.min(255, Math.round((v + m) * 255))).toString(16).padStart(2,'0');
+  return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+
+function deriveVars(primary, accent){
+  const p = hexToHsl(primary);
+  const a = hexToHsl(accent);
+  const b900 = hslToHex(p.h, p.s, Math.max(6, p.l - 7));
+  const b800 = primary;
+  const b700 = hslToHex(p.h, p.s, Math.min(88, p.l + 7));
+  const b600 = hslToHex(p.h, p.s, Math.min(88, p.l + 14));
+  const creamSat = Math.min(26, Math.max(14, p.s * 0.55));
+  const lineS = Math.min(30, p.s * 0.5);
+  const lineL = Math.min(35, p.l);
+  return {
+    '--brown-900': b900,
+    '--brown-800': b800,
+    '--brown-700': b700,
+    '--brown-600': b600,
+    '--gold':      hslToHex(a.h, a.s, a.l),
+    '--gold-2':    hslToHex(a.h, a.s, Math.min(92, a.l + 11)),
+    '--gold-3':    hslToHex(a.h, Math.max(18, a.s - 8), Math.min(95, a.l + 24)),
+    '--cream':     hslToHex(p.h, creamSat, 97),
+    '--cream-2':   hslToHex(p.h, creamSat + 2, 94),
+    '--cream-3':   hslToHex(p.h, creamSat + 4, 88),
+    '--ink':       hslToHex(p.h, Math.min(30, p.s * 0.7), 14),
+    '--muted':     hslToHex(p.h, Math.min(24, p.s * 0.55), 52),
+    '--line':      'hsla(' + p.h.toFixed(1) + ',' + lineS.toFixed(1) + '%,' + lineL.toFixed(1) + '%,0.12)',
+    '--line-2':    'hsla(' + p.h.toFixed(1) + ',' + lineS.toFixed(1) + '%,' + lineL.toFixed(1) + '%,0.07)',
+    '--gold-rgb':       hexToRgbStr(accent),
+    '--brown-900-rgb':  hexToRgbStr(b900),
+    '--brown-800-rgb':  hexToRgbStr(b800)
+  };
+}
+
+function applyTheme(primary, accent, key){
+  const vars = deriveVars(primary, accent);
+  const root = document.documentElement;
+  Object.keys(vars).forEach(k => root.style.setProperty(k, vars[k]));
+
+  try{ localStorage.setItem(LS_THEME, JSON.stringify({ primary: primary, accent: accent, key: key })); }catch(e){}
+
+  $$('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === key));
+
+  const pi = $('#themePrimary'), ai = $('#themeAccent');
+  if(pi && pi.value !== primary) pi.value = primary;
+  if(ai && ai.value !== accent) ai.value = accent;
+  const ph = $('#themePrimaryHex'), ah = $('#themeAccentHex');
+  if(ph) ph.textContent = primary;
+  if(ah) ah.textContent = accent;
+}
+
+function buildPresets(){
+  const wrap = $('#themePresets');
+  if(!wrap) return;
+  wrap.innerHTML = THEME_PRESETS.map(t => {
+    const v = deriveVars(t.primary, t.accent);
+    return '<button type="button" class="theme-swatch" data-key="' + t.key + '">' +
+      '<div class="sw-dots">' +
+        '<span class="sw-dot" style="background:' + t.primary + '"></span>' +
+        '<span class="sw-dot" style="background:' + t.accent + '"></span>' +
+        '<span class="sw-dot" style="background:' + v['--cream'] + '"></span>' +
+      '</div>' +
+      '<span>' + t.name + '</span>' +
+    '</button>';
+  }).join('');
+}
+
+function loadTheme(){
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(LS_THEME)); }catch(e){}
+  if(saved && saved.primary && saved.accent){
+    applyTheme(saved.primary, saved.accent, saved.key || 'custom');
+    return;
+  }
+  $$('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === 'classic'));
+  const d = THEME_PRESETS[0];
+  const pi = $('#themePrimary'), ai = $('#themeAccent');
+  if(pi) pi.value = d.primary;
+  if(ai) ai.value = d.accent;
+  const ph = $('#themePrimaryHex'), ah = $('#themeAccentHex');
+  if(ph) ph.textContent = d.primary;
+  if(ah) ah.textContent = d.accent;
+}
+
+function resetTheme(){
+  const d = THEME_PRESETS[0];
+  applyTheme(d.primary, d.accent, d.key);
+}
+
+(function initThemeEvents(){
+  const fab = $('#themeFab'), panel = $('#themePanel');
+  if(!fab || !panel) return;
+
+  fab.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = panel.classList.toggle('show');
+    fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  $('#themeClose').addEventListener('click', () => {
+    panel.classList.remove('show');
+    fab.setAttribute('aria-expanded','false');
+  });
+
+  $('#themeReset').addEventListener('click', () => {
+    resetTheme();
+    toast('تم رنگی به حالت پیش‌فرض بازگشت');
+  });
+
+  $('#themePresets').addEventListener('click', e => {
+    const sw = e.target.closest('.theme-swatch');
+    if(!sw) return;
+    const t = THEME_PRESETS.find(x => x.key === sw.dataset.key);
+    if(t){
+      applyTheme(t.primary, t.accent, t.key);
+      toast('تم «' + t.name + '» اعمال شد');
+    }
+  });
+
+  $('#themePrimary').addEventListener('input', e => {
+    applyTheme(e.target.value, $('#themeAccent').value, 'custom');
+  });
+  $('#themeAccent').addEventListener('input', e => {
+    applyTheme($('#themePrimary').value, e.target.value, 'custom');
+  });
+
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#themePanel') && !e.target.closest('#themeFab')){
+      panel.classList.remove('show');
+      fab.setAttribute('aria-expanded','false');
+    }
+  });
+
+  buildPresets();
+  loadTheme();
+})();
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+document.addEventListener('click', e => {
+
+  const addBtn = e.target.closest('[data-add]');
+  if(addBtn){
+    e.preventDefault();
+    const card = addBtn.closest('.product-card');
+    const pid = +addBtn.dataset.add;
+    const w = card ? +card.dataset.w : defaultWeight(PRODUCTS.find(p => p.id === pid));
+    addToCart(pid, w, 1);
+    return;
+  }
+
+  const qBtn = e.target.closest('.q-btn');
+  if(qBtn){
+    e.preventDefault();
+    const key = qBtn.closest('.qty-stepper').dataset.key;
+    changeQty(key, qBtn.dataset.act === 'inc' ? 1 : -1);
+    return;
+  }
+
+  const wChip = e.target.closest('.w-chip');
+  if(wChip){
+    e.preventDefault();
+    const card = wChip.closest('.product-card');
+    const w = +wChip.dataset.w;
+    card.dataset.w = w;
+    $$('.w-chip', card).forEach(c => c.classList.toggle('active', +c.dataset.w === w));
+    const p = PRODUCTS.find(x => x.id === +card.dataset.pid);
+    $('.pc-price', card).innerHTML = priceHTML(p, w);
+    $('.pc-actions', card).innerHTML = actionsHTML(p, w);
+    return;
+  }
+
+  const wishBtn = e.target.closest('[data-wish]');
+  if(wishBtn){
+    e.preventDefault();
+    const pid = +wishBtn.dataset.wish;
+    const p = PRODUCTS.find(x => x.id === pid);
+    if(state.wish.includes(pid)){
+      state.wish = state.wish.filter(x => x !== pid);
+      toast('«' + p.name + '» از علاقه‌مندی‌ها حذف شد');
+    }else{
+      state.wish.push(pid);
+      toast('«' + p.name + '» به علاقه‌مندی‌ها اضافه شد');
+    }
+    saveJSON(LS_WISH, state.wish);
+    $('#wishCount').textContent = fa(state.wish.length);
+    refreshCards();
+    return;
+  }
+
+  const cq = e.target.closest('[data-cq]');
+  if(cq){
+    e.preventDefault();
+    changeQty(cq.dataset.key, cq.dataset.cq === 'inc' ? 1 : -1);
+    return;
+  }
+  const rm = e.target.closest('[data-remove]');
+  if(rm){
+    e.preventDefault();
+    removeItem(rm.dataset.remove);
+    return;
+  }
+
+  const catEl = e.target.closest('[data-cat]');
+  if(catEl){
+    e.preventDefault();
+    setCategory(catEl.dataset.cat);
+    $('#catNav').classList.remove('mega-open');
+    closeDrawers();
+    document.getElementById('shop').scrollIntoView({behavior:'smooth', block:'start'});
+    return;
+  }
+
+  const fCat = e.target.closest('[data-filter-cat]');
+  if(fCat){
+    e.preventDefault();
+    setCategory(fCat.dataset.filterCat);
+    return;
+  }
+
+  if(e.target.closest('#cartBtn')){ e.preventDefault(); openDrawer($('#cartDrawer')); return; }
+  if(e.target.closest('#menuBtn')){ e.preventDefault(); openDrawer($('#menuDrawer')); return; }
+  if(e.target.closest('#cartClose') || e.target.closest('#menuClose')){ closeDrawers(); return; }
+  if(e.target.closest('#continueShop') || e.target.closest('#emptyShopBtn')){
+    closeDrawers();
+    setTimeout(() => document.getElementById('shop').scrollIntoView({behavior:'smooth'}), 120);
+    return;
+  }
+  if(e.target.closest('#checkoutBtn')){
+    toast('درگاه پرداخت در نسخه نمایشی فعال نیست', 'err');
+    return;
+  }
+  if(e.target.closest('#wishBtn')){
+    e.preventDefault();
+    toast(state.wish.length ? fa(state.wish.length) + ' محصول در علاقه‌مندی‌های شماست' : 'لیست علاقه‌مندی‌ها خالی است');
+    return;
+  }
+  if(e.target.closest('#giftConsultBtn')){
+    e.preventDefault();
+    toast('همکاران ما برای سفارش سازمانی با شما تماس می‌گیرند');
+    return;
+  }
+  if(e.target.closest('[data-noop]')){ e.preventDefault(); return; }
+
+  if(e.target.closest('#megaBtn')){
+    e.preventDefault();
+    const nav = $('#catNav');
+    nav.classList.toggle('mega-open');
+    $('#megaBtn').setAttribute('aria-expanded', nav.classList.contains('mega-open'));
+    return;
+  }
+  if(!e.target.closest('.mega-panel') && !e.target.closest('#megaBtn')){
+    $('#catNav').classList.remove('mega-open');
+  }
+});
+
+overlay.addEventListener('click', closeDrawers);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDrawers(); });
+
+window.addEventListener('scroll', () => {
+  $('#siteHeader').classList.toggle('scrolled', window.scrollY > 12);
+}, {passive:true});
+
+$('#searchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  state.filter.q = $('#searchInput').value;
+  renderShop();
+  document.getElementById('shop').scrollIntoView({behavior:'smooth', block:'start'});
+  if(state.filter.q.trim()) toast('نتایج جستجو برای: ' + state.filter.q);
+});
+
+$('#mmSearch').addEventListener('input', e => {
+  state.filter.q = e.target.value;
+  renderShop();
+});
+
+const priceRange = $('#priceRange');
+priceRange.addEventListener('input', () => {
+  const val = +priceRange.value;
+  state.filter.max = val;
+  const pct = (val / +priceRange.max) * 100;
+  priceRange.style.setProperty('--fill', pct + '%');
+  $('#rangeVal').textContent = money(val) + ' تومان';
+  renderShop();
+});
+
+$('#sortSelect').addEventListener('change', e => {
+  state.filter.sort = e.target.value;
+  renderShop();
+});
+
+$('#nlForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const val = $('#nlInput').value.trim();
+  if(val.length < 5){ toast('شماره موبایل یا ایمیل معتبر وارد کنید', 'err'); return; }
+  $('#nlInput').value = '';
+  toast('عضویت شما با موفقیت ثبت شد. سپاسگزاریم!');
+});
+
+$('#heroPrev').addEventListener('click', () => goSlide(heroIndex - 1));
+$('#heroNext').addEventListener('click', () => goSlide(heroIndex + 1));
+
+setInterval(() => {
+  const el = $('#tbMsg');
+  el.classList.add('hide');
+  setTimeout(() => {
+    tbIndex = (tbIndex + 1) % TB_MESSAGES.length;
+    $('#tbText').textContent = TB_MESSAGES[tbIndex];
+    el.classList.remove('hide');
+  }, 400);
+}, 5000);
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  hydrateImages(document);
+
+  buildDots();
+  restartHeroTimer();
+
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  const offers = PRODUCTS.filter(p => p.discount > 0)
+    .sort((a, b) => b.discount - a.discount)
+    .slice(0, 8);
+  renderGrid($('#offersGrid'), offers);
+
+  const bestIds = [1, 6, 8, 4, 13, 7, 11, 2];
+  renderGrid($('#bestGrid'), bestIds.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean));
+
+  const specialIds = [18, 13, 14, 9, 10, 11, 12, 15, 16, 17];
+  renderGrid($('#specialGrid'), specialIds.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean));
+
+  renderChips();
+  renderShop();
+
+  renderCart();
+  $('#wishCount').textContent = fa(state.wish.length);
+
+  priceRange.style.setProperty('--fill', '100%');
+  $('#rangeVal').textContent = money(state.filter.max) + ' تومان';
+})();
+</script>
+</body>
+</html>
