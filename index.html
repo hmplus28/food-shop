@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>خشکبار آریانا | خرید آنلاین آجیل، خشکبار و محصولات طبیعی</title>
 <meta name="description" content="خشکبار آریانا؛ فروشگاه اینترنتی تخصصی آجیل، پسته، بادام، گردو، میوه خشک، خرما، زعفران و پک‌های هدیه. تضمین تازگی، بسته‌بندی بهداشتی و ارسال سریع به سراسر کشور.">
 <meta name="theme-color" content="#3a2818">
@@ -758,9 +758,9 @@ svg{display:block}
    ============================================================ */
 .shop-toolbar{
   background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);
-  padding:14px;display:grid;gap:12px;margin-bottom:18px;
+  padding:14px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-bottom:18px;
 }
-.tb-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.tb-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-width:0}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;flex:1}
 .chips::-webkit-scrollbar{display:none}
 .chip{
@@ -853,6 +853,83 @@ svg{display:block}
 .theme-actions .btn{height:38px;font-size:12px;padding:0}
 .theme-note{font-size:10px;color:var(--muted);margin-top:11px;line-height:1.8;display:flex;gap:5px;align-items:flex-start}
 .theme-note svg{width:13px;height:13px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;flex:none;margin-top:3px}
+
+/* ============================================================
+   MOBILE RESPONSIVE LAYER (full mobile support)
+   ============================================================ */
+body{-webkit-tap-highlight-color:transparent}
+@media(max-width:899px){
+  html{scroll-padding-top:86px}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .theme-fab{bottom:calc(84px + env(safe-area-inset-bottom))}
+  .theme-panel{bottom:calc(148px + env(safe-area-inset-bottom));max-height:calc(100dvh - 170px)}
+  .toast-wrap{bottom:calc(82px + env(safe-area-inset-bottom))}
+  .drawer{width:min(400px,92%)}
+}
+
+/* --- Header: tighter on small screens --- */
+@media(max-width:420px){
+  .header-top{gap:8px;padding:9px 0}
+  .header-actions .action:first-child{display:none} /* ورود داخل منوی موبایل */
+  .brand-text strong{font-size:13.5px}
+}
+@media(max-width:380px){
+  .brand-text small{display:none}
+  .brand-mark{width:36px;height:36px;border-radius:12px}
+  .brand-mark svg{width:20px;height:20px}
+  .icon-btn{width:38px;height:38px}
+  .action{min-width:38px;padding:5px 4px}
+}
+
+/* --- Shop toolbar: stack cleanly on mobile --- */
+@media(max-width:640px){
+  .shop-toolbar{padding:12px;gap:10px;border-radius:16px}
+  .range-wrap{min-width:100%;order:3;flex-wrap:wrap;row-gap:8px}
+  .range-wrap label{order:1}
+  .range-val{order:2;margin-inline-start:auto}
+  .range-wrap input[type=range]{order:3;flex:1 1 100%;min-width:0}
+  .tb-select{flex:1 1 auto;min-width:140px}
+  .result-count{margin-inline-start:auto}
+  .chips{padding-bottom:4px;-webkit-overflow-scrolling:touch}
+}
+
+/* --- Touch-friendly targets & cards --- */
+@media(max-width:640px){
+  .btn-add{height:40px;font-size:13px}
+  .qty-stepper{height:40px}
+  .q-btn{width:30px;height:30px}
+  .w-chip{padding:5px 10px;font-size:11px}
+  .sec-link{padding:8px 16px}
+  .testi-card p{min-height:0}
+  .mm-search input,.nl-form input{font-size:16px} /* جلوگیری از زوم iOS */
+  .newsletter{padding:28px 18px}
+  .nl-form input{flex:1 1 100%}
+  .nl-form button{flex:1 1 100%}
+  .gift-banner{padding:24px 16px}
+  .offers-wrap{padding:18px 14px 16px}
+  .cd-box{min-width:40px;padding:5px 7px}
+  .story-media .badge-float{padding:8px 12px}
+  .story-media .badge-float b{font-size:15px}
+}
+
+/* --- Mobile bottom navigation --- */
+.mobile-nav{
+  position:fixed;bottom:0;inset-inline:0;z-index:700;
+  display:flex;align-items:stretch;justify-content:space-around;gap:2px;
+  background:rgba(253,250,243,.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+  box-shadow:0 -8px 30px rgba(var(--brown-800-rgb),.10);
+}
+.mobile-nav a,.mobile-nav button{
+  position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:50px;color:var(--muted);font-size:10px;font-weight:700;border-radius:12px;transition:color .2s, transform .15s;
+}
+.mobile-nav a:active,.mobile-nav button:active{transform:scale(.93)}
+.mobile-nav a:hover,.mobile-nav button:hover{color:var(--brown-800)}
+.mobile-nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mobile-nav .count.hide{display:none}
+@media(min-width:900px){.mobile-nav{display:none!important}}
 </style>
 </head>
 <body>
@@ -1480,10 +1557,36 @@ svg{display:block}
     </div>
   </div>
   <div class="mm-foot">
+    <a href="#" class="btn btn-brown" style="grid-column:1/-1">ورود / ثبت‌نام</a>
     <a href="tel:02191001234" class="btn btn-outline">۰۲۱-۹۱۰۰۱۲۳۴</a>
-    <a href="#shop" class="btn btn-brown">مشاهده فروشگاه</a>
+    <a href="#shop" class="btn btn-outline">مشاهده فروشگاه</a>
   </div>
 </aside>
+
+<!-- ================= MOBILE BOTTOM NAV ================= -->
+<nav class="mobile-nav" aria-label="ناوبری موبایل">
+  <a href="#" aria-label="خانه">
+    <svg viewBox="0 0 24 24"><path d="m3 10.5 9-7.5 9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>
+    <span>خانه</span>
+  </a>
+  <a href="#shop" aria-label="فروشگاه">
+    <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>
+    <span>فروشگاه</span>
+  </a>
+  <a href="#offers" aria-label="تخفیف‌ها">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 15 6-6"/><path d="M9.5 9.5h.01M14.5 14.5h.01"/></svg>
+    <span>تخفیف‌ها</span>
+  </a>
+  <button type="button" class="js-open-cart" aria-label="سبد خرید">
+    <svg viewBox="0 0 24 24"><path d="M6 7h14l-1.4 9.5H7.4z"/><circle cx="9.5" cy="20" r="1.5"/><circle cx="17.5" cy="20" r="1.5"/><path d="M6 7 5 3.5H2"/></svg>
+    <span>سبد خرید</span>
+    <i class="count hide" id="mnavCartCount">۰</i>
+  </button>
+  <button type="button" class="js-open-menu" aria-label="منو">
+    <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    <span>منو</span>
+  </button>
+</nav>
 
 <!-- ================= THEME CUSTOMIZER ================= -->
 <button class="theme-fab" id="themeFab" aria-label="تغییر تم رنگی" aria-expanded="false">
@@ -1873,6 +1976,12 @@ function renderCart(){
   $('#wishCount').textContent = fa(state.wish.length);
   $('#cartTotal').textContent = money(t.total) + ' تومان';
   $('#cartDrawerCount').textContent = fa(t.count) + ' کالا';
+
+  const mnavCount = $('#mnavCartCount');
+  if(mnavCount){
+    mnavCount.textContent = fa(t.count);
+    mnavCount.classList.toggle('hide', t.count === 0);
+  }
 
   const body = $('#cartBody');
   const foot = $('#cartFoot');
@@ -2334,8 +2443,8 @@ document.addEventListener('click', e => {
     return;
   }
 
-  if(e.target.closest('#cartBtn')){ e.preventDefault(); openDrawer($('#cartDrawer')); return; }
-  if(e.target.closest('#menuBtn')){ e.preventDefault(); openDrawer($('#menuDrawer')); return; }
+  if(e.target.closest('#cartBtn') || e.target.closest('.js-open-cart')){ e.preventDefault(); openDrawer($('#cartDrawer')); return; }
+  if(e.target.closest('#menuBtn') || e.target.closest('.js-open-menu')){ e.preventDefault(); openDrawer($('#menuDrawer')); return; }
   if(e.target.closest('#cartClose') || e.target.closest('#menuClose')){ closeDrawers(); return; }
   if(e.target.closest('#continueShop') || e.target.closest('#emptyShopBtn')){
     closeDrawers();
