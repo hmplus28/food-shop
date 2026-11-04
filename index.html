@@ -840,15 +840,40 @@ svg{display:block}
 .theme-swatch .sw-dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.08)}
 .theme-swatch span{font-size:9.5px;font-weight:700;color:var(--brown-800);text-align:center;line-height:1.35}
 .theme-divider{height:1px;background:var(--line-2);margin:15px 0 13px}
-.theme-custom{display:grid;gap:11px}
-.theme-custom label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600;color:var(--brown-800);cursor:pointer}
-.theme-custom .tc-hex{font-style:normal;font-size:10px;color:var(--muted);font-family:ui-monospace,monospace;direction:ltr;font-weight:500;margin-inline-start:5px}
+.theme-custom{display:grid;gap:10px;margin-top:13px}
+.tc-sec{font-size:10.5px;font-weight:800;color:var(--brown-700);display:flex;align-items:center;gap:8px;letter-spacing:.2px}
+.tc-sec::after{content:'';flex:1;height:1px;background:var(--line-2)}
+.tc-main{display:grid;gap:9px}
+.tc-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tc-top span{font-size:12px;font-weight:600;color:var(--brown-800)}
+.tc-ctrls{display:flex;align-items:center;gap:6px;flex:none}
+.tc-hexin{
+  width:74px;height:32px;border:1px solid var(--line);border-radius:9px;background:var(--cream-2);
+  font-size:10.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;text-align:center;color:var(--brown-800);
+  outline:none;transition:.2s;padding:0 4px;
+}
+.tc-hexin:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(var(--gold-rgb),.14)}
+.tc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tc-card{
+  flex-direction:column;align-items:stretch;gap:7px;
+  border:1px solid var(--line-2);border-radius:13px;padding:9px 10px;background:var(--cream);
+}
+.tc-card .tc-top span{font-size:11px}
+.tc-card .tc-ctrls{justify-content:space-between;width:100%}
+.tc-card .tc-hexin{width:62px}
+.tc-card input[type=color]{width:40px}
 .theme-custom input[type=color]{
   -webkit-appearance:none;appearance:none;width:46px;height:32px;border:1px solid var(--line);border-radius:9px;padding:2px;background:#fff;cursor:pointer;flex:none;
 }
 .theme-custom input[type=color]::-webkit-color-swatch-wrapper{padding:0}
 .theme-custom input[type=color]::-webkit-color-swatch{border:none;border-radius:6px}
 .theme-custom input[type=color]::-moz-color-swatch{border:none;border-radius:6px}
+@media(max-width:380px){
+  .tc-grid{gap:7px}
+  .tc-hexin{width:62px}
+  .theme-custom input[type=color]{width:40px}
+  .tc-card .tc-hexin{width:56px}
+}
 .theme-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
 .theme-actions .btn{height:38px;font-size:12px;padding:0}
 .theme-note{font-size:10px;color:var(--muted);margin-top:11px;line-height:1.8;display:flex;gap:5px;align-items:flex-start}
@@ -1598,18 +1623,14 @@ body{-webkit-tap-highlight-color:transparent}
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18 4.5 4.5 0 0 1 0-9 4.5 4.5 0 0 0 0-9z"/></svg>
     تغییر تم رنگی
   </h3>
-  <p class="tp-sub">یک تم آماده انتخاب کنید یا رنگ دلخواه خود را بسازید. تغییرات به‌صورت خودکار ذخیره می‌شود.</p>
+  <p class="tp-sub">تم آماده انتخاب کنید یا هر رنگ را جداگانه تنظیم کنید — کد دقیق رنگ (HEX) هم قابل وارد کردن است. تغییرات خودکار ذخیره می‌شود.</p>
   <div class="theme-presets" id="themePresets"></div>
   <div class="theme-divider"></div>
   <div class="theme-custom">
-    <label>
-      <span>رنگ اصلی برند <em class="tc-hex" id="themePrimaryHex">#3a2818</em></span>
-      <input type="color" id="themePrimary" value="#3a2818" aria-label="انتخاب رنگ اصلی">
-    </label>
-    <label>
-      <span>رنگ تأکید (طلایی) <em class="tc-hex" id="themeAccentHex">#c2a15a</em></span>
-      <input type="color" id="themeAccent" value="#c2a15a" aria-label="انتخاب رنگ تأکید">
-    </label>
+    <div class="tc-sec">رنگ‌های اصلی برند</div>
+    <div class="tc-main" id="tcMain"></div>
+    <div class="tc-sec">رنگ‌های جزئیات</div>
+    <div class="tc-grid" id="tcGrid"></div>
   </div>
   <div class="theme-actions">
     <button type="button" class="btn btn-outline" id="themeReset">بازنشانی</button>
@@ -1617,7 +1638,7 @@ body{-webkit-tap-highlight-color:transparent}
   </div>
   <div class="theme-note">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
-    <span>برای خوانایی بهتر، رنگ‌های تیره و متوسط (مثل قهوه‌ای، زیتونی، سرمه‌ای) پیشنهاد می‌شود.</span>
+    <span>هر رنگ مستقل اعمال می‌شود؛ برای خوانایی بهتر، رنگ برند و متن را تیره و کرم پس‌زمینه را روشن نگه دارید.</span>
   </div>
 </div>
 
@@ -2167,13 +2188,38 @@ let tbIndex = 0;
    ============================================================ */
 const LS_THEME = 'ariana_theme_v1';
 
+/* رنگ‌های قابل ویرایش توسط کاربر */
+const COLOR_DEFS = [
+  { key:'primary', name:'قهوه‌ای برند',  group:'main'   },
+  { key:'accent',  name:'طلایی تأکید',   group:'main'   },
+  { key:'cream',   name:'کرم پس‌زمینه',  group:'main'   },
+  { key:'ink',     name:'رنگ متن',       group:'detail' },
+  { key:'muted',   name:'متن کم‌رنگ',    group:'detail' },
+  { key:'olive',   name:'سبز زیتونی',    group:'detail' },
+  { key:'brick',   name:'نارنجی آجری',   group:'detail' }
+];
+
+/* هر تم = ۷ رنگ پایه (+ مقادیر دقیق اختیاری برای طیف‌های مشتق) */
 const THEME_PRESETS = [
-  { key:'classic',     name:'قهوه‌ای کلاسیک', primary:'#3a2818', accent:'#c2a15a' },
-  { key:'olive',       name:'زیتونی طبیعی',   primary:'#3f4a2a', accent:'#b9a25b' },
-  { key:'pomegranate', name:'اناری',          primary:'#6e1f2a', accent:'#d4a24a' },
-  { key:'teal',        name:'آبی نفتی',       primary:'#1f3f47', accent:'#c9a96a' },
-  { key:'plum',        name:'بنفش اسطوخودوس', primary:'#3d2a4a', accent:'#c9a86b' },
-  { key:'gray',        name:'طوسی مدرن',      primary:'#2f3338', accent:'#c9a45e' }
+  { key:'classic', name:'قهوه‌ای کلاسیک',
+    base:{ primary:'#3a2818', accent:'#c2a15a', cream:'#fdfaf3', ink:'#2f231a', muted:'#8a7866', olive:'#74804f', brick:'#b4552d' },
+    ov:{
+      '--brown-900':'#2b1d13','--brown-700':'#4a3323','--brown-600':'#5f422c',
+      '--gold-2':'#dcc28a','--gold-3':'#efe0bd',
+      '--cream-2':'#f6efe2','--cream-3':'#efe4d0',
+      '--line':'rgba(58,40,24,0.12)','--line-2':'rgba(58,40,24,0.07)',
+      '--olive-dark':'#586239','--brick-2':'#fdeee6'
+    } },
+  { key:'olive', name:'زیتونی طبیعی',
+    base:{ primary:'#3f4a2a', accent:'#b9a25b', cream:'#f9faf0', ink:'#262d1a', muted:'#7c8469', olive:'#6a7c42', brick:'#b4552d' } },
+  { key:'pomegranate', name:'اناری',
+    base:{ primary:'#6e1f2a', accent:'#d4a24a', cream:'#fdf8f4', ink:'#2f1c1f', muted:'#97756d', olive:'#7d6a3a', brick:'#b8433a' } },
+  { key:'teal', name:'آبی نفتی',
+    base:{ primary:'#1f3f47', accent:'#c9a96a', cream:'#f5f9f8', ink:'#1c2c30', muted:'#6f8884', olive:'#4e7a68', brick:'#c26a4a' } },
+  { key:'plum', name:'بنفش اسطوخودوس',
+    base:{ primary:'#3d2a4a', accent:'#c9a86b', cream:'#faf8fc', ink:'#241c2e', muted:'#7f7390', olive:'#6c5f82', brick:'#a8506b' } },
+  { key:'gray', name:'طوسی مدرن',
+    base:{ primary:'#2f3338', accent:'#c9a45e', cream:'#f8f9f8', ink:'#23272b', muted:'#7b8087', olive:'#66766b', brick:'#b05c3f' } }
 ];
 
 function hexToRgbStr(hex){
@@ -2225,90 +2271,182 @@ function hslToHex(h, s, l){
   return '#' + toHex(r) + toHex(g) + toHex(b);
 }
 
-function deriveVars(primary, accent){
-  const p = hexToHsl(primary);
-  const a = hexToHsl(accent);
-  const b900 = hslToHex(p.h, p.s, Math.max(6, p.l - 7));
-  const b800 = primary;
-  const b700 = hslToHex(p.h, p.s, Math.min(88, p.l + 7));
-  const b600 = hslToHex(p.h, p.s, Math.min(88, p.l + 14));
-  const creamSat = Math.min(26, Math.max(14, p.s * 0.55));
-  const lineS = Math.min(30, p.s * 0.5);
-  const lineL = Math.min(35, p.l);
-  return {
-    '--brown-900': b900,
-    '--brown-800': b800,
-    '--brown-700': b700,
-    '--brown-600': b600,
-    '--gold':      hslToHex(a.h, a.s, a.l),
-    '--gold-2':    hslToHex(a.h, a.s, Math.min(92, a.l + 11)),
-    '--gold-3':    hslToHex(a.h, Math.max(18, a.s - 8), Math.min(95, a.l + 24)),
-    '--cream':     hslToHex(p.h, creamSat, 97),
-    '--cream-2':   hslToHex(p.h, creamSat + 2, 94),
-    '--cream-3':   hslToHex(p.h, creamSat + 4, 88),
-    '--ink':       hslToHex(p.h, Math.min(30, p.s * 0.7), 14),
-    '--muted':     hslToHex(p.h, Math.min(24, p.s * 0.55), 52),
-    '--line':      'hsla(' + p.h.toFixed(1) + ',' + lineS.toFixed(1) + '%,' + lineL.toFixed(1) + '%,0.12)',
-    '--line-2':    'hsla(' + p.h.toFixed(1) + ',' + lineS.toFixed(1) + '%,' + lineL.toFixed(1) + '%,0.07)',
-    '--gold-rgb':       hexToRgbStr(accent),
-    '--brown-900-rgb':  hexToRgbStr(b900),
-    '--brown-800-rgb':  hexToRgbStr(b800)
-  };
+/* فقط متغیرهای وابسته به یک رنگ پایه را مجدداً محاسبه می‌کند (ویرایش دقیق) */
+function varsForBase(key, base){
+  const v = {};
+  const p = hexToHsl(base.primary), a = hexToHsl(base.accent), c = hexToHsl(base.cream);
+  const o = hexToHsl(base.olive), b = hexToHsl(base.brick);
+  switch(key){
+    case 'primary':
+      v['--brown-800'] = base.primary;
+      v['--brown-900'] = hslToHex(p.h, p.s, Math.max(6, p.l - 7));
+      v['--brown-700'] = hslToHex(p.h, p.s, Math.min(88, p.l + 7));
+      v['--brown-600'] = hslToHex(p.h, p.s, Math.min(88, p.l + 14));
+      v['--line']   = 'rgba(' + hexToRgbStr(base.primary) + ',0.12)';
+      v['--line-2'] = 'rgba(' + hexToRgbStr(base.primary) + ',0.07)';
+      break;
+    case 'accent':
+      v['--gold']   = base.accent;
+      v['--gold-2'] = hslToHex(a.h, a.s, Math.min(92, a.l + 11));
+      v['--gold-3'] = hslToHex(a.h, Math.max(18, a.s - 8), Math.min(95, a.l + 24));
+      break;
+    case 'cream':
+      v['--cream']   = base.cream;
+      v['--cream-2'] = hslToHex(c.h, Math.min(80, c.s * 0.75 + 2), Math.max(55, c.l - 4.5));
+      v['--cream-3'] = hslToHex(c.h, Math.min(80, c.s * 0.6 + 4), Math.max(45, c.l - 10));
+      break;
+    case 'ink':   v['--ink'] = base.ink;     break;
+    case 'muted': v['--muted'] = base.muted; break;
+    case 'olive':
+      v['--olive'] = base.olive;
+      v['--olive-dark'] = hslToHex(o.h, Math.min(100, o.s + 3), Math.max(15, o.l - 10));
+      break;
+    case 'brick':
+      v['--brick'] = base.brick;
+      v['--brick-2'] = hslToHex(b.h, Math.min(85, b.s + 25), 95);
+      break;
+  }
+  return v;
 }
 
-function applyTheme(primary, accent, key){
-  const vars = deriveVars(primary, accent);
+function buildVarMap(base){
+  const vars = {};
+  COLOR_DEFS.forEach(d => Object.assign(vars, varsForBase(d.key, base)));
+  return vars;
+}
+
+/* مقادیر RGB بعد از اعمال overrides همیشه از مقدار نهایی محاسبه می‌شوند */
+function finalizeRgb(vars){
+  if(vars['--brown-900']) vars['--brown-900-rgb'] = hexToRgbStr(vars['--brown-900']);
+  if(vars['--brown-800']) vars['--brown-800-rgb'] = hexToRgbStr(vars['--brown-800']);
+  if(vars['--gold'])      vars['--gold-rgb']      = hexToRgbStr(vars['--gold']);
+  return vars;
+}
+
+let themeState = { key:'classic', base:Object.assign({}, THEME_PRESETS[0].base), vars:{} };
+
+function applyVars(vars){
   const root = document.documentElement;
   Object.keys(vars).forEach(k => root.style.setProperty(k, vars[k]));
+  const mc = document.querySelector('meta[name="theme-color"]');
+  if(mc && vars['--brown-800']) mc.setAttribute('content', vars['--brown-800']);
+}
 
-  try{ localStorage.setItem(LS_THEME, JSON.stringify({ primary: primary, accent: accent, key: key })); }catch(e){}
+function commit(){
+  applyVars(themeState.vars);
+  try{ localStorage.setItem(LS_THEME, JSON.stringify({ key: themeState.key, base: themeState.base, vars: themeState.vars })); }catch(e){}
+  syncPanel();
+}
 
-  $$('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === key));
+function applyPreset(key){
+  const t = THEME_PRESETS.find(x => x.key === key);
+  if(!t) return;
+  themeState = { key:t.key, base:Object.assign({}, t.base), vars:finalizeRgb(Object.assign(buildVarMap(t.base), t.ov || {})) };
+  commit();
+}
 
-  const pi = $('#themePrimary'), ai = $('#themeAccent');
-  if(pi && pi.value !== primary) pi.value = primary;
-  if(ai && ai.value !== accent) ai.value = accent;
-  const ph = $('#themePrimaryHex'), ah = $('#themeAccentHex');
-  if(ph) ph.textContent = primary;
-  if(ah) ah.textContent = accent;
+/* ویرایش یک رنگ: فقط متغیرهای وابسته به همان رنگ بازمحاسبه می‌شوند */
+function applyColorEdit(key, val){
+  if(!Object.prototype.hasOwnProperty.call(themeState.base, key)) return;
+  themeState.base[key] = val;
+  themeState.vars = Object.assign({}, themeState.vars, varsForBase(key, themeState.base));
+  finalizeRgb(themeState.vars);
+  themeState.key = 'custom';
+  commit();
+}
+
+function syncPanel(){
+  COLOR_DEFS.forEach(d => {
+    const pick = $('#cpick_' + d.key), hex = $('#hexin_' + d.key);
+    if(pick && pick.value.toLowerCase() !== themeState.base[d.key]) pick.value = themeState.base[d.key];
+    if(hex && document.activeElement !== hex) hex.value = themeState.base[d.key];
+  });
+  $$('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === themeState.key));
+}
+
+function buildColorInputs(){
+  const mk = d =>
+    '<div class="tc-item' + (d.group === 'detail' ? ' tc-card' : '') + '">' +
+      '<div class="tc-top"><span>' + d.name + '</span></div>' +
+      '<div class="tc-ctrls">' +
+        '<input type="text" class="tc-hexin" id="hexin_' + d.key + '" maxlength="7" dir="ltr" spellcheck="false" autocomplete="off" aria-label="کد رنگ ' + d.name + '">' +
+        '<input type="color" id="cpick_' + d.key + '" aria-label="' + d.name + '">' +
+      '</div>' +
+    '</div>';
+  const main = $('#tcMain'), grid = $('#tcGrid');
+  if(main) main.innerHTML = COLOR_DEFS.filter(d => d.group === 'main').map(mk).join('');
+  if(grid) grid.innerHTML = COLOR_DEFS.filter(d => d.group === 'detail').map(mk).join('');
+}
+
+function initColorInputs(){
+  COLOR_DEFS.forEach(d => {
+    const pick = $('#cpick_' + d.key), hex = $('#hexin_' + d.key);
+    if(!pick || !hex) return;
+    pick.addEventListener('input', () => {
+      hex.value = pick.value;
+      applyColorEdit(d.key, pick.value.toLowerCase());
+    });
+    hex.addEventListener('change', () => {
+      let v = hex.value.trim();
+      if(v.charAt(0) !== '#') v = '#' + v;
+      if(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)){
+        if(v.length === 4) v = '#' + v.slice(1).split('').map(c => c + c).join('');
+        applyColorEdit(d.key, v.toLowerCase());
+      } else {
+        hex.value = themeState.base[d.key];
+        toast('کد رنگ نامعتبر است');
+      }
+    });
+  });
 }
 
 function buildPresets(){
   const wrap = $('#themePresets');
   if(!wrap) return;
-  wrap.innerHTML = THEME_PRESETS.map(t => {
-    const v = deriveVars(t.primary, t.accent);
-    return '<button type="button" class="theme-swatch" data-key="' + t.key + '">' +
+  wrap.innerHTML = THEME_PRESETS.map(t =>
+    '<button type="button" class="theme-swatch" data-key="' + t.key + '" aria-label="تم ' + t.name + '">' +
       '<div class="sw-dots">' +
-        '<span class="sw-dot" style="background:' + t.primary + '"></span>' +
-        '<span class="sw-dot" style="background:' + t.accent + '"></span>' +
-        '<span class="sw-dot" style="background:' + v['--cream'] + '"></span>' +
+        '<span class="sw-dot" style="background:' + t.base.primary + '"></span>' +
+        '<span class="sw-dot" style="background:' + t.base.accent + '"></span>' +
+        '<span class="sw-dot" style="background:' + t.base.cream + '"></span>' +
       '</div>' +
       '<span>' + t.name + '</span>' +
-    '</button>';
-  }).join('');
+    '</button>'
+  ).join('');
 }
 
 function loadTheme(){
   let saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_THEME)); }catch(e){}
-  if(saved && saved.primary && saved.accent){
-    applyTheme(saved.primary, saved.accent, saved.key || 'custom');
+
+  /* مهاجرت از نسخه قبلی (فقط دو رنگ) */
+  if(saved && !saved.base && saved.primary && saved.accent){
+    const b = Object.assign({}, THEME_PRESETS[0].base, { primary:saved.primary, accent:saved.accent });
+    themeState = { key:'custom', base:b, vars:buildVarMap(b) };
+    finalizeRgb(themeState.vars);
+    commit();
     return;
   }
-  $$('.theme-swatch').forEach(s => s.classList.toggle('active', s.dataset.key === 'classic'));
-  const d = THEME_PRESETS[0];
-  const pi = $('#themePrimary'), ai = $('#themeAccent');
-  if(pi) pi.value = d.primary;
-  if(ai) ai.value = d.accent;
-  const ph = $('#themePrimaryHex'), ah = $('#themeAccentHex');
-  if(ph) ph.textContent = d.primary;
-  if(ah) ah.textContent = d.accent;
+
+  if(saved && saved.base){
+    const base = Object.assign({}, THEME_PRESETS[0].base, saved.base);
+    COLOR_DEFS.forEach(d => {
+      const v = base[d.key];
+      if(typeof v !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(v)) base[d.key] = THEME_PRESETS[0].base[d.key];
+    });
+    const full = buildVarMap(base);
+    const vars = (saved.vars && typeof saved.vars === 'object') ? Object.assign(full, saved.vars) : full;
+    themeState = { key: saved.key || 'custom', base:base, vars:vars };
+    applyVars(themeState.vars);
+    syncPanel();
+    return;
+  }
+
+  applyPreset('classic');
 }
 
 function resetTheme(){
-  const d = THEME_PRESETS[0];
-  applyTheme(d.primary, d.accent, d.key);
+  applyPreset('classic');
 }
 
 (function initThemeEvents(){
@@ -2336,16 +2474,9 @@ function resetTheme(){
     if(!sw) return;
     const t = THEME_PRESETS.find(x => x.key === sw.dataset.key);
     if(t){
-      applyTheme(t.primary, t.accent, t.key);
+      applyPreset(t.key);
       toast('تم «' + t.name + '» اعمال شد');
     }
-  });
-
-  $('#themePrimary').addEventListener('input', e => {
-    applyTheme(e.target.value, $('#themeAccent').value, 'custom');
-  });
-  $('#themeAccent').addEventListener('input', e => {
-    applyTheme($('#themePrimary').value, e.target.value, 'custom');
   });
 
   document.addEventListener('click', e => {
@@ -2355,6 +2486,8 @@ function resetTheme(){
     }
   });
 
+  buildColorInputs();
+  initColorInputs();
   buildPresets();
   loadTheme();
 })();
