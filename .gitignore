@@ -1,0 +1,9 @@
+node_modules/
+dist/
+upload/
+skills/
+scripts/
+.env
+dev.log
+*.local
+.DS_Store

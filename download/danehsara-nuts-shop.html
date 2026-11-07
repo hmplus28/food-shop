@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>دانه‌سرا | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی</title>
+<meta name="description" content="خرید آنلاین بهترین آجیل، پسته، بادام، گردو، خرما، زعفران و پک‌های هدیه با تضمین تازگی، ارسال سریع سراسری و مرجوعی رایگان از فروشگاه دانه‌سرا">
+<meta name="keywords" content="آجیل, خشکبار, پسته, بادام, گردو, خرما, زعفران, پک هدیه, فروشگاه اینترنتی خشکبار">
+<meta property="og:title" content="دانه‌سرا | طعم اصالت، کیفیت در هر دانه">
+<meta property="og:description" content="انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#358500">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23358500'/%3E%3Cpath d='M32 14c8 6 12 13 12 20a12 12 0 1 1-24 0c0-7 4-14 12-20z' fill='%23c29800'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Lalezar&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Store","name":"فروشگاه خشکبار دانه‌سرا","description":"فروشگاه اینترنتی آجیل و خشکبار","telephone":"+982191092000","priceRange":"$$","address":{"@type":"PostalAddress","addressCountry":"IR","addressLocality":"تهران"},"openingHours":"Mo-Su 09:00-21:00"}
+</script>
+<style>
+/* ============================================================
+   دانه‌سرا — فروشگاه خشکبار | Design Tokens
+   Palette: brand #358500 | gold #c29800 | bg #ffffff
+============================================================ */
+:root{
+  --brand:#358500; --brand-600:#2e7400; --brand-700:#255e00; --brand-800:#1c4600;
+  --brand-100:#dceed2; --brand-050:#eef6e9; --brand-soft:#f5faf1;
+  --gold:#c29800; --gold-600:#a17e00; --gold-100:#f8eecb; --gold-050:#fdf8e8;
+  --red:#d63a2f; --red-600:#b52a22;
+  --bg:#ffffff; --bg-warm:#faf8f1; --bg-mint:#f2f8ec;
+  --ink:#1e2b16; --ink-2:#57664d; --ink-3:#8a9681;
+  --line:#e8e8de; --line-2:#d9dccb;
+  --star:#f2a413;
+  --f-body:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
+  --f-display:'Lalezar','Vazirmatn',sans-serif;
+  --f-serif:'Amiri','Vazirmatn',serif;
+  --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:28px;
+  --sh-sm:0 2px 10px rgba(30,43,22,.06);
+  --sh-md:0 8px 28px rgba(30,43,22,.10);
+  --sh-lg:0 18px 50px rgba(30,43,22,.16);
+  --tr:.28s cubic-bezier(.4,0,.2,1);
+  --hd-h:118px;
+}
+/* ---- theme presets (سوییچر تم، مطابق پنل انتخاب رنگ) ---- */
+[data-theme="anari"]{--brand:#c03045;--brand-600:#a42538;--brand-700:#871d2e;--brand-800:#6b1624;--brand-100:#f9dfe4;--brand-050:#fdf0f2;--brand-soft:#fdf5f6}
+[data-theme="zeitoni"]{--brand:#6d8f2f;--brand-600:#5b7a26;--brand-700:#4a631f;--brand-800:#394d18;--brand-100:#e4eed2;--brand-050:#f2f7e7;--brand-soft:#f7faf0}
+[data-theme="gahvei"]{--brand:#6b4a2b;--brand-600:#593d23;--brand-700:#47301c;--brand-800:#362415;--brand-100:#ecdfcf;--brand-050:#f7f0e7;--brand-soft:#faf5ee}
+[data-theme="tousi"]{--brand:#5c6b75;--brand-600:#4d5a63;--brand-700:#3e4951;--brand-800:#2f383e;--brand-100:#e1e7ea;--brand-050:#f0f4f5;--brand-soft:#f6f8f9}
+[data-theme="banafsh"]{--brand:#7a5fa8;--brand-600:#684f91;--brand-700:#554077;--brand-800:#43315e;--brand-100:#e9e2f5;--brand-050:#f4f0fa;--brand-soft:#f9f6fd}
+[data-theme="abi"]{--brand:#1f5a73;--brand-600:#1a4b61;--brand-700:#153d4e;--brand-800:#102e3b;--brand-100:#d7e8ef;--brand-050:#eaf3f7;--brand-soft:#f2f8fa}
+
+/* ================= Reset & Base ================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body{font-family:var(--f-body);background:var(--bg);color:var(--ink);line-height:1.8;overflow-x:hidden;min-height:100vh}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:1rem;color:var(--ink)}
+ul,ol{list-style:none}
+h1,h2,h3,h4{line-height:1.45;font-weight:800}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+::selection{background:var(--brand-100)}
+.container{width:min(1320px,100% - 28px);margin-inline:auto}
+.section{padding:52px 0;position:relative}
+.hidden{display:none!important}
+.icon{width:1.25em;height:1.25em;fill:currentColor;vertical-align:-.28em;flex:none}
+@media(min-width:1440px){.container{width:min(1400px,100% - 48px)}}
+
+/* ================= Keyframes ================= */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes heartbeat{
+  0%,100%{transform:scale(1)}
+  10%{transform:scale(1.14)} 20%{transform:scale(1)}
+  30%{transform:scale(1.12)} 45%{transform:scale(1)}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+@keyframes slideStart{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes bounceIn{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes ringPulse{0%{box-shadow:0 0 0 0 rgba(194,152,0,.55)}70%{box-shadow:0 0 0 14px rgba(194,152,0,0)}100%{box-shadow:0 0 0 0 rgba(194,152,0,0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(50%)}}
+
+/* ================= دایره قرمز با هاله طلایی (مثل خورشید + ضربان قلب) ================= */
+.pulse-sun{
+  position:relative;display:grid;place-items:center;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,#ff8168,var(--red) 62%,var(--red-600));
+  color:#fff;font-weight:800;letter-spacing:.2px;
+  border:2.5px solid var(--gold);
+  box-shadow:0 6px 16px rgba(214,58,47,.45),0 0 14px rgba(194,152,0,.5);
+  animation:heartbeat 1.6s ease-in-out infinite;
+  isolation:isolate;
+}
+.pulse-sun::after{
+  content:"";position:absolute;inset:-13px;border-radius:50%;z-index:-1;
+  background:repeating-conic-gradient(var(--gold) 0deg 7deg,transparent 7deg 20deg);
+  -webkit-mask:radial-gradient(circle,transparent 58%,#000 59% 74%,transparent 75%);
+  mask:radial-gradient(circle,transparent 58%,#000 59% 74%,transparent 75%);
+  opacity:.9;animation:spin 16s linear infinite;
+  filter:drop-shadow(0 0 6px rgba(194,152,0,.6));
+}
+.pulse-sun.sm{width:26px;height:26px;font-size:11px;border-width:2px}
+.pulse-sun.md{width:54px;height:54px;font-size:15px}
+.pulse-sun.lg{width:74px;height:74px;font-size:21px;border-width:3px}
+.dot-pulse{position:absolute;top:-2px;left:-2px;min-width:19px;height:19px;padding:0 4px;border-radius:99px;
+  background:radial-gradient(circle at 32% 28%,#ff8168,var(--red) 65%);border:2px solid var(--gold);
+  color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;
+  animation:heartbeat 1.6s ease-in-out infinite;box-shadow:0 2px 8px rgba(214,58,47,.5);z-index:5}
+
+/* ================= Buttons ================= */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:14px;
+  font-weight:700;font-size:.95rem;transition:var(--tr);border:2px solid transparent;user-select:none;white-space:nowrap}
+.btn:active{transform:scale(.96)}
+.btn-brand{background:var(--brand);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.14)}
+.btn-brand:hover{background:var(--brand-600);transform:translateY(-2px)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#fff;box-shadow:0 6px 18px rgba(194,152,0,.35)}
+.btn-gold:hover{filter:brightness(1.07);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border-color:var(--brand);color:var(--brand)}
+.btn-ghost:hover{background:var(--brand);color:#fff}
+.btn-light{background:#fff;color:var(--ink);border-color:var(--line-2)}
+.btn-light:hover{border-color:var(--brand);color:var(--brand)}
+.btn-red{background:linear-gradient(135deg,#e9573f,var(--red));color:#fff}
+.btn-red:hover{filter:brightness(1.06)}
+.btn-sm{padding:8px 14px;font-size:.85rem;border-radius:11px}
+.btn-lg{padding:15px 30px;font-size:1.05rem}
+.btn-block{width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:99px;background:#fff;
+  border:1.5px solid var(--line-2);font-size:.86rem;font-weight:600;color:var(--ink-2);transition:var(--tr);white-space:nowrap}
+.chip:hover{border-color:var(--brand);color:var(--brand)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.13)}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700}
+.tag.gold{background:var(--gold-050);color:var(--gold-600);border:1px solid var(--gold-100)}
+.tag.green{background:var(--brand-050);color:var(--brand-600);border:1px solid var(--brand-100)}
+.tag.red{background:#fdeceb;color:var(--red);border:1px solid #f7cdc9}
+
+/* ================= نوار ارتباط با مشتری (فونت جداگانه: امیری) ================= */
+.topbar{background:linear-gradient(90deg,var(--brand-800),var(--brand-700));color:#fff;font-size:.86rem;position:relative;z-index:60}
+.topbar .container{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:42px;flex-wrap:wrap;padding-block:4px}
+.tb-comm{font-family:var(--f-serif);font-size:1.04rem;display:flex;align-items:center;gap:10px;color:#fdf6df}
+.tb-comm .phone{font-weight:700;color:#fff;letter-spacing:.5px;direction:ltr;font-family:var(--f-body);font-size:.92rem}
+.tb-comm a.phone:hover{color:var(--gold)}
+.tb-links{display:flex;align-items:center;gap:4px}
+.tb-links button{color:#e7f2df;padding:6px 10px;border-radius:8px;font-size:.82rem;display:inline-flex;gap:6px;align-items:center;transition:var(--tr)}
+.tb-links button:hover{background:rgba(255,255,255,.14);color:#fff}
+.tb-sep{width:1px;height:16px;background:rgba(255,255,255,.25)}
+@media(max-width:640px){.tb-links button span.lbl{display:none}.tb-comm{font-size:.9rem;flex:1;min-width:0;flex-wrap:wrap;gap:2px 8px}.tb-comm .tb-tail{display:none}}
+
+/* ================= نوار اطلاع‌رسانی ================= */
+.announce{background:var(--brand);color:#fff;overflow:hidden;position:relative;z-index:59;font-size:.85rem;font-weight:600}
+.an-track{display:flex;width:max-content;animation:marquee 28s linear infinite}
+.announce:hover .an-track{animation-play-state:paused}
+.an-item{display:inline-flex;align-items:center;gap:8px;padding:8px 26px;white-space:nowrap}
+.an-item .icon{color:var(--gold-100)}
+.an-item b{color:#ffe9a8;font-weight:800}
+
+/* ================= Header ================= */
+.site-header{position:sticky;top:0;z-index:55;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);box-shadow:0 4px 20px rgba(30,43,22,.05)}
+.hd-inner{display:flex;align-items:center;gap:14px;min-height:70px;position:relative}
+.burger{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--brand-050);color:var(--brand-700);transition:var(--tr)}
+.burger:hover{background:var(--brand);color:#fff}
+.burger .icon{width:22px;height:22px}
+.logo{display:flex;align-items:center;gap:10px;flex:none}
+.logo-mark{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand-600));
+  display:grid;place-items:center;color:#fff;box-shadow:0 6px 16px rgba(53,133,0,.3);position:relative}
+.logo-mark::after{content:"";position:absolute;inset:3px;border-radius:11px;border:1.5px dashed rgba(255,255,255,.55)}
+.logo-mark .icon{width:24px;height:24px}
+.logo-text b{font-family:var(--f-display);font-weight:400;font-size:1.5rem;color:var(--brand-700);display:block;line-height:1.2}
+.logo-text small{font-size:.68rem;color:var(--ink-3);letter-spacing:.4px;display:block;margin-top:-3px}
+.search-wrap{flex:1;max-width:560px;position:relative}
+.search-box{display:flex;align-items:center;background:var(--bg-warm);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;transition:var(--tr)}
+.search-box:focus-within{border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px var(--brand-050)}
+.search-box .icon{margin-inline-start:14px;color:var(--ink-3);width:19px;height:19px}
+.search-input{flex:1;border:0;background:none;padding:11px 10px;font-size:.92rem;outline:none;min-width:0}
+.search-input::placeholder{color:var(--ink-3)}
+.search-btn{background:var(--brand);color:#fff;padding:10px 18px;font-size:.86rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.search-btn:hover{background:var(--brand-600)}
+.search-dd{position:absolute;top:calc(100% + 8px);inset-inline:0;background:#fff;border-radius:var(--r-md);box-shadow:var(--sh-lg);
+  border:1px solid var(--line);padding:8px;display:none;z-index:80;max-height:380px;overflow:auto}
+.search-dd.open{display:block;animation:fadeUp .25s ease}
+.sr-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;transition:var(--tr)}
+.sr-item:hover{background:var(--brand-soft)}
+.sr-item img{width:52px;height:52px;object-fit:cover;border-radius:9px}
+.sr-item .n{font-size:.88rem;font-weight:600}
+.sr-item .p{font-size:.8rem;color:var(--brand-600);font-weight:700}
+.sr-empty{padding:16px;text-align:center;color:var(--ink-3);font-size:.88rem}
+.hd-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
+.icon-btn{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;color:var(--ink-2);
+  background:transparent;transition:var(--tr)}
+.icon-btn:hover{background:var(--brand-050);color:var(--brand-700)}
+.icon-btn .icon{width:22px;height:22px}
+.icon-btn .lb{font-size:.7rem;font-weight:600;display:none}
+.cart-btn{background:var(--brand-050);color:var(--brand-700)}
+.cart-btn:hover{background:var(--brand);color:#fff}
+.theme-btn{color:var(--gold-600)}
+.theme-pop{position:absolute;top:calc(100% + 10px);left:10px;background:#fff;border-radius:var(--r-md);box-shadow:var(--sh-lg);
+  border:1px solid var(--line);padding:14px;width:238px;display:none;z-index:90}
+.theme-pop.open{display:block;animation:fadeUp .22s ease}
+.theme-pop h4{font-size:.85rem;margin-bottom:10px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.theme-dots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.t-dot{display:grid;place-items:center;height:40px;border-radius:11px;border:2px solid var(--line);transition:var(--tr);position:relative}
+.t-dot i{width:22px;height:22px;border-radius:50%;display:block;box-shadow:inset 0 0 0 2.5px rgba(255,255,255,.65)}
+.t-dot:hover{transform:translateY(-2px);border-color:var(--gold)}
+.t-dot.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-100)}
+.t-dot.on::after{content:"✓";position:absolute;color:#fff;font-size:.7rem;font-weight:900}
+/* header desktop row 2 = nav */
+@media(max-width:991px){
+  .hd-inner{min-height:62px;gap:8px}
+  .search-wrap{display:none}
+  .m-search{padding:0 0 12px}
+  .hd-actions .icon-btn .lb{display:none}
+  .login-btn{display:none}
+  .logo-text small{display:none}
+  .logo-text b{font-size:1.3rem}
+  .icon-btn{width:38px;height:38px}
+  .hd-actions{gap:1px}
+  .burger{width:38px;height:38px}
+}
+@media(min-width:992px){
+  .burger{display:none}
+  .login-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px;background:var(--brand-050);
+    color:var(--brand-700);font-weight:700;font-size:.87rem;transition:var(--tr)}
+  .login-btn:hover{background:var(--brand);color:#fff}
+  .m-search{display:none}
+}
+.m-search{width:100%}
+.m-search .search-box{background:var(--bg-warm)}
+
+/* ================= Mega Menu ================= */
+.main-nav{border-top:1px solid var(--line);background:#fff;position:relative}
+.nav-list{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-list::-webkit-scrollbar{display:none}
+.nav-item>a{display:flex;align-items:center;gap:6px;padding:12px 13px;font-size:.87rem;font-weight:600;color:var(--ink-2);
+  white-space:nowrap;border-bottom:2.5px solid transparent;transition:var(--tr)}
+.nav-item>a .icon{width:17px;height:17px;color:var(--gold-600)}
+.nav-item>a:hover,.nav-item:hover>a{color:var(--brand-700);border-bottom-color:var(--brand)}
+.nav-item.hot>a::after{content:"داغ";background:var(--red);color:#fff;font-size:.62rem;padding:1px 7px;border-radius:99px;font-weight:800}
+.mega{position:absolute;top:100%;inset-inline:0;background:#fff;border-top:1px solid var(--line);box-shadow:var(--sh-lg);
+  opacity:0;visibility:hidden;transform:translateY(12px);transition:var(--tr);z-index:70;border-radius:0 0 var(--r-lg) var(--r-lg)}
+.nav-item:hover .mega,.nav-item:focus-within .mega{opacity:1;visibility:visible;transform:none}
+.mega-inner{display:grid;grid-template-columns:1.1fr 2.2fr 1.4fr;gap:26px;padding:26px 6px}
+.mega h5{font-size:.8rem;color:var(--gold-600);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.mega h5::after{content:"";flex:1;height:1px;background:var(--gold-100)}
+.mega-cats a,.mega-links a{display:block;padding:7px 2px;font-size:.85rem;color:var(--ink-2);border-radius:8px;transition:var(--tr)}
+.mega-cats a:hover,.mega-links a:hover{color:var(--brand-700);padding-inline-start:8px;background:var(--brand-soft)}
+.mega-cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+.mega-feat{background:linear-gradient(160deg,var(--brand-soft),var(--gold-050));border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:10px}
+.mega-feat img{border-radius:12px;height:150px;width:100%;object-fit:cover}
+.mega-feat b{font-size:.92rem}
+.mega-feat span{font-size:.78rem;color:var(--ink-2)}
+@media(max-width:991px){.main-nav{display:none}.mega{display:none}}
+</style>
+<style>
+/* ================= Drawer (منوی موبایل) ================= */
+.drawer-veil{position:fixed;inset:0;background:rgba(20,30,15,.5);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:var(--tr);z-index:95}
+.drawer-veil.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;bottom:0;right:0;width:min(330px,88vw);background:#fff;z-index:96;transform:translateX(105%);
+  transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-radius:0 0 0 var(--r-lg)}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;gap:10px;padding:16px 18px;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff}
+.drawer-head .logo-mark{background:rgba(255,255,255,.16);box-shadow:none}
+.drawer-head b{font-family:var(--f-display);font-weight:400;font-size:1.3rem}
+.drawer-head button{margin-inline-start:auto;color:#fff;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.15)}
+.drawer-body{flex:1;overflow-y:auto;padding:10px 14px 24px}
+.acc{border-bottom:1px solid var(--line)}
+.acc>button{width:100%;display:flex;align-items:center;gap:10px;padding:13px 4px;font-size:.92rem;font-weight:600;text-align:right}
+.acc>button .icon{color:var(--gold-600)}
+.acc>button .chev{margin-inline-start:auto;transition:var(--tr);color:var(--ink-3)}
+.acc.open>button .chev{transform:rotate(180deg)}
+.acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.acc.open .acc-panel{grid-template-rows:1fr}
+.acc-panel>div{overflow:hidden}
+.acc-panel a{display:block;padding:8px 26px;font-size:.85rem;color:var(--ink-2)}
+.acc-panel a:hover{color:var(--brand)}
+.drawer-foot{padding:14px;border-top:1px solid var(--line);display:grid;gap:9px}
+.drawer-foot a{display:flex;align-items:center;gap:9px;font-size:.88rem;color:var(--ink-2);padding:9px 10px;border-radius:10px}
+.drawer-foot a:hover{background:var(--brand-soft);color:var(--brand-700)}
+
+/* ================= Hero ================= */
+.hero{position:relative;margin-top:14px}
+.hero-frame{position:relative;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-md);min-height:400px;background:var(--brand-800)}
+.slides{display:flex;transition:transform .65s cubic-bezier(.5,0,.2,1);height:100%}
+.slide{flex:0 0 100%;position:relative;display:flex;align-items:center;min-height:400px;max-height:540px}
+.slide .s-media{position:absolute;inset:0}
+.slide .s-media img{width:100%;height:100%;object-fit:cover}
+.slide .s-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,32,10,.82) 8%,rgba(20,32,10,.45) 45%,rgba(20,32,10,.05) 80%)}
+.s-content{position:relative;z-index:2;padding:56px 54px;max-width:620px;color:#fff;animation:slideStart .7s ease both}
+.s-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(194,152,0,.2);border:1px solid rgba(194,152,0,.65);color:#ffe9a8;
+  padding:6px 16px;border-radius:99px;font-size:.8rem;font-weight:700;backdrop-filter:blur(4px)}
+.s-title{font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem,4.6vw,3.1rem);line-height:1.35;margin:16px 0 10px;text-shadow:0 3px 18px rgba(0,0,0,.4)}
+.s-title em{font-style:normal;color:var(--gold);position:relative}
+.s-text{font-size:clamp(.9rem,1.6vw,1.05rem);color:#eef3e8;max-width:480px;margin-bottom:22px}
+.s-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.9);color:var(--brand-700);display:grid;place-items:center;box-shadow:var(--sh-md);transition:var(--tr)}
+.hero-arrow:hover{background:var(--gold);color:#fff}
+.hero-arrow.next{inset-inline-start:16px}
+.hero-arrow.prev{inset-inline-end:16px}
+.hero-dots{position:absolute;bottom:16px;inset-inline-start:50%;transform:translateX(50%);display:flex;gap:7px;z-index:5}
+.hero-dots .dot{width:9px;height:9px;border-radius:99px;background:rgba(255,255,255,.5);transition:var(--tr);border:0}
+.hero-dots .dot.on{width:26px;background:var(--gold)}
+@media(max-width:767px){
+  .hero-frame,.slide{min-height:440px;border-radius:var(--r-lg)}
+  .s-content{padding:30px 24px}
+  .slide .s-media::after{background:linear-gradient(0deg,rgba(20,32,10,.85) 22%,rgba(20,32,10,.25) 65%)}
+  .s-content{align-self:flex-end}
+  .slide{align-items:flex-end}
+  .hero-arrow{display:none}
+}
+
+/* ================= نوار خدمات ================= */
+.services{margin-top:-30px;position:relative;z-index:6}
+.srv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.srv{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:14px;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--sh-sm);transition:var(--tr)}
+.srv:hover{transform:translateY(-4px);box-shadow:var(--sh-md);border-color:var(--gold-100)}
+.srv .si{width:46px;height:46px;flex:none;border-radius:13px;display:grid;place-items:center;background:var(--brand-050);color:var(--brand-700)}
+.srv:nth-child(2) .si{background:var(--gold-050);color:var(--gold-600)}
+.srv:nth-child(3) .si{background:#fdeceb;color:var(--red)}
+.srv:nth-child(4) .si{background:#eaf3f7;color:#1f5a73}
+.srv b{font-size:.86rem;display:block}
+.srv span{font-size:.72rem;color:var(--ink-3);display:block}
+@media(min-width:768px){.srv-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* ================= پک‌های تخفیفی کارت دورانی ================= */
+.packs-sec{background:radial-gradient(circle at 20% 10%,var(--gold-050),transparent 45%),radial-gradient(circle at 85% 90%,var(--brand-050),transparent 40%),var(--bg-warm);
+  border-block:1px solid var(--line)}
+.packs-rail{display:flex;gap:22px;overflow-x:auto;padding:26px 4px 18px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.packs-rail::-webkit-scrollbar{display:none}
+.pack{flex:0 0 218px;scroll-snap-align:center;text-align:center;position:relative;padding-top:8px}
+.pack-circle{position:relative;width:190px;height:190px;margin:0 auto 14px;border-radius:50%;padding:7px;
+  background:conic-gradient(from 0deg,var(--gold),#fff8dd,var(--gold-600),#fff3cf,var(--gold));box-shadow:var(--sh-md);transition:var(--tr)}
+.pack:hover .pack-circle{transform:translateY(-7px) scale(1.02);box-shadow:0 22px 46px rgba(194,152,0,.3)}
+.pack-circle::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:2.5px dashed var(--gold);opacity:.65;animation:spin 26s linear infinite}
+.pack-circle .ph{width:100%;height:100%;border-radius:50%;overflow:hidden;border:5px solid #fff;background:#fff}
+.pack-circle img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.pack:hover .pack-circle img{transform:scale(1.12) rotate(2deg)}
+.pack-disc{position:absolute;top:14px;inset-inline-end:2px;z-index:4}
+.pack h3{font-size:1rem;font-weight:800;margin-bottom:2px}
+.pack .pk-sub{font-size:.74rem;color:var(--ink-3);margin-bottom:8px}
+.pack .pk-price{display:flex;align-items:baseline;justify-content:center;gap:8px;margin-bottom:8px}
+.pack .pk-price del{color:var(--ink-3);font-size:.82rem}
+.pack .pk-price b{color:var(--brand-600);font-size:1.06rem}
+.pack .pk-price small{font-size:.72rem;color:var(--ink-3)}
+.pack-timer{display:inline-flex;gap:5px;align-items:center;background:#fff;border:1.5px solid var(--gold-100);border-radius:12px;padding:5px 10px;margin-bottom:10px}
+.pack-timer .icon{color:var(--red);width:15px;height:15px}
+.pack-timer b{font-size:.95rem;color:var(--red-600);letter-spacing:1px;direction:ltr;font-variant-numeric:tabular-nums}
+.pack-timer span{font-size:.68rem;color:var(--ink-3)}
+.pack .btn{width:88%}
+@media(min-width:992px){.packs-rail{justify-content:center;overflow:visible;flex-wrap:wrap}}
+
+/* ================= سرتیتر بخش‌ها ================= */
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.sec-head .en{display:flex;align-items:center;gap:10px}
+.sec-ic{width:46px;height:46px;border-radius:14px;background:var(--brand-050);color:var(--brand-700);display:grid;place-items:center;flex:none}
+.sec-ic .icon{width:23px;height:23px}
+.sec-title{font-family:var(--f-display);font-weight:400;font-size:clamp(1.25rem,3vw,1.7rem);color:var(--ink)}
+.sec-title i{font-style:normal;color:var(--brand)}
+.sec-sub{font-size:.82rem;color:var(--ink-3);display:block;margin-top:-2px}
+.sec-actions{margin-inline-start:auto;display:flex;gap:8px;align-items:center}
+.rail-arrow{width:38px;height:38px;border-radius:11px;background:#fff;border:1.5px solid var(--line-2);color:var(--ink-2);display:grid;place-items:center;transition:var(--tr)}
+.rail-arrow:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-050)}
+.link-more{font-size:.85rem;font-weight:700;color:var(--brand-700);display:inline-flex;align-items:center;gap:5px}
+.link-more:hover{color:var(--gold-600)}
+
+/* ================= کارت دسته‌بندی ================= */
+.cats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cat-card{position:relative;border-radius:var(--r-md);overflow:hidden;aspect-ratio:1/.92;box-shadow:var(--sh-sm)}
+.cat-card img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+.cat-card::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(15,25,8,.78) 12%,rgba(15,25,8,.12) 55%)}
+.cat-card:hover img{transform:scale(1.1)}
+.cat-info{position:absolute;bottom:0;right:0;left:0;z-index:2;padding:14px;color:#fff}
+.cat-info b{font-size:.95rem;display:block}
+.cat-info span{font-size:.72rem;color:#e4e9dd}
+.cat-info .go{position:absolute;left:12px;bottom:14px;width:32px;height:32px;border-radius:50%;background:var(--gold);color:#fff;
+  display:grid;place-items:center;opacity:0;transform:translateY(8px);transition:var(--tr)}
+.cat-card:hover .go{opacity:1;transform:none}
+@media(min-width:768px){.cats-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1200px){.cats-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* ================= شگفت‌انگیز ================= */
+.amazing{background:linear-gradient(140deg,#8f1d14,var(--red-600) 55%,#c23a24);border-radius:var(--r-xl);padding:22px;color:#fff;position:relative;overflow:hidden}
+.amazing::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.07);top:-140px;left:-110px}
+.amazing::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.05);bottom:-100px;right:-60px}
+.amz-wrap{display:grid;grid-template-columns:1fr;gap:18px;position:relative;z-index:2}
+.amz-side{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.amz-badge{position:relative;width:96px;height:96px}
+.amz-badge .pulse-sun{width:96px;height:96px;font-size:1.5rem;border-width:3px}
+.amz-side h3{font-family:var(--f-display);font-weight:400;font-size:1.5rem;margin-top:6px}
+.amz-side p{font-size:.8rem;color:#ffe3dd}
+.cd-row{display:flex;gap:8px;direction:ltr;margin:8px 0 4px}
+.cd-box{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:11px;min-width:56px;padding:7px 6px;text-align:center;backdrop-filter:blur(3px)}
+.cd-box b{font-size:1.25rem;display:block;font-variant-numeric:tabular-nums;line-height:1.2}
+.cd-box span{font-size:.62rem;opacity:.85}
+.amz-rail{display:flex;gap:13px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;scrollbar-width:none}
+.amz-rail::-webkit-scrollbar{display:none}
+.amz-rail .p-card{flex:0 0 208px;scroll-snap-align:start}
+@media(min-width:992px){.amz-wrap{grid-template-columns:240px 1fr}.amz-side{border-inline-end:1px dashed rgba(255,255,255,.3)}}
+
+/* ================= کارت محصول ================= */
+.p-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;
+  transition:var(--tr);position:relative}
+.p-card:hover{box-shadow:var(--sh-md);border-color:var(--gold-100);transform:translateY(-5px)}
+.p-media{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg-warm)}
+.p-media img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+.p-card:hover .p-media img{transform:scale(1.09)}
+.p-tags{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;z-index:3}
+.p-tags .tag{backdrop-filter:blur(3px);box-shadow:var(--sh-sm)}
+.p-fav{position:absolute;top:10px;left:10px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.92);
+  display:grid;place-items:center;color:var(--ink-3);box-shadow:var(--sh-sm);transition:var(--tr)}
+.p-fav:hover{color:var(--red);transform:scale(1.1)}
+.p-fav.on{color:var(--red)}
+.p-fav.on .icon{fill:var(--red)}
+.p-fav .icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.p-disc{position:absolute;bottom:10px;inset-inline-end:10px;z-index:3}
+.p-disc .pulse-sun{width:46px;height:46px;font-size:.85rem}
+.p-body{padding:13px 14px 15px;display:flex;flex-direction:column;gap:8px;flex:1}
+.p-cat{font-size:.7rem;color:var(--gold-600);font-weight:700}
+.p-name{font-size:.92rem;font-weight:700;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em}
+.p-meta{display:flex;align-items:center;gap:8px;font-size:.74rem;color:var(--ink-3)}
+.p-meta .rate{color:var(--star);font-weight:800;display:inline-flex;align-items:center;gap:3px}
+.p-meta .rate .icon{width:13px;height:13px;fill:var(--star)}
+.p-meta .sold{margin-inline-start:auto}
+.p-weights{display:flex;gap:5px;flex-wrap:wrap}
+.w-chip{padding:4px 9px;border-radius:9px;border:1.5px solid var(--line-2);font-size:.72rem;font-weight:700;color:var(--ink-2);transition:var(--tr);background:#fff}
+.w-chip:hover{border-color:var(--gold)}
+.w-chip.on{background:var(--brand-050);border-color:var(--brand);color:var(--brand-700)}
+.w-chip:disabled{opacity:.4;cursor:not-allowed}
+.p-pricewrap{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.p-price b{font-size:1.02rem;color:var(--ink);font-weight:800}
+.p-price small{font-size:.68rem;color:var(--ink-3);font-weight:500}
+.p-price .p-old{font-size:.76rem;color:var(--ink-3);text-decoration:line-through;display:block;line-height:1.3}
+.p-price .p-now{display:flex;align-items:baseline;gap:4px}
+.p-actions{display:flex;gap:7px;align-items:center}
+.qty{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:11px;overflow:hidden;background:#fff}
+.qty button{width:30px;height:36px;display:grid;place-items:center;color:var(--brand-700);font-weight:900;font-size:1.05rem}
+.qty button:hover{background:var(--brand-050)}
+.qty span{min-width:26px;text-align:center;font-size:.88rem;font-weight:700}
+.p-add{flex:1;background:var(--brand);color:#fff;border-radius:11px;padding:9px 6px;font-size:.82rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:var(--tr)}
+.p-add:hover{background:var(--brand-600)}
+.p-add:active{transform:scale(.94)}
+.p-add .icon{width:16px;height:16px}
+.p-add.done{background:var(--gold-600)}
+@media(min-width:576px){.p-name{font-size:.95rem}}
+
+/* ================= ریل افقی محصولات (موبایل: چپ/راست) ================= */
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;mask-image:linear-gradient(90deg,transparent,#000 18px,#000 calc(100% - 18px),transparent)}
+.rail>*{flex:0 0 216px;scroll-snap-align:start}
+.rail::-webkit-scrollbar{display:none}
+@media(min-width:576px){.rail>*{flex-basis:232px}}
+@media(min-width:768px){.rail>*{flex-basis:250px}}
+@media(min-width:992px){.rail{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;mask-image:none}.rail>*{flex:auto}}
+@media(min-width:1200px){.rail{grid-template-columns:repeat(5,1fr)}}
+
+/* ================= فروشگاه + فیلترها ================= */
+.shop-sec{background:var(--bg-warm);border-block:1px solid var(--line)}
+.shop-tools{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.chips-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.chips-row::-webkit-scrollbar{display:none}
+.filters-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fld{background:#fff;border:1.5px solid var(--line-2);border-radius:12px;padding:9px 13px;font-size:.86rem;transition:var(--tr);outline:none}
+.fld:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-050)}
+.price-range{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--ink-3)}
+.price-range input{width:110px}
+.sort-sel{margin-inline-start:auto;display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ink-2)}
+.sort-sel select{padding:9px 34px 9px 13px;border-radius:12px;border:1.5px solid var(--line-2);background:#fff;font-size:.85rem;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2357664d' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:left 12px center}
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.shop-meta{font-size:.82rem;color:var(--ink-3);margin-bottom:12px}
+.shop-meta b{color:var(--brand-700)}
+@media(min-width:768px){.shop-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:992px){.shop-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1200px){.shop-grid{grid-template-columns:repeat(5,1fr)}}
+.show-more-wrap{text-align:center;margin-top:24px}
+.empty-state{text-align:center;padding:44px 16px;color:var(--ink-3)}
+.empty-state .icon{width:44px;height:44px;color:var(--line-2)}
+
+/* ================= پک‌های هدیه ================= */
+.gift-sec{background:radial-gradient(1100px 500px at 85% -10%,rgba(194,152,0,.16),transparent 55%),linear-gradient(150deg,#223c12,var(--brand-800) 55%,#152b09);color:#fff;border-radius:var(--r-xl);padding:30px 20px;position:relative;overflow:hidden}
+.gift-sec::before{content:"";position:absolute;inset:14px;border:1.5px solid rgba(194,152,0,.35);border-radius:calc(var(--r-xl) - 10px);pointer-events:none}
+.gift-sec .sec-title{color:#fff}
+.gift-sec .sec-sub{color:#c9d6bd}
+.gift-sec .sec-ic{background:rgba(194,152,0,.18);color:var(--gold)}
+.gift-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+.gift-card{background:rgba(255,255,255,.05);border:1px solid rgba(194,152,0,.35);border-radius:var(--r-md);overflow:hidden;transition:var(--tr);backdrop-filter:blur(4px)}
+.gift-card:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 18px 44px rgba(0,0,0,.4)}
+.g-media{aspect-ratio:16/10;overflow:hidden}
+.g-media img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
+.gift-card:hover .g-media img{transform:scale(1.08)}
+.g-body{padding:13px 14px 16px}
+.g-tag{color:var(--gold);font-size:.72rem;font-weight:800;letter-spacing:.5px}
+.g-title{font-size:.98rem;margin:3px 0 4px}
+.g-text{font-size:.76rem;color:#c9d6bd;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.g-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.g-price b{color:var(--gold);font-size:.95rem}
+.g-price small{font-size:.66rem;color:#c9d6bd}
+.btn-gold-o{border:1.5px solid var(--gold);color:var(--gold);border-radius:11px;padding:7px 13px;font-size:.78rem;font-weight:700;transition:var(--tr)}
+.btn-gold-o:hover{background:var(--gold);color:#fff}
+@media(min-width:992px){.gift-grid{grid-template-columns:repeat(4,1fr)}.gift-sec{padding:44px 36px}}
+
+/* ================= خرید اطمینان ================= */
+.trust-sec{background:linear-gradient(120deg,var(--gold-050),#fff 55%,var(--brand-050))}
+.trust-wrap{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+.trust-card{background:#fff;border:2px solid var(--gold-100);border-radius:var(--r-xl);box-shadow:var(--sh-md);overflow:hidden;display:grid;grid-template-columns:1fr;position:relative}
+.t-ribbon{position:absolute;top:18px;right:-42px;transform:rotate(-45deg);background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#fff;
+  padding:6px 50px;font-size:.76rem;font-weight:800;box-shadow:0 4px 12px rgba(194,152,0,.4);z-index:3;letter-spacing:.3px}
+.t-media{position:relative;aspect-ratio:16/10;overflow:hidden}
+.t-media img{width:100%;height:100%;object-fit:cover}
+.t-off{position:absolute;bottom:12px;inset-inline-start:12px}
+.t-body{padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px}
+.t-kicker{font-size:.76rem;color:var(--gold-600);font-weight:800;display:flex;align-items:center;gap:6px}
+.t-title{font-size:1.15rem;font-weight:800}
+.t-why{font-size:.84rem;color:var(--ink-2);background:var(--brand-soft);border:1px dashed var(--brand-100);border-radius:12px;padding:10px 13px}
+.t-why b{color:var(--brand-700)}
+.t-price{display:flex;align-items:baseline;gap:10px}
+.t-price del{color:var(--ink-3);font-size:.85rem}
+.t-price b{font-size:1.3rem;color:var(--brand-700)}
+.t-price small{color:var(--ink-3);font-size:.75rem}
+.t-days{display:flex;gap:7px;align-items:center}
+.t-days i{width:11px;height:11px;border-radius:50%;background:var(--line-2);transition:var(--tr)}
+.t-days i.on{background:var(--gold);transform:scale(1.25);box-shadow:0 0 0 3px var(--gold-100)}
+.t-days span{font-size:.72rem;color:var(--ink-3);margin-inline-start:4px}
+@media(min-width:820px){.trust-card{grid-template-columns:1.05fr 1fr}.t-media{aspect-ratio:auto;min-height:300px}}
+
+/* ================= مشاوره خرید + پیگیری ================= */
+.cons-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.cons-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;box-shadow:var(--sh-sm);display:flex;flex-direction:column;gap:12px}
+.cons-card.hl{background:linear-gradient(150deg,var(--brand-soft),#fff);border-color:var(--brand-100)}
+.cons-top{display:flex;align-items:center;gap:12px}
+.cons-top .ci{width:50px;height:50px;border-radius:15px;background:var(--gold-050);color:var(--gold-600);display:grid;place-items:center;flex:none}
+.cons-card.track .cons-top .ci{background:var(--brand-050);color:var(--brand-700)}
+.cons-top b{font-size:1rem}
+.cons-top span{font-size:.76rem;color:var(--ink-3);display:block}
+.cons-text{font-size:.85rem;color:var(--ink-2)}
+.cons-actions{display:flex;gap:9px;flex-wrap:wrap}
+.cons-form{display:grid;gap:9px}
+.cons-form .fld{width:100%}
+.cons-form select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2357664d' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center}
+.track-row{display:flex;gap:9px}
+.track-row .fld{flex:1;min-width:0}
+.timeline{display:none;margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
+.timeline.open{display:block;animation:fadeUp .3s ease}
+.tl-item{display:flex;gap:11px;position:relative;padding-bottom:18px}
+.tl-item:last-child{padding-bottom:4px}
+.tl-item::before{content:"";position:absolute;top:26px;bottom:0;right:12px;width:2px;background:var(--line-2)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid var(--line-2);display:grid;place-items:center;flex:none;color:transparent;z-index:2}
+.tl-item.on .tl-dot{background:var(--brand);border-color:var(--brand);color:#fff}
+.tl-item.cur .tl-dot{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-100);animation:ringPulse 2s infinite}
+.tl-item b{font-size:.85rem;display:block}
+.tl-item span{font-size:.72rem;color:var(--ink-3)}
+@media(min-width:992px){.cons-grid{grid-template-columns:1fr 1fr 1fr}}
+
+/* ================= چرا دانه‌سرا ================= */
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.why-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 16px;text-align:center;transition:var(--tr)}
+.why-card:hover{transform:translateY(-6px);box-shadow:var(--sh-md);border-color:var(--gold-100)}
+.why-card .wi{width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;background:var(--brand-050);color:var(--brand-700);transition:var(--tr)}
+.why-card:nth-child(2) .wi{background:var(--gold-050);color:var(--gold-600)}
+.why-card:nth-child(3) .wi{background:#fdeceb;color:var(--red)}
+.why-card:nth-child(4) .wi{background:#eaf3f7;color:#1f5a73}
+.why-card:hover .wi{transform:rotate(-6deg) scale(1.08)}
+.why-card b{font-size:.95rem;display:block;margin-bottom:5px}
+.why-card p{font-size:.79rem;color:var(--ink-2)}
+@media(min-width:992px){.why-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* ================= داستان ما ================= */
+.story-sec{background:var(--bg-warm);border-block:1px solid var(--line)}
+.story-grid{display:grid;grid-template-columns:1fr;gap:26px;align-items:center}
+.story-media{position:relative}
+.story-media img{border-radius:var(--r-xl);box-shadow:var(--sh-md);aspect-ratio:4/3;object-fit:cover;width:100%}
+.story-media::before{content:"";position:absolute;inset:-13px -13px auto auto;width:130px;height:130px;border:3px dashed var(--gold);border-radius:50%;opacity:.5;z-index:-1}
+.story-badge{position:absolute;bottom:-16px;inset-inline-start:22px;background:var(--brand);color:#fff;border-radius:16px;padding:10px 18px;
+  box-shadow:var(--sh-md);display:flex;align-items:center;gap:10px}
+.story-badge b{font-family:var(--f-display);font-weight:400;font-size:1.5rem;line-height:1}
+.story-badge span{font-size:.7rem;line-height:1.5}
+.story-body .sec-title{margin-bottom:12px}
+.story-body p{font-size:.92rem;color:var(--ink-2);margin-bottom:12px;text-align:justify}
+.story-body blockquote{font-family:var(--f-serif);font-size:1.12rem;color:var(--brand-700);background:#fff;border-inline-start:4px solid var(--gold);
+  border-radius:0 14px 14px 0;padding:14px 18px;box-shadow:var(--sh-sm);margin:16px 0}
+.story-pts{display:flex;gap:10px;flex-wrap:wrap}
+.story-pts .tag{font-size:.76rem;padding:7px 13px}
+@media(min-width:992px){.story-grid{grid-template-columns:1fr 1.15fr}}
+
+/* ================= نظرات مشتریان ================= */
+.rev-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.rev-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);position:relative}
+.rev-card::before{content:"”";position:absolute;top:6px;left:16px;font-family:var(--f-serif);font-size:3.4rem;color:var(--gold-100);line-height:1}
+.stars{display:flex;gap:2px;color:var(--star);margin-bottom:8px}
+.stars .icon{width:15px;height:15px;fill:var(--star)}
+.rev-text{font-size:.85rem;color:var(--ink-2);margin-bottom:12px;min-height:66px}
+.rev-user{display:flex;align-items:center;gap:10px}
+.rev-av{width:40px;height:40px;border-radius:50%;background:var(--brand-050);color:var(--brand-700);display:grid;place-items:center;font-weight:800;font-size:.95rem;flex:none}
+.rev-user b{font-size:.85rem;display:block}
+.rev-user span{font-size:.7rem;color:var(--ink-3)}
+.rev-prod{margin-inline-start:auto;font-size:.68rem;color:var(--gold-600);background:var(--gold-050);border:1px solid var(--gold-100);padding:4px 10px;border-radius:99px;font-weight:700}
+@media(min-width:768px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1200px){.rev-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ================= خبرنامه ================= */
+.news-box{background:linear-gradient(135deg,var(--brand-600),var(--brand));border-radius:var(--r-xl);padding:30px 22px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.news-box::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:2px dashed rgba(255,255,255,.2);top:-90px;inset-inline-end:-70px}
+.news-box h3{font-family:var(--f-display);font-weight:400;font-size:1.5rem;margin-bottom:6px}
+.news-box p{font-size:.86rem;color:#e2efda;max-width:520px;margin:0 auto 18px}
+.news-form{display:flex;gap:9px;max-width:480px;margin:0 auto;background:#fff;padding:6px;border-radius:16px;box-shadow:var(--sh-md)}
+.news-form input{flex:1;border:0;outline:none;padding:10px 14px;border-radius:12px;font-size:.9rem;min-width:0}
+.news-note{font-size:.72rem;color:#d7e6cd;margin-top:12px}
+.news-note b{color:var(--gold)}
+
+/* ================= Footer ================= */
+.footer{background:linear-gradient(180deg,#20340f,#142408);color:#dbe6cf;margin-top:60px}
+.f-top{padding:46px 0 30px;display:grid;grid-template-columns:1fr;gap:28px}
+.f-col .f-title{color:#fff;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.f-col .f-title::after{content:"";flex:1;height:1px;background:rgba(194,152,0,.35)}
+.f-col a{display:block;padding:5px 0;font-size:.85rem;color:#b9c8aa;transition:var(--tr)}
+.f-col a:hover{color:var(--gold);padding-inline-start:6px}
+.f-about p{font-size:.84rem;color:#b9c8aa;margin:12px 0 16px;text-align:justify}
+.f-logo{display:flex;align-items:center;gap:10px}
+.f-logo .logo-mark{background:rgba(194,152,0,.15);box-shadow:none}
+.f-logo b{font-family:var(--f-display);font-weight:400;font-size:1.4rem;color:#fff}
+.socials{display:flex;gap:9px}
+.socials a{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.07);display:grid;place-items:center;color:#e5ecdb;transition:var(--tr);padding:0}
+.socials a:hover{background:var(--gold);color:#fff;transform:translateY(-3px)}
+.socials .icon{width:19px;height:19px}
+.f-contact li{display:flex;gap:9px;align-items:flex-start;font-size:.84rem;padding:5px 0;color:#b9c8aa}
+.f-contact .icon{color:var(--gold);margin-top:5px}
+.f-badges{display:flex;gap:10px;flex-wrap:wrap}
+.f-badge{background:#fff;border-radius:13px;padding:9px 13px;display:flex;align-items:center;gap:9px;color:var(--ink-2);font-size:.72rem;font-weight:700;box-shadow:var(--sh-sm)}
+.f-badge .icon{width:26px;height:26px;color:var(--brand)}
+.f-bottom{border-top:1px solid rgba(255,255,255,.09);padding:16px 0 22px;font-size:.76rem;color:#93a483;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.f-bottom b{color:var(--gold)}
+@media(min-width:768px){.f-top{grid-template-columns:1fr 1fr}}
+@media(min-width:1100px){.f-top{grid-template-columns:2.2fr 1fr 1fr 1.4fr}}
+</style>
+<style>
+/* ================= سبد خرید (کشویی) ================= */
+.cart-drawer{position:fixed;top:0;bottom:0;left:0;width:min(400px,94vw);background:#fff;z-index:96;transform:translateX(-105%);
+  transition:transform .38s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:var(--sh-lg);border-radius:0 0 var(--r-lg) 0}
+.cart-drawer.open{transform:none}
+.cd-head{display:flex;align-items:center;gap:10px;padding:16px 18px;background:linear-gradient(135deg,var(--brand),var(--brand-600));color:#fff}
+.cd-head b{font-size:1rem;display:flex;align-items:center;gap:8px}
+.cd-head .cnt{background:rgba(255,255,255,.2);border-radius:99px;padding:1px 10px;font-size:.76rem}
+.cd-head button{margin-inline-start:auto;color:#fff;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.15)}
+.ship-progress{background:var(--bg-mint);padding:12px 18px;border-bottom:1px solid var(--line)}
+.ship-progress p{font-size:.76rem;color:var(--ink-2);margin-bottom:7px}
+.ship-progress p b{color:var(--brand-700)}
+.sp-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.sp-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--brand));transition:width .5s ease}
+.cd-items{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.cart-empty{text-align:center;color:var(--ink-3);padding:50px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.cart-empty .icon{width:60px;height:60px;color:var(--line-2)}
+.cart-item{display:grid;grid-template-columns:76px 1fr;gap:11px;background:var(--bg-warm);border:1px solid var(--line);border-radius:var(--r-md);padding:10px}
+.ci-media{position:relative}
+.ci-media img{width:76px;height:76px;border-radius:11px;object-fit:cover}
+.ci-info{min-width:0}
+.ci-name{font-size:.84rem;font-weight:700;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-w{font-size:.7rem;color:var(--ink-3);background:#fff;border:1px solid var(--line);padding:2px 8px;border-radius:99px;display:inline-block;margin:4px 0}
+.ci-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ci-qty{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:9px;background:#fff}
+.ci-qty button{width:26px;height:28px;font-weight:900;color:var(--brand-700);display:grid;place-items:center}
+.ci-qty span{min-width:24px;text-align:center;font-size:.82rem;font-weight:700}
+.ci-price{font-size:.86rem;font-weight:800;color:var(--ink)}
+.ci-price small{font-size:.62rem;color:var(--ink-3);font-weight:500}
+.ci-del{color:var(--ink-3);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;transition:var(--tr)}
+.ci-del:hover{background:#fdeceb;color:var(--red)}
+.cd-foot{border-top:1px solid var(--line);padding:14px 18px 18px;background:#fff}
+.coupon-row{display:flex;gap:8px;margin-bottom:12px}
+.coupon-row .fld{flex:1;min-width:0}
+.coupon-hint{font-size:.68rem;color:var(--ink-3);margin-top:-6px;margin-bottom:10px}
+.coupon-hint b{color:var(--gold-600);cursor:pointer}
+.totals{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:.85rem}
+.t-row{display:flex;justify-content:space-between;color:var(--ink-2)}
+.t-row.grand{font-size:1rem;font-weight:800;color:var(--ink);border-top:1px dashed var(--line);padding-top:9px;margin-top:3px}
+.t-row .free{color:var(--brand-700);font-weight:800}
+.t-row .off{color:var(--red)}
+.returns-note{display:flex;gap:7px;align-items:center;font-size:.72rem;color:var(--ink-3);background:var(--bg-warm);border-radius:10px;padding:8px 11px;margin-bottom:12px}
+.returns-note .icon{color:var(--gold-600)}
+
+/* ================= مودال پایه ================= */
+.overlay{position:fixed;inset:0;background:rgba(18,28,12,.55);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.overlay.open{display:flex;animation:fadeIn .25s ease}
+.modal{background:#fff;border-radius:var(--r-xl);width:min(680px,100%);max-height:92vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:popIn .3s ease;position:relative}
+.modal-head{position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);display:flex;align-items:center;gap:10px;
+  padding:16px 20px;border-bottom:1px solid var(--line);z-index:5}
+.modal-head b{font-size:1.02rem;display:flex;align-items:center;gap:9px}
+.modal-head .icon{color:var(--brand)}
+.modal-x{margin-inline-start:auto;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--bg-warm);color:var(--ink-2);transition:var(--tr)}
+.modal-x:hover{background:#fdeceb;color:var(--red)}
+.modal-body{padding:20px}
+
+/* ================= تسویه حساب ================= */
+.co-steps{display:flex;gap:6px;margin-bottom:20px}
+.co-step{flex:1;text-align:center;position:relative;font-size:.76rem;color:var(--ink-3);font-weight:700}
+.co-step::before{content:"";width:30px;height:30px;border-radius:50%;background:var(--bg-warm);border:2px solid var(--line-2);
+  display:grid;place-items:center;margin:0 auto 6px;font-size:.8rem;color:var(--ink-3);transition:var(--tr)}
+.co-step.on{color:var(--brand-700)}
+.co-step.on::before{background:var(--brand);border-color:var(--brand);color:#fff;content:attr(data-n)}
+.co-step.done::before{background:var(--gold);border-color:var(--gold);color:#fff;content:"✓"}
+.co-pane{display:none}
+.co-pane.on{display:block;animation:fadeUp .3s ease}
+.f-grid{display:grid;grid-template-columns:1fr;gap:11px}
+@media(min-width:560px){.f-grid.c2{grid-template-columns:1fr 1fr}}
+.fld label{font-size:.78rem;font-weight:700;color:var(--ink-2);display:block;margin-bottom:5px}
+.fld.w{padding:0;border:0;background:none}
+.fld.w input,.fld.w select,.fld.w textarea{width:100%;border:1.5px solid var(--line-2);border-radius:12px;padding:11px 13px;font-size:.9rem;outline:none;transition:var(--tr);background:#fff}
+.fld.w input:focus,.fld.w select:focus,.fld.w textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-050)}
+.ship-opts{display:grid;gap:9px}
+.ship-opt{display:flex;align-items:center;gap:11px;border:1.5px solid var(--line-2);border-radius:13px;padding:12px 14px;cursor:pointer;transition:var(--tr);background:#fff}
+.ship-opt:hover{border-color:var(--brand-100)}
+.ship-opt input{accent-color:var(--brand);width:18px;height:18px}
+.ship-opt b{font-size:.86rem;display:block}
+.ship-opt span{font-size:.72rem;color:var(--ink-3)}
+.ship-opt .pr{margin-inline-start:auto;font-weight:800;font-size:.86rem;color:var(--brand-700)}
+.ship-opt .pr.free{color:var(--gold-600)}
+.ship-opt.on{border-color:var(--brand);background:var(--brand-soft)}
+.co-summary{background:var(--bg-warm);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;font-size:.85rem}
+.co-pay-btn{margin-top:14px}
+.pay-note{display:flex;gap:7px;align-items:center;font-size:.72rem;color:var(--ink-3);justify-content:center;margin-top:10px}
+.co-success{text-align:center;padding:16px 6px}
+.co-success .ok-ic{width:84px;height:84px;border-radius:50%;background:var(--brand-050);color:var(--brand);display:grid;place-items:center;margin:0 auto 16px;animation:bounceIn .6s ease}
+.co-success .ok-ic .icon{width:42px;height:42px}
+.co-success h3{font-size:1.2rem;margin-bottom:8px}
+.co-success .ord-code{display:inline-block;background:var(--gold-050);border:1.5px dashed var(--gold);color:var(--gold-600);border-radius:12px;padding:7px 20px;font-weight:800;margin:8px 0;font-size:1.05rem}
+.sms-note{display:flex;gap:9px;align-items:center;background:var(--brand-soft);border:1px solid var(--brand-100);color:var(--brand-700);
+  border-radius:12px;padding:11px 14px;font-size:.8rem;text-align:right;margin:14px 0}
+.co-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+
+/* ================= پنل کاربری (موبایل‌فرست) ================= */
+.panel-shell{position:fixed;inset:0;z-index:105;background:var(--bg-warm);display:none;flex-direction:column;animation:fadeIn .25s ease}
+.panel-shell.open{display:flex}
+.up-head{background:linear-gradient(140deg,var(--brand-700),var(--brand) 70%);color:#fff;padding:18px 18px 58px;position:relative;flex:none}
+.up-head .row1{display:flex;align-items:center;gap:12px}
+.up-av{width:54px;height:54px;border-radius:18px;background:var(--gold);display:grid;place-items:center;font-size:1.3rem;font-weight:900;color:#fff;flex:none;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.up-name{font-size:1rem;font-weight:800}
+.up-phone{font-size:.76rem;opacity:.85;direction:ltr;text-align:right}
+.up-tier{margin-inline-start:auto;text-align:center;background:rgba(255,255,255,.14);border:1px solid rgba(194,152,0,.7);border-radius:14px;padding:6px 12px}
+.up-tier b{color:var(--gold);font-size:.82rem;display:block}
+.up-tier span{font-size:.62rem;opacity:.8}
+.up-x{position:absolute;top:16px;inset-inline-end:16px;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.16);color:#fff;display:grid;place-items:center}
+.up-welcome{position:absolute;inset-inline:18px;bottom:-34px;background:#fff;border-radius:16px;box-shadow:var(--sh-md);padding:13px 16px;display:flex;align-items:center;gap:10px}
+.up-welcome .icon{color:var(--gold-600);width:24px;height:24px}
+.up-welcome p{font-size:.78rem;color:var(--ink-2);line-height:1.6}
+.up-welcome b{color:var(--brand-700)}
+.up-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:48px 14px 8px}
+.up-stat{background:#fff;border-radius:14px;padding:11px 6px;text-align:center;box-shadow:var(--sh-sm);border:1px solid var(--line)}
+.up-stat b{font-size:1.05rem;display:block;color:var(--brand-700)}
+.up-stat span{font-size:.66rem;color:var(--ink-3)}
+.up-body{flex:1;overflow-y:auto;padding:12px 14px 90px}
+.up-view{display:none;animation:fadeUp .3s ease}
+.up-view.on{display:block}
+.up-sec-title{font-size:.9rem;font-weight:800;margin:12px 2px 9px;display:flex;align-items:center;gap:7px}
+.up-sec-title .icon{color:var(--gold-600)}
+.order-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:13px;margin-bottom:11px;box-shadow:var(--sh-sm)}
+.oc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.oc-code{font-weight:800;font-size:.88rem;color:var(--brand-700)}
+.oc-date{font-size:.7rem;color:var(--ink-3)}
+.oc-status{margin-inline-start:auto}
+.oc-items-line{font-size:.74rem;color:var(--ink-2);margin:7px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.oc-foot{display:flex;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:9px}
+.oc-total{font-size:.86rem;font-weight:800}
+.oc-total small{font-size:.66rem;color:var(--ink-3);font-weight:500}
+.oc-actions{margin-inline-start:auto;display:flex;gap:7px}
+.mini-tl{display:flex;justify-content:space-between;margin:11px 2px 3px;position:relative}
+.mini-tl::before{content:"";position:absolute;top:11px;right:12%;left:12%;height:3px;border-radius:9px;background:var(--line)}
+.mini-tl i{width:24px;height:24px;border-radius:50%;background:#fff;border:2.5px solid var(--line-2);z-index:2;display:grid;place-items:center;color:transparent;font-size:.66rem}
+.mini-tl i.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.mini-tl i.cur{border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-100)}
+.mini-tl-lbl{display:flex;justify-content:space-between;font-size:.62rem;color:var(--ink-3);margin-top:5px;padding:0 2px}
+.mini-tl-lbl b{color:var(--ink-2);font-weight:700}
+.up-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:6px}
+.up-act{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:.74rem;font-weight:700;color:var(--ink-2);transition:var(--tr)}
+.up-act:hover{border-color:var(--brand);color:var(--brand-700)}
+.up-act .icon{width:22px;height:22px;color:var(--gold-600)}
+.msg-card{display:flex;gap:11px;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:12px;margin-bottom:10px}
+.msg-ic{width:40px;height:40px;border-radius:12px;background:var(--brand-050);color:var(--brand-700);display:grid;place-items:center;flex:none}
+.msg-card b{font-size:.8rem;display:block}
+.msg-card p{font-size:.74rem;color:var(--ink-2);line-height:1.7}
+.msg-card time{font-size:.64rem;color:var(--ink-3)}
+.code-card{background:#fff;border:1.5px dashed var(--gold);border-radius:var(--r-md);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.code-card.used{opacity:.5;border-color:var(--line-2)}
+.code-card .cc-c{font-weight:900;letter-spacing:1.5px;color:var(--gold-600);direction:ltr}
+.code-card b{font-size:.8rem;display:block}
+.code-card span{font-size:.68rem;color:var(--ink-3)}
+.code-card .use{margin-inline-start:auto}
+.fav-row{display:grid;grid-template-columns:64px 1fr auto;gap:11px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:10px;margin-bottom:10px}
+.fav-row img{width:64px;height:64px;border-radius:11px;object-fit:cover}
+.fav-row b{font-size:.82rem;display:block}
+.fav-row span{font-size:.74rem;color:var(--brand-700);font-weight:700}
+.fav-acts{display:flex;flex-direction:column;gap:6px}
+.profile-fld{margin-bottom:10px}
+.up-empty{text-align:center;padding:34px 12px;color:var(--ink-3)}
+.up-empty .icon{width:48px;height:48px;color:var(--line-2)}
+.up-empty p{font-size:.8rem;margin:8px 0 14px}
+.up-tabbar{flex:none;display:flex;background:#fff;border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -6px 22px rgba(30,43,22,.07)}
+.up-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.66rem;font-weight:700;color:var(--ink-3);padding:6px 2px;border-radius:12px;transition:var(--tr)}
+.up-tab .icon{width:22px;height:22px}
+.up-tab.on{color:var(--brand-700)}
+.up-tab.on .icon{color:var(--gold-600)}
+@media(min-width:900px){
+  .panel-shell{align-items:center;justify-content:center;padding:20px;background:rgba(18,28,12,.55);backdrop-filter:blur(4px)}
+  .up-frame{background:var(--bg-warm);border-radius:var(--r-xl);width:min(880px,100%);height:min(640px,92vh);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--sh-lg);animation:popIn .3s ease}
+  .up-head{border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .up-body{padding-bottom:20px}
+  .up-stats{padding-top:48px}
+  .up-tabbar{border-radius:0 0 var(--r-xl) var(--r-xl)}
+}
+@media(max-width:899px){.up-frame{display:flex;flex-direction:column;height:100%}}
+
+/* ================= گردونه/کارت شانس ================= */
+.lucky-modal{background:linear-gradient(150deg,#1a2c0d,#2c4a14 60%,#203a0e);width:min(430px,96vw);text-align:center;color:#fff;overflow:hidden}
+.lucky-modal::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;border:2px dashed rgba(194,152,0,.4);top:-110px;inset-inline-start:-90px}
+.lucky-head{padding:24px 20px 6px}
+.lucky-head .gift-ic{width:76px;height:76px;margin:0 auto 12px;border-radius:50%;background:rgba(194,152,0,.15);border:2px solid var(--gold);
+  display:grid;place-items:center;color:var(--gold);animation:floaty 3s ease-in-out infinite}
+.lucky-head .gift-ic .icon{width:36px;height:36px}
+.lucky-head h3{font-family:var(--f-display);font-weight:400;font-size:1.55rem;color:#ffe9a8}
+.lucky-head p{font-size:.82rem;color:#d7e6cd;margin-top:4px}
+.lucky-stage{padding:22px 26px 30px;perspective:1100px}
+.lc-inner{position:relative;width:230px;height:230px;margin:0 auto;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.6,0,.2,1);cursor:pointer}
+.lucky-modal.flipped .lc-inner{transform:rotateY(180deg)}
+.lc-face{position:absolute;inset:0;border-radius:26px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.lc-front{background:linear-gradient(145deg,#fff6d8,#f5dd94 55%,#e9c85f);color:#7a5c00;box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.6)}
+.lc-front .q{font-size:3.2rem;line-height:1;animation:floaty 2.6s ease-in-out infinite}
+.lc-front b{font-size:1.05rem}
+.lc-front span{font-size:.72rem;opacity:.75}
+.lc-back{background:linear-gradient(145deg,#fff,#fdf6e2);color:var(--ink);transform:rotateY(180deg);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 0 0 3px var(--gold)}
+.lc-prize-ic{width:64px;height:64px;border-radius:50%;background:var(--gold-050);border:2px solid var(--gold);display:grid;place-items:center;color:var(--gold-600)}
+.lc-prize-ic .icon{width:30px;height:30px}
+.lc-back h4{font-size:1.02rem;color:var(--brand-700)}
+.lc-back .lc-code{background:var(--brand-050);border:1.5px dashed var(--brand);color:var(--brand-700);border-radius:10px;padding:5px 16px;font-weight:900;letter-spacing:1.5px;direction:ltr;font-size:.95rem}
+.lc-back p{font-size:.72rem;color:var(--ink-3)}
+.lucky-foot{padding:0 26px 26px;display:flex;flex-direction:column;gap:9px}
+.lucky-foot .hint{font-size:.7rem;color:#a9bd97}
+.lc-shine{position:absolute;inset:0;border-radius:26px;overflow:hidden;pointer-events:none}
+.lc-shine::before{content:"";position:absolute;top:0;bottom:0;width:60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:shimmer 2.8s linear infinite}
+
+/* ================= Toast ================= */
+.toasts{position:fixed;bottom:20px;right:50%;transform:translateX(50%);z-index:120;display:flex;flex-direction:column;gap:9px;align-items:center;pointer-events:none;width:min(420px,92vw)}
+.toast{background:#fff;border-radius:14px;box-shadow:var(--sh-lg);padding:12px 16px;display:flex;align-items:center;gap:10px;
+  font-size:.84rem;font-weight:600;width:100%;border-inline-start:4px solid var(--brand);animation:fadeUp .35s ease;pointer-events:auto}
+.toast.out{animation:fadeIn .3s ease reverse forwards}
+.toast .icon{width:21px;height:21px;flex:none}
+.toast.ok{border-color:var(--brand)}.toast.ok .icon{color:var(--brand)}
+.toast.err{border-color:var(--red)}.toast.err .icon{color:var(--red)}
+.toast.gold{border-color:var(--gold)}.toast.gold .icon{color:var(--gold-600)}
+
+/* ================= دکمه‌های شناور + نوار پایین موبایل ================= */
+.fab-wrap{position:fixed;inset-inline-start:14px;bottom:20px;z-index:80;display:flex;flex-direction:column;gap:9px}
+.fab{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;box-shadow:var(--sh-md);transition:var(--tr);background:#fff;color:var(--brand-700);border:1px solid var(--line);position:relative}
+.fab:hover{transform:translateY(-3px)}
+.fab.gold{background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#fff;border:0}
+.fab.brand{background:var(--brand);color:#fff;border:0}
+.fab .icon{width:22px;height:22px}
+.m-cart-bar{position:fixed;bottom:0;inset-inline:0;z-index:70;background:#fff;border-top:1.5px solid var(--gold-100);box-shadow:0 -10px 30px rgba(30,43,22,.14);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:none;align-items:center;gap:11px;transform:translateY(110%);transition:transform .35s ease}
+.m-cart-bar.show{transform:none}
+.m-cart-bar .ci{position:relative;width:42px;height:42px;border-radius:12px;background:var(--brand-050);color:var(--brand-700);display:grid;place-items:center;flex:none}
+.m-cart-bar b{font-size:.88rem;display:block;color:var(--ink)}
+.m-cart-bar span{font-size:.68rem;color:var(--ink-3);display:block}
+.m-cart-bar .btn{margin-inline-start:auto}
+@media(max-width:767px){.m-cart-bar.show{display:flex}.fab-wrap{bottom:78px}.toasts{bottom:84px}}
+
+/* ================= حرکت کمتر / چاپ ================= */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media print{.topbar,.announce,.site-header,.fab-wrap,.m-cart-bar,.overlay,.panel-shell,.toasts{display:none!important}}
+</style>
+</head>
+<body>
+<!-- ===== آیکون‌های SVG ===== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-nut" viewBox="0 0 24 24"><path d="M12 2.5c4.6 3.4 7 7.4 7 11.3a7 7 0 1 1-14 0c0-3.9 2.4-7.9 7-11.3z"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M7.3 18.5a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6zm9.4 0a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6zM3.6 3.2h1.9c.5 0 .9.3 1 .8l.5 2.2m0 0 1.5 7.2c.1.6.6 1 1.2 1h8.6c.6 0 1.1-.4 1.2-1l1.4-6.4c.1-.6-.3-1.2-1-1.2H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.3S4 15.1 4 9.6C4 6.9 6.1 5 8.5 5c1.4 0 2.7.7 3.5 1.8C12.8 5.7 14.1 5 15.5 5 17.9 5 20 6.9 20 9.6c0 5.5-8 10.7-8 10.7z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4zm0 2.2c-4.4 0-8 2.3-8 5.1V21h16v-1.7c0-2.8-3.6-5.1-8-5.1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.8 14.3h-1l-.3-.4a6.8 6.8 0 1 0-1.2 1.2l.4.3v1l4.4 4.4 1.9-1.9-4.2-4.6zm-6.3 0a4.7 4.7 0 1 1 0-9.4 4.7 4.7 0 0 1 0 9.4z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 10.8a15.6 15.6 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.7.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.3 0 .7-.2 1l-2.2 2.1z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.8l2.9 5.8 6.4 1-4.6 4.5 1 6.4-5.7-3-5.7 3 1-6.4L2.7 9.6l6.4-1L12 2.8z"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H14v11H3V6.5zM14 9h4.2c.4 0 .8.2 1 .5L21.6 13c.2.3.4.7.4 1v2h-8V9zM7 19.4a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8zm10.5 0a1.9 1.9 0 1 0 0-3.8 1.9 1.9 0 0 0 0 3.8z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6.2c0 5-3.4 9.3-8 10.8-4.6-1.5-8-5.8-8-10.8V5l8-3zm-1.2 13.5l6-6-1.5-1.5-4.5 4.5-2.1-2.1-1.5 1.5 3.6 3.6z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 4c-9 0-15 4.5-15 12 0 .8.1 1.6.3 2.3C7 16 9.6 13.5 13 12c-3 2-5.6 5-6.8 8.2.9.5 2 .8 3.3.8 7.5 0 10.5-7 10.5-17z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 5h-2v6l5 3 1-1.7-4-2.3V7z"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M20 7h-2.2c.3-.5.5-1.1.5-1.7A2.8 2.8 0 0 0 15.5 2.5c-1.4 0-2.6.8-3.5 2-.9-1.2-2.1-2-3.5-2A2.8 2.8 0 0 0 5.7 5.3c0 .6.2 1.2.5 1.7H4a1.5 1.5 0 0 0-1.5 1.5V11h8V7h3v4h8V8.5A1.5 1.5 0 0 0 20 7zM4 12.5V21h7v-8.5H4zm9 0V21h7v-8.5h-7z"/></symbol>
+  <symbol id="i-headset" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v5a3 3 0 0 0 3 3h2v-8H5.5v-.2A6.7 6.7 0 0 1 12 5.3a6.7 6.7 0 0 1 6.5 6.5v.2H16v8h2a3 3 0 0 0 3-3v-5a9 9 0 0 0-9-9z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M21.4 11.6l-9-9A2 2 0 0 0 11 2H4a2 2 0 0 0-2 2v7c0 .5.2 1 .6 1.4l9 9a2 2 0 0 0 2.8 0l7-7a2 2 0 0 0 0-2.8zM7.5 9A1.5 1.5 0 1 1 9 7.5 1.5 1.5 0 0 1 7.5 9z"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7h-1V6a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zm-4 8.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM16 7H5V5h11v2z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2a7.4 7.4 0 0 0-7.4 7.4C4.6 14.9 12 22 12 22s7.4-7.1 7.4-12.6A7.4 7.4 0 0 0 12 2zm0 10.1a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.4 6.6L8 8l4 4-4 4 1.4 1.4L14.8 12 9.4 6.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 11h14v2H5z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 12a2 2 0 0 1-2 1.8H9A2 2 0 0 1 7 21L6 9z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M9.6 16.8L5 12.2l-1.4 1.4 6 6 10-10L18.2 8.2 9.6 16.8z"/></symbol>
+  <symbol id="i-sms" viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM7 9h10v2H7V9zm6 5H7v-2h6v2z"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3a2 2 0 0 1 2 2v1h5.2l2.6 8.1c.1.4.2.9.2 1.4a4.5 4.5 0 0 1-9 0c0-.5.1-1 .2-1.4L15.8 8H13v11h3v2H8v-2h3V8H8.2l2.6 6.1c.1.4.2.9.2 1.4a4.5 4.5 0 0 1-9 0c0-.5.1-1 .2-1.4L4.8 6H10V5a2 2 0 0 1 2-2zm-6.5 6.6L4 13h3l-1.5-3.4zm13 0L17 13h3l-1.5-3.4z"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0 0 20c1.4 0 2.3-1.1 2.3-2.3 0-.6-.2-1.1-.6-1.5-.3-.4-.5-.9-.5-1.4 0-1.2 1-2.3 2.3-2.3h2.6c2.1 0 3.9-1.7 3.9-3.8C22 6 17.5 2 12 2zM6.5 12a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zm3.4-4.5a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zm4.9 0a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zm3.4 4.5a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4z"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.5-3.2a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></symbol>
+  <symbol id="i-telegram" viewBox="0 0 24 24"><path d="M21.9 4.3L18.7 19c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.3 12.7l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 2.9c.9-.3 1.6.2 1.3 1.4z"/></symbol>
+  <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A9.9 9.9 0 1 0 12 2zm5.4 13.9c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.4l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.4z"/></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24"><path d="M13.5 2s.5 3-1.5 5.5S7 11 7 15a5 5 0 0 0 10 0c0-1.5-.5-3-1.5-4 0 1.5-1 2.5-2 2.5.5-2 .5-5.5 0-7.5-.3-1.5 0-4 0-4z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M12 2l9 4.5v11L12 22l-9-4.5v-11L12 2zm0 2.2L5.7 7.3 12 10.4l6.3-3.1L12 4.2zM5 9v7.3l6 3V12L5 9zm14 0l-6 3v7.3l6-3V9z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M12 4a8 8 0 0 1 7.7 5.9l1.9-.5A10 10 0 0 0 12 2v2zM4.3 14.1A8 8 0 0 1 12 4V2A10 10 0 0 0 2.4 9.6l1.9.5zm15.4-1.2A8 8 0 0 1 12 20v2a10 10 0 0 0 9.6-7.6l-1.9-.5zM2.4 9.6A10 10 0 0 0 12 22v-2a8 8 0 0 1-7.7-5.9l-1.9.5z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M17 9V7A5 5 0 0 0 7 7v2H5v13h14V9h-2zM9 7a3 3 0 0 1 6 0v2H9V7zm4 9.7V19h-2v-2.3a2 2 0 1 1 2 0z"/></symbol>
+  <symbol id="i-percent" viewBox="0 0 24 24"><path d="M7.5 3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 6.4A1.9 1.9 0 1 1 7.5 5.6a1.9 1.9 0 0 1 0 3.8zM16.5 12a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm0 6.4a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8zM18.6 3.2L20 4.6 5.4 20.8 4 19.4 18.6 3.2z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-6 4h10v2H7v-2zm0 4h10v2H7v-2z"/></symbol>
+</svg>
+
+<!-- ===== نوار ارتباط با مشتری (فونت امیری) ===== -->
+<div class="topbar">
+  <div class="container">
+    <div class="tb-comm">
+      <svg class="icon"><use href="#i-headset"/></svg>
+      <span>ارتباط با مشتری:</span>
+      <a class="phone" href="tel:02191092000" dir="ltr">۰۲۱-۹۱۰۹۲۰۰۰</a>
+      <span class="tb-tail">ـ پاسخگویی شبانه‌روزی، همیشه در کنار شما</span>
+    </div>
+    <nav class="tb-links" aria-label="دسترسی سریع">
+      <button type="button" data-open="track"><svg class="icon"><use href="#i-doc"/></svg><span class="lbl">پیگیری سفارش</span></button>
+      <i class="tb-sep"></i>
+      <button type="button" data-scroll="#consult"><svg class="icon"><use href="#i-headset"/></svg><span class="lbl">مشاوره خرید</span></button>
+      <i class="tb-sep"></i>
+      <button type="button" data-open="lucky"><svg class="icon"><use href="#i-gift"/></svg><span class="lbl">کارت شانس</span></button>
+    </nav>
+  </div>
+</div>
+
+<!-- ===== نوار اطلاع‌رسانی ===== -->
+<div class="announce" aria-label="اطلاع‌رسانی فروشگاه">
+  <div class="an-track">
+    <span class="an-item"><svg class="icon"><use href="#i-truck"/></svg>ارسال <b>رایگان</b> سفارش‌های بالای ۱٬۵۰۰٬۰۰۰ تومان</span>
+    <span class="an-item"><svg class="icon"><use href="#i-shield"/></svg><b>۷ روز</b> ضمانت بازگشت کالا بدون قید و شرط و مرجوعی رایگان</span>
+    <span class="an-item"><svg class="icon"><use href="#i-tag"/></svg>تخفیف ویژه خرید عمده و همکاری با فروشگاه‌ها تا <b>۲۵٪</b></span>
+    <span class="an-item"><svg class="icon"><use href="#i-leaf"/></svg>تضمین تازگی؛ مستقیم از باغ تا سفره شما</span>
+    <span class="an-item"><svg class="icon"><use href="#i-truck"/></svg>ارسال <b>رایگان</b> سفارش‌های بالای ۱٬۵۰۰٬۰۰۰ تومان</span>
+    <span class="an-item"><svg class="icon"><use href="#i-shield"/></svg><b>۷ روز</b> ضمانت بازگشت کالا بدون قید و شرط و مرجوعی رایگان</span>
+    <span class="an-item"><svg class="icon"><use href="#i-tag"/></svg>تخفیف ویژه خرید عمده و همکاری با فروشگاه‌ها تا <b>۲۵٪</b></span>
+    <span class="an-item"><svg class="icon"><use href="#i-leaf"/></svg>تضمین تازگی؛ مستقیم از باغ تا سفره شما</span>
+  </div>
+</div>
+
+<!-- ===== هدر ===== -->
+<header class="site-header">
+  <div class="container">
+    <div class="hd-inner">
+      <button class="burger" id="burgerBtn" aria-label="باز کردن منو"><svg class="icon"><use href="#i-menu"/></svg></button>
+      <a class="logo" href="#" aria-label="فروشگاه دانه‌سرا">
+        <span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span>
+        <span class="logo-text"><b>دانه‌سرا</b><small>خشکبار و محصولات طبیعی</small></span>
+      </a>
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input class="search-input" id="searchInput" type="search" placeholder="جستجو در بیش از ۳۰ محصول؛ مثلاً پسته اکبری…" aria-label="جستجوی محصولات">
+          <button class="search-btn" id="searchBtn">جستجو</button>
+        </div>
+        <div class="search-dd" id="searchDD" role="listbox"></div>
+      </div>
+      <div class="hd-actions">
+        <div style="position:relative">
+          <button class="icon-btn theme-btn" id="themeBtn" aria-label="تغییر تم رنگی" aria-haspopup="true">
+            <svg class="icon"><use href="#i-palette"/></svg><span class="lb">تم رنگی</span>
+          </button>
+          <div class="theme-pop" id="themePop" role="menu">
+            <h4><svg class="icon"><use href="#i-palette"/></svg> تغییر تم رنگی</h4>
+            <div class="theme-dots" id="themeDots"></div>
+          </div>
+        </div>
+        <button class="icon-btn" id="favBtn" aria-label="علاقه‌مندی‌ها">
+          <svg class="icon"><use href="#i-heart"/></svg>
+          <span class="dot-pulse fav-count hidden" id="favCount">۰</span>
+        </button>
+        <button class="login-btn" id="loginBtn"><svg class="icon"><use href="#i-user"/></svg> ورود | ثبت‌نام</button>
+        <button class="icon-btn login-btn-m" id="loginBtnM" aria-label="ورود | ثبت‌نام" style="display:none">
+          <svg class="icon"><use href="#i-user"/></svg>
+        </button>
+        <button class="icon-btn cart-btn" id="cartBtn" aria-label="سبد خرید">
+          <svg class="icon"><use href="#i-cart"/></svg>
+          <span class="dot-pulse cart-count hidden" id="cartCount">۰</span>
+        </button>
+      </div>
+    </div>
+    <div class="m-search">
+      <div class="search-box">
+        <svg class="icon"><use href="#i-search"/></svg>
+        <input class="search-input" id="searchInputM" type="search" placeholder="جستجوی محصول…" aria-label="جستجوی محصولات">
+        <button class="search-btn" id="searchBtnM" aria-label="جستجو"><svg class="icon"><use href="#i-search"/></svg></button>
+      </div>
+      <div class="search-dd" id="searchDDM" role="listbox"></div>
+    </div>
+  </div>
+  <!-- منوی دسته‌بندی دسکتاپ -->
+  <nav class="main-nav" aria-label="دسته‌بندی محصولات">
+    <div class="container">
+      <ul class="nav-list" id="navList"></ul>
+    </div>
+  </nav>
+</header>
+
+<!-- ===== منوی کشویی موبایل ===== -->
+<div class="drawer-veil" id="drawerVeil"></div>
+<aside class="drawer" id="navDrawer" aria-label="منوی اصلی">
+  <div class="drawer-head">
+    <span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span>
+    <b>دانه‌سرا</b>
+    <button id="drawerClose" aria-label="بستن منو"><svg class="icon"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <a href="tel:02191092000"><svg class="icon"><use href="#i-phone"/></svg> ۰۲۱-۹۱۰۹۲۰۰۰</a>
+    <a href="#consult" data-scroll="#consult"><svg class="icon"><use href="#i-headset"/></svg> مشاوره خرید</a>
+    <a href="#track" data-open="track"><svg class="icon"><use href="#i-doc"/></svg> پیگیری سفارش</a>
+    <a href="#story" data-scroll="#story"><svg class="icon"><use href="#i-leaf"/></svg> داستان دانه‌سرا</a>
+  </div>
+</aside>
+
+<!-- ===== Hero ===== -->
+<section class="hero container" aria-label="معرفی فروشگاه">
+  <div class="hero-frame">
+    <div class="slides" id="heroSlides">
+      <div class="slide">
+        <div class="s-media"><img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/62b15d793f24.png" alt="کاسه آجیل و خشکبار متنوع" fetchpriority="high"></div>
+        <div class="s-content">
+          <span class="s-tag"><svg class="icon"><use href="#i-leaf"/></svg> تازه، سالم و باکیفیت</span>
+          <h1 class="s-title">طعم اصالت، کیفیت در <em>هر دانه</em></h1>
+          <p class="s-text">انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.</p>
+          <div class="s-ctas">
+            <a class="btn btn-gold btn-lg" href="#shop" data-scroll="#shop"><svg class="icon"><use href="#i-cart"/></svg> مشاهده محصولات</a>
+            <a class="btn btn-ghost btn-lg" href="#amazing" style="border-color:#fff;color:#fff" data-scroll="#amazing">مشاهده پیشنهادهای ویژه</a>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="s-media"><img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e218521bb098.jpg" alt="پسته تازه در کاسه چوبی" loading="lazy"></div>
+        <div class="s-content">
+          <span class="s-tag"><svg class="icon"><use href="#i-fire"/></svg> پرفروش‌ترین‌های دانه‌سرا</span>
+          <h2 class="s-title">پسته، بادام و گردوی <em>درجه‌یک</em></h2>
+          <p class="s-text">محصولات ما مستقیماً از باغ‌های رفسنجان، سمنان و تویسرکان تهیه و روزانه بو داده می‌شوند.</p>
+          <div class="s-ctas">
+            <a class="btn btn-gold btn-lg" href="#best" data-scroll="#best">مشاهده پرفروش‌ها</a>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="s-media"><img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9773f286dee5.jpg" alt="جعبه هدیه خشکبار لوکس" loading="lazy"></div>
+        <div class="s-content">
+          <span class="s-tag"><svg class="icon"><use href="#i-gift"/></svg> پک‌های هدیه ویژه</span>
+          <h2 class="s-title">هدیه‌ای که <em>طعم می‌گیرد</em></h2>
+          <p class="s-text">جعبه‌های هدیه یلدا، نوروز و سازمانی با بسته‌بندی لوکس و کارت تبریک اختصاصی.</p>
+          <div class="s-ctas">
+            <a class="btn btn-gold btn-lg" href="#gifts" data-scroll="#gifts">مشاهده پک‌های هدیه</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="hero-arrow next" id="heroNext" aria-label="اسلاید بعدی"><svg class="icon"><use href="#i-chev"/></svg></button>
+    <button class="hero-arrow prev" id="heroPrev" aria-label="اسلاید قبلی" style="transform:translateY(-50%) rotate(180deg)"><svg class="icon"><use href="#i-chev"/></svg></button>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+</section>
+<!-- ===== نوار خدمات ===== -->
+<section class="services container" aria-label="خدمات فروشگاه">
+  <div class="srv-grid">
+    <div class="srv"><span class="si"><svg class="icon"><use href="#i-truck"/></svg></span><div><b>ارسال سریع سراسری</b><span>پیک فوری تهران، پست به همه نقاط</span></div></div>
+    <div class="srv"><span class="si"><svg class="icon"><use href="#i-shield"/></svg></span><div><b>ضمانت تازگی</b><span>مرجوعی رایگان تا ۷ روز</span></div></div>
+    <div class="srv"><span class="si"><svg class="icon"><use href="#i-box"/></svg></span><div><b>بسته‌بندی بهداشتی</b><span>بسته‌بندی واکیوم و هدیه</span></div></div>
+    <div class="srv"><span class="si"><svg class="icon"><use href="#i-scale"/></svg></span><div><b>قیمت منصفانه</b><span>خرید مستقیم از باغ‌دار</span></div></div>
+  </div>
+</section>
+
+<!-- ===== پک‌های تخفیفی کارت دورانی ===== -->
+<section class="section packs-sec" id="packs" aria-label="پک‌های تخفیفی ویژه">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-percent"/></svg></span>
+        <div><h2 class="sec-title">پک‌های <i>تخفیفی</i> ویژه امروز</h2><span class="sec-sub">فرصت محدود؛ فقط ۲۴ تا ۴۸ ساعت پس از شمارش معکوس باقی است!</span></div></span>
+    </div>
+    <div class="packs-rail" id="packsRail"></div>
+  </div>
+</section>
+
+<!-- ===== دسته‌بندی‌های محبوب ===== -->
+<section class="section" id="cats" aria-label="دسته‌بندی‌های محبوب">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-nut"/></svg></span>
+        <div><h2 class="sec-title">دسته‌بندی‌های <i>محبوب</i></h2><span class="sec-sub">از میان طعم‌های اصیل ایرانی انتخاب کنید</span></div></span>
+      <div class="sec-actions"><a class="link-more" href="#shop" data-scroll="#shop">همه محصولات <svg class="icon"><use href="#i-chev"/></svg></a></div>
+    </div>
+    <div class="cats-grid" id="catsGrid"></div>
+  </div>
+</section>
+
+<!-- ===== پیشنهاد شگفت‌انگیز ===== -->
+<section class="section" id="amazing" aria-label="پیشنهاد شگفت‌انگیز">
+  <div class="container">
+    <div class="amazing">
+      <div class="amz-wrap">
+        <div class="amz-side">
+          <div class="amz-badge"><span class="pulse-sun" style="font-size:1.02rem">تا ٪۳۰</span></div>
+          <h3>پیشنهاد شگفت‌انگیز</h3>
+          <p>تخفیف‌های باورنکردنی روی محصولات منتخب؛ فرصت باقی‌مانده:</p>
+          <div class="cd-row" id="amzTimer">
+            <div class="cd-box"><b id="cdH">۰۰</b><span>ساعت</span></div>
+            <div class="cd-box"><b id="cdM">۰۰</b><span>دقیقه</span></div>
+            <div class="cd-box"><b id="cdS">۰۰</b><span>ثانیه</span></div>
+          </div>
+          <a class="btn btn-gold btn-sm" href="#shop" data-scroll="#shop">مشاهده همه</a>
+        </div>
+        <div class="amz-rail" id="amzRail"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== پرفروش‌ترین‌ها ===== -->
+<section class="section" id="best" aria-label="پرفروش‌ترین محصولات">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-fire"/></svg></span>
+        <div><h2 class="sec-title">پرفروش‌ترین <i>محصولات</i></h2><span class="sec-sub">انتخاب هزاران مشتری در سراسر ایران</span></div></span>
+      <div class="sec-actions">
+        <button class="rail-arrow" data-rail="bestRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
+        <button class="rail-arrow" data-rail="bestRail" data-dir="-1" aria-label="قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
+      </div>
+    </div>
+    <div class="rail" id="bestRail"></div>
+  </div>
+</section>
+
+<!-- ===== تازه‌ها و ممتازها ===== -->
+<section class="section" id="new" style="padding-top:0" aria-label="تازه‌ترین محصولات">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-leaf"/></svg></span>
+        <div><h2 class="sec-title">تازه‌ها و <i>ممتازترین‌ها</i></h2><span class="sec-sub">جدیدترین محصولات رسیدۀ به قفسه‌های دانه‌سرا</span></div></span>
+      <div class="sec-actions">
+        <button class="rail-arrow" data-rail="newRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
+        <button class="rail-arrow" data-rail="newRail" data-dir="-1" aria-label="قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
+      </div>
+    </div>
+    <div class="rail" id="newRail"></div>
+  </div>
+</section>
+<!-- ===== فروشگاه (جستجو/فیلتر/مرتب‌سازی) ===== -->
+<section class="section shop-sec" id="shop" aria-label="فروشگاه">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-search"/></svg></span>
+        <div><h2 class="sec-title">فروشگاه <i>دانه‌سرا</i></h2><span class="sec-sub">جستجو، فیلتر و مقایسه میان همه محصولات</span></div></span>
+      <div class="sec-actions"><span class="shop-meta" id="shopMeta"></span></div>
+    </div>
+    <div class="shop-tools">
+      <div class="chips-row" id="catChips" role="tablist" aria-label="فیلتر دسته‌بندی"></div>
+      <div class="filters-row">
+        <div class="price-range">
+          <label for="priceMin">محدوده قیمت (تومان):</label>
+          <input class="fld" id="priceMin" type="number" inputmode="numeric" placeholder="از ۰" min="0" aria-label="حداقل قیمت">
+          <span>تا</span>
+          <input class="fld" id="priceMax" type="number" inputmode="numeric" placeholder="تا بی‌نهایت" min="0" aria-label="حداکثر قیمت">
+        </div>
+        <div class="sort-sel">
+          <svg class="icon"><use href="#i-refresh"/></svg>
+          <select id="sortSel" aria-label="مرتب‌سازی">
+            <option value="pop">پرفروش‌ترین</option>
+            <option value="cheap">ارزان‌ترین</option>
+            <option value="exp">گران‌ترین</option>
+            <option value="rate">بیشترین امتیاز</option>
+            <option value="disc">بیشترین تخفیف</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="empty-state hidden" id="shopEmpty">
+      <svg class="icon"><use href="#i-search"/></svg>
+      <p>محصولی با این مشخصات پیدا نشد؛ فیلترها را تغییر دهید.</p>
+    </div>
+    <div class="show-more-wrap"><button class="btn btn-ghost" id="showMore">نمایش محصولات بیشتر</button></div>
+  </div>
+</section>
+
+<!-- ===== پک‌های هدیه ===== -->
+<section class="section" id="gifts" aria-label="پک‌های هدیه">
+  <div class="container">
+    <div class="gift-sec">
+      <div class="sec-head">
+        <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-gift"/></svg></span>
+          <div><h2 class="sec-title">پک‌های <i>هدیه</i> دانه‌سرا</h2><span class="sec-sub">جعبه‌های لوکس برای لحظه‌های خاص؛ با کارت تبریک و بسته‌بندی طلایی</span></div></span>
+      </div>
+      <div class="gift-grid" id="giftGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== خرید اطمینان ===== -->
+<section class="section trust-sec" id="etemad" aria-label="خرید اطمینان">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <div><h2 class="sec-title">قسمت <i>خرید اطمینان</i></h2><span class="sec-sub">هر روز یک کالای منتخب غیرخوراکی با قیمت ویژه</span></div></span>
+    </div>
+    <div class="trust-wrap">
+      <div class="trust-card" id="trustCard">
+        <span class="t-ribbon">پیشنهاد ویژه اطمینان</span>
+        <div class="t-media"><img id="trustImg" src="" alt="کالای روز خرید اطمینان" loading="lazy"><span class="t-off tag red" id="trustOff">٪۱۵ تخفیف امروز</span></div>
+        <div class="t-body">
+          <span class="t-kicker"><svg class="icon"><use href="#i-shield"/></svg> پیشنهاد <span id="trustDay">امروز</span></span>
+          <h3 class="t-title" id="trustName">—</h3>
+          <p class="t-why" id="trustWhy"><b>چرا این‌جا؟</b> </p>
+          <div class="t-price"><del id="trustOld">—</del><b id="trustPrice">—</b><small>تومان</small></div>
+          <div class="t-days" id="trustDays"><span>کالای هر روز هفته متفاوت است:</span></div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <button class="btn btn-brand" id="trustAdd"><svg class="icon"><use href="#i-cart"/></svg> افزودن به سبد</button>
+            <button class="btn btn-light" data-open="track">این هم اعتماد ماست؛ سفارش خود را پیگیری کنید</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== مشاوره خرید + پیگیری سفارش ===== -->
+<section class="section" id="consult" aria-label="مشاوره خرید و پیگیری سفارش">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-headset"/></svg></span>
+        <div><h2 class="sec-title"><i>مشاوره خرید</i> و پیگیری سفارش</h2><span class="sec-sub">کارشناسان دانه‌سرا پاسخگوی انتخاب‌های شما هستند</span></div></span>
+    </div>
+    <div class="cons-grid">
+      <div class="cons-card hl">
+        <div class="cons-top">
+          <span class="ci"><svg class="icon"><use href="#i-phone"/></svg></span>
+          <div><b>تماس فوری با کارشناس</b><span>شنبه تا پنجشنبه ۹ تا ۲۱ | جمعه‌ها ۱۰ تا ۱۸</span></div>
+        </div>
+        <p class="cons-text">نمی‌دانید برای مهمانی، هدیه یا رژیم غذایی‌تان چه محصولی مناسب است؟ همین حالا تماس بگیرید تا رایگان راهنمایی‌تان کنیم.</p>
+        <div class="cons-actions">
+          <a class="btn btn-brand btn-sm" href="tel:02191092000"><svg class="icon"><use href="#i-phone"/></svg> ۰۲۱-۹۱۰۹۲۰۰۰</a>
+          <a class="btn btn-light btn-sm" href="https://wa.me/989120000000" target="_blank" rel="noopener"><svg class="icon"><use href="#i-whatsapp"/></svg> واتساپ</a>
+        </div>
+      </div>
+      <div class="cons-card">
+        <div class="cons-top">
+          <span class="ci"><svg class="icon"><use href="#i-doc"/></svg></span>
+          <div><b>درخواست مشاوره تلفنی</b><span>کارشناس ما در اولین فرصت با شما تماس می‌گیرد</span></div>
+        </div>
+        <form class="cons-form" id="consultForm">
+          <div class="fld w"><input id="consName" type="text" placeholder="نام و نام خانوادگی" required></div>
+          <div class="fld w"><input id="consPhone" type="tel" inputmode="tel" placeholder="شماره موبایل (۰۹…)" required></div>
+          <div class="fld w">
+            <select id="consTopic" aria-label="موضوع مشاوره">
+              <option value="">موضوع مشاوره…</option>
+              <option>انتخاب آجیل برای مهمانی</option>
+              <option>پک هدیه سازمانی و شرکتی</option>
+              <option>مشاوره رژیم سلامت</option>
+              <option>خرید عمده و همکاری</option>
+            </select>
+          </div>
+          <button class="btn btn-gold btn-sm" type="submit"><svg class="icon"><use href="#i-sms"/></svg> ثبت درخواست مشاوره</button>
+        </form>
+      </div>
+      <div class="cons-card track">
+        <div class="cons-top">
+          <span class="ci"><svg class="icon"><use href="#i-truck"/></svg></span>
+          <div><b>پیگیری سفارش</b><span>با کد سفارش یا شماره موبایل</span></div>
+        </div>
+        <p class="cons-text">بعد از ثبت خرید، کد پیگیری برایتان پیامک می‌شود؛ همین‌جا وضعیت لحظه‌ای سفارش را ببینید.</p>
+        <form class="track-row" id="trackFormS">
+          <input class="fld" id="trackInputS" type="text" placeholder="کد سفارش مثل AS-1024 یا شماره موبایل" aria-label="کد سفارش">
+          <button class="btn btn-brand btn-sm" type="submit">پیگیری</button>
+        </form>
+        <div class="timeline" id="timelineS"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== چرا دانه‌سرا ===== -->
+<section class="section" id="why" style="padding-top:0" aria-label="مزایای فروشگاه">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <div><h2 class="sec-title">چرا <i>دانه‌سرا</i>؟</h2><span class="sec-sub">چهار دلیل برای اعتماد هزاران خانواده ایرانی</span></div></span>
+    </div>
+    <div class="why-grid">
+      <div class="why-card"><span class="wi"><svg class="icon"><use href="#i-leaf"/></svg></span><b>تضمین تازگی و کیفیت</b><p>محصولات روزانه از باغ‌ها دریافت و بو داده می‌شوند؛ اگر راضی نبودید، مرجوعی رایگان است.</p></div>
+      <div class="why-card"><span class="wi"><svg class="icon"><use href="#i-box"/></svg></span><b>بسته‌بندی بهداشتی</b><p>بسته‌بندی وکیوم و استاندارد مواد غذایی با درج تاریخ تولید و انقضا روی هر بسته.</p></div>
+      <div class="why-card"><span class="wi"><svg class="icon"><use href="#i-truck"/></svg></span><b>ارسال سریع سراسری</b><p>پیک فوری در تهران، پست پیشتاز و تیپاکس به تمام نقاط ایران؛ ارسال رایگان بالای ۱.۵ میلیون.</p></div>
+      <div class="why-card"><span class="wi"><svg class="icon"><use href="#i-scale"/></svg></span><b>قیمت منصفانه و شفاف</b><p>خرید مستقیم از باغ‌دار بدون واسطه؛ قیمت‌ها همیشه شفاف و بدون هزینه پنهان.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== داستان ما ===== -->
+<section class="section story-sec" id="story" aria-label="داستان دانه‌سرا">
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-media">
+        <img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/184a195e98fd.jpg" alt="باغ زردآلو؛ از دل طبیعت تا سفره شما" loading="lazy">
+        <div class="story-badge"><b>+۳۹</b><span>سال تجربه<br>از سال ۱۳۶۵</span></div>
+      </div>
+      <div class="story-body">
+        <div class="sec-head" style="margin-bottom:10px"><span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-leaf"/></svg></span>
+          <h2 class="sec-title">داستان <i>دانه‌سرا</i></h2></span></div>
+        <p>قصه ما از یک مغازه کوچک در راسته خشکبار بازار قدیم شروع شد؛ جایی که پدربزرگ با یک ترازوی برنجی و یک عهد ساده کار می‌کرد: «به مشتری همان را بده که برای خانه خودت برمی‌داری.» امروز دانه‌سرا همان عهد را با ابزارهای امروزی ادامه می‌دهد؛ خرید مستقیم از باغ‌داران رفسنجان، سمنان، استهبان و قائنات.</p>
+        <p>ما هیچ محصولی را انبار نمی‌کنیم؛ سفارش‌ها روز ثبت، وزن و بسته‌بندی می‌شوند و با بسته‌بندی بهداشتی و وکیوم به دست شما می‌رسند. کیفیت هر محموله قبل از ورود در آزمایشگاه کنترل می‌شود.</p>
+        <blockquote>«به مشتری همان را بده که برای خانه خودت برمی‌داری.» — بنیان‌گذار دانه‌سرا، ۱۳۶۵</blockquote>
+        <div class="story-pts">
+          <span class="tag green"><svg class="icon"><use href="#i-check"/></svg> خرید مستقیم از باغ‌دار</span>
+          <span class="tag gold">بدون واسطه</span>
+          <span class="tag green"><svg class="icon"><use href="#i-check"/></svg> کنترل کیفیت آزمایشگاهی</span>
+          <span class="tag gold">تازگی روز</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== نظرات مشتریان ===== -->
+<section class="section" id="reviews" aria-label="نظرات مشتریان">
+  <div class="container">
+    <div class="sec-head">
+      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-star"/></svg></span>
+        <div><h2 class="sec-title">مشتریان ما چه <i>می‌گویند</i>؟</h2><span class="sec-sub">امتیاز ۴.۸ از ۵ بر اساس بیش از ۱۲٬۴۰۰ نظر ثبت‌شده</span></div></span>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <p class="rev-text">پسته اکبری‌شون واقعاً عالی بود؛ تازه، خوش‌طعم و بسته‌بندی بی‌نقص. سفارش صبح ثبت شد و فردا ظهر تحویل گرفتم.</p>
+        <div class="rev-user"><span class="rev-av">س</span><div><b>سارا محمدی</b><span>تهران</span></div><span class="rev-prod">پسته اکبری ممتاز</span></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <p class="rev-text">پک هدیه یلدا رو برای خانواده گرفتم؛ جعبه‌ش آن‌قدر شیک بود که همتون گفتن از کجا خریدی! خشکبارش هم فوق‌العاده تازه بود.</p>
+        <div class="rev-user"><span class="rev-av">ا</span><div><b>امیر رضایی</b><span>مشهد</span></div><span class="rev-prod">پک هدیه یلدا</span></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon" style="opacity:.25"><use href="#i-star"/></svg></div>
+        <p class="rev-text">مغز گردو هفت‌پر بود و هیچ تلخی‌ای نداشت. فقط ای‌کاش ارسال به شهرستان یه روز سریع‌تر بود؛ ولی کیفیت واقعاً ارزشش رو داشت.</p>
+        <div class="rev-user"><span class="rev-av">ف</span><div><b>فاطمه کریمی</b><span>اصفهان</span></div><span class="rev-prod">مغز گردو</span></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <p class="rev-text">زعفران سرگلشون رنگ و عطر بی‌نظیری داره. تیم مشاوره هم با صبوری راهنماییم کردن که چه مقدار بخرم. مشتری ثابت‌تون شدم.</p>
+        <div class="rev-user"><span class="rev-av">ن</span><div><b>نگار حسینی</b><span>شیراز</span></div><span class="rev-prod">زعفران سرگل قائنات</span></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <p class="rev-text">خرما پیارم درست همون چیزی بود که تو توضیحات نوشته بودن. بسته‌بندی وکیوم و تاریخ شمسی روی کارتن؛ حرفه‌ای کار می‌کنن.</p>
+        <div class="rev-user"><span class="rev-av">ح</span><div><b>حسین موسوی</b><span>تبریز</span></div><span class="rev-prod">خرما پیارم</span></div>
+      </div>
+      <div class="rev-card">
+        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
+        <p class="rev-text">مرجوعی رایگان رو با شک داشتم، تست کردم! یه بسته فندق رو بدون هیچ سوالی پس گرفتن و هزینه‌ش هم برگشت. همین یعنی اعتماد به نفس.</p>
+        <div class="rev-user"><span class="rev-av">م</span><div><b>مریم احمدی</b><span>کرج</span></div><span class="rev-prod">فندق خام</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== خبرنامه ===== -->
+<section class="section" id="newsletter" style="padding-top:0" aria-label="خبرنامه">
+  <div class="container">
+    <div class="news-box">
+      <h3>عضو خانوادۀ دانه‌سرا شوید</h3>
+      <p>اولین کسی باشید که از تخفیف‌ها، محصولات تازه‌رس و پک‌های فصلی باخبر می‌شود.</p>
+      <form class="news-form" id="newsForm">
+        <input type="text" id="newsInput" placeholder="شماره موبایل یا ایمیل خود را وارد کنید" aria-label="شماره موبایل یا ایمیل" required>
+        <button class="btn btn-gold" type="submit">عضویت</button>
+      </form>
+      <p class="news-note">🎁 هدیه عضویت: کد تخفیف <b>WELCOME10</b> — ۱۰٪ تخفیف اولین خرید بالای ۵۰۰٬۰۰۰ تومان</p>
+    </div>
+  </div>
+</section>
+<!-- ===== فوتر ===== -->
+<footer class="footer" aria-label="پاورقی">
+  <div class="container">
+    <div class="f-top">
+      <div class="f-col f-about">
+        <div class="f-logo"><span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span><b>دانه‌سرا</b></div>
+        <p>دانه‌سرا، فروشگاه اینترنتی خشکبار و محصولات طبیعی؛ بیش از سه دهه است که تازه‌ترین آجیل، خشکبار، زعفران و دمنوش‌ها را مستقیم از باغ‌داران ایرانی تهیه و با بسته‌بندی بهداشتی به سراسر ایران می‌رساند.</p>
+        <div class="socials">
+          <a href="#" aria-label="اینستاگرام"><svg class="icon"><use href="#i-instagram"/></svg></a>
+          <a href="#" aria-label="تلگرام"><svg class="icon"><use href="#i-telegram"/></svg></a>
+          <a href="#" aria-label="واتساپ"><svg class="icon"><use href="#i-whatsapp"/></svg></a>
+          <a href="tel:02191092000" aria-label="تلفن"><svg class="icon"><use href="#i-phone"/></svg></a>
+        </div>
+      </div>
+      <div class="f-col">
+        <h4 class="f-title">دسته‌بندی‌ها</h4>
+        <a href="#shop" data-cat="ajil">آجیل و مغزها</a>
+        <a href="#shop" data-cat="pistachio">پسته</a>
+        <a href="#shop" data-cat="date">خرما و رطب</a>
+        <a href="#shop" data-cat="saffron">زعفران و ادویه</a>
+        <a href="#shop" data-cat="tea">دمنوش و محصولات طبیعی</a>
+        <a href="#gifts" data-scroll="#gifts">آجیل و پک‌های هدیه</a>
+      </div>
+      <div class="f-col">
+        <h4 class="f-title">راهنمای خرید</h4>
+        <a href="#" data-toast="راهنمای خرید به‌زودی تکمیل می‌شود.">نحوه ثبت سفارش</a>
+        <a href="#" data-toast="شیوه‌های ارسال: پیک فوری، پست پیشتاز و تیپاکس.">شیوه‌های ارسال و هزینه‌ها</a>
+        <a href="#" data-toast="مرجوعی رایگان تا ۷ روز؛ بدون قید و شرط!">شرایط مرجوعی کالا</a>
+        <a href="#" data-toast="سوالات متداول به‌زودی تکمیل می‌شود.">سوالات متداول</a>
+        <a href="#" data-open="track">پیگیری سفارش</a>
+        <a href="#consult" data-scroll="#consult">مشاوره خرید</a>
+      </div>
+      <div class="f-col">
+        <h4 class="f-title">تماس با ما</h4>
+        <ul class="f-contact">
+          <li><svg class="icon"><use href="#i-pin"/></svg> تهران، خیابان ولی‌عصر، مجتمع تجاری دانه‌سرا، طبقه ۲</li>
+          <li><svg class="icon"><use href="#i-phone"/></svg> ۰۲۱-۹۱۰۹۲۰۰۰ (۷ خط)</li>
+          <li><svg class="icon"><use href="#i-sms"/></svg> info@asalat-shop.ir</li>
+          <li><svg class="icon"><use href="#i-clock"/></svg> شنبه تا پنجشنبه ۹ تا ۲۱</li>
+        </ul>
+        <div class="f-badges" style="margin-top:14px">
+          <span class="f-badge"><svg class="icon"><use href="#i-shield"/></svg> نماد اعتماد الکترونیکی</span>
+          <span class="f-badge"><svg class="icon"><use href="#i-check"/></svg> ساماندهی رسانه‌های دیجیتال</span>
+          <span class="f-badge"><svg class="icon"><use href="#i-lock"/></svg> درگاه پرداخت امن</span>
+        </div>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© ۱۴۰۴ فروشگاه خشکبار <b>دانه‌سرا</b> — تمامی حقوق محفوظ است.</span>
+      <span>طراحی‌شده با <b>♥</b> برای طعم‌های اصیل ایران</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== دکمه‌های شناور ===== -->
+<div class="fab-wrap">
+  <button class="fab gold" data-open="lucky" aria-label="کارت شانس"><svg class="icon"><use href="#i-gift"/></svg><span class="dot-pulse">۱</span></button>
+  <a class="fab brand" href="tel:02191092000" aria-label="ارتباط با مشتری"><svg class="icon"><use href="#i-headset"/></svg></a>
+  <button class="fab" id="fabTop" aria-label="بازگشت به بالا"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
+</div>
+
+<!-- ===== نوار سبد خرید موبایل ===== -->
+<div class="m-cart-bar" id="mCartBar">
+  <span class="ci"><svg class="icon"><use href="#i-cart"/></svg><span class="dot-pulse cart-count" id="cartCountM">۰</span></span>
+  <div><b id="mCartTotal">۰ تومان</b><span id="mCartItems">سبد خرید خالی است</span></div>
+  <button class="btn btn-brand btn-sm" data-open="cart">مشاهده سبد</button>
+</div>
+
+<!-- ===== کشوی سبد خرید ===== -->
+<div class="drawer-veil" id="cartVeil"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="سبد خرید">
+  <div class="cd-head">
+    <b><svg class="icon"><use href="#i-cart"/></svg> سبد خرید <span class="cnt" id="cdCount">۰</span></b>
+    <button id="cartClose" aria-label="بستن سبد"><svg class="icon"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="ship-progress">
+    <p id="shipMsg">تا ارسال رایگان <b>۱٬۵۰۰٬۰۰۰ تومان</b> باقی مانده</p>
+    <div class="sp-bar"><i id="shipBar" style="width:0%"></i></div>
+  </div>
+  <div class="cd-items" id="cdItems"></div>
+  <div class="cd-foot">
+    <div class="coupon-row">
+      <input class="fld" id="couponInput" type="text" placeholder="کد تخفیف…" aria-label="کد تخفیف">
+      <button class="btn btn-brand btn-sm" id="couponBtn">اعمال</button>
+    </div>
+    <p class="coupon-hint">کدهای فعال: <b data-coupon="WELCOME10">WELCOME10</b> (اولین خرید) | کدهای کارت شانس در <b data-open="panel">پنل کاربری</b></p>
+    <div class="totals">
+      <div class="t-row"><span>جمع کالاها</span><b id="tSub">۰ تومان</b></div>
+      <div class="t-row"><span>تخفیف کدها</span><b class="off" id="tOff">۰ تومان</b></div>
+      <div class="t-row"><span>هزینه ارسال</span><b id="tShip">—</b></div>
+      <div class="t-row grand"><span>مبلغ قابل پرداخت</span><b id="tGrand">۰ تومان</b></div>
+    </div>
+    <div class="returns-note"><svg class="icon"><use href="#i-shield"/></svg> مرجوعی کاملاً رایگان تا ۷ روز؛ هزینه پیک برای سفارش‌های بالای ۱٬۵۰۰٬۰۰۰ تومان نیز رایگان است.</div>
+    <button class="btn btn-brand btn-lg btn-block" id="checkoutBtn">تکمیل خرید و پرداخت</button>
+  </div>
+</aside>
+
+<!-- ===== مودال تسویه حساب ===== -->
+<div class="overlay" id="coModal" role="dialog" aria-modal="true" aria-label="تسویه حساب">
+  <div class="modal">
+    <div class="modal-head"><b><svg class="icon"><use href="#i-cart"/></svg> تکمیل خرید</b><button class="modal-x" data-close="coModal"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body">
+      <div class="co-steps">
+        <span class="co-step on" data-n="۱">اطلاعات ارسال</span>
+        <span class="co-step">پرداخت</span>
+        <span class="co-step">تکمیل سفارش</span>
+      </div>
+      <div class="co-pane on" id="coPane1">
+        <div class="f-grid c2">
+          <div class="fld w"><label>نام و نام خانوادگی *</label><input id="coName" type="text" placeholder="مثلاً سارا محمدی"></div>
+          <div class="fld w"><label>شماره موبایل *</label><input id="coPhone" type="tel" inputmode="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" dir="rtl"></div>
+          <div class="fld w"><label>استان</label>
+            <select id="coProvince"><option>تهران</option><option>البرز</option><option>اصفهان</option><option>فارس</option><option>خراسان رضوی</option><option>آذربایجان شرقی</option><option>سایر استان‌ها</option></select>
+          </div>
+          <div class="fld w"><label>شهر</label><input id="coCity" type="text" placeholder="مثلاً تهران"></div>
+          <div class="fld w" style="grid-column:1/-1"><label>آدرس کامل پستی *</label><textarea id="coAddr" rows="2" placeholder="خیابان، کوچه، پلاک، واحد…"></textarea></div>
+        </div>
+        <h4 style="margin:16px 0 10px;font-size:.92rem">روش ارسال:</h4>
+        <div class="ship-opts" id="shipOpts">
+          <label class="ship-opt on"><input type="radio" name="ship" value="peyk" data-cost="89000" data-days="همان روز" checked>
+            <span><b>پیک فوری (تهران)</b><span>تحویل همان روز، ۲ تا ۵ ساعت کاری</span></span><span class="pr" data-pr>۸۹٬۰۰۰</span></label>
+          <label class="ship-opt"><input type="radio" name="ship" value="post" data-cost="59000" data-days="۲ تا ۴ روز کاری">
+            <span><b>پست پیشتاز (سراسر کشور)</b><span>۲ تا ۴ روز کاری</span></span><span class="pr" data-pr>۵۹٬۰۰۰</span></label>
+          <label class="ship-opt"><input type="radio" name="ship" value="tipax" data-cost="99000" data-days="۱ تا ۳ روز کاری">
+            <span><b>تیپاکس (سراسر کشور)</b><span>۱ تا ۳ روز کاری، بسته‌های حجیم</span></span><span class="pr" data-pr>۹۹٬۰۰۰</span></label>
+        </div>
+        <button class="btn btn-brand btn-lg btn-block co-pay-btn" id="coNext">ادامه و مشاهده فاکتور</button>
+      </div>
+      <div class="co-pane" id="coPane2">
+        <div class="co-summary" id="coSummary"></div>
+        <div class="sms-note" style="background:var(--gold-050);border-color:var(--gold-100);color:var(--gold-600)">
+          <svg class="icon"><use href="#i-lock"/></svg> پرداخت به‌صورت امن از طریق درگاه بانکی انجام می‌شود (نسخه نمایشی؛ پرداخت واقعی انجام نمی‌شود).
+        </div>
+        <button class="btn btn-brand btn-lg btn-block co-pay-btn" id="coPay"><svg class="icon"><use href="#i-lock"/></svg> پرداخت و ثبت نهایی سفارش</button>
+        <p class="pay-note"><svg class="icon"><use href="#i-shield"/></svg> با ثبت سفارش، قوانین فروشگاه دانه‌سرا را می‌پذیرید.</p>
+      </div>
+      <div class="co-pane" id="coPane3">
+        <div class="co-success">
+          <div class="ok-ic"><svg class="icon"><use href="#i-check"/></svg></div>
+          <h3>سفارش شما با موفقیت ثبت شد! 🎉</h3>
+          <p style="font-size:.86rem;color:var(--ink-2)">کد سفارش شما:</p>
+          <span class="ord-code" id="coOrdCode">AS-0000</span>
+          <div class="sms-note"><svg class="icon"><use href="#i-sms"/></svg> <span>پیامک تأیید سفارش حاوی کد پیگیری به شماره <b id="coSmsPhone">—</b> ارسال شد. وضعیت سفارش هر لحظه از قسمت «پیگیری سفارش» قابل مشاهده است.</span></div>
+          <div class="co-actions">
+            <button class="btn btn-brand" data-open="track">پیگیری سفارش</button>
+            <button class="btn btn-gold" data-open="panel">مشاهده پنل کاربری</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== مودال پیگیری سفارش ===== -->
+<div class="overlay" id="trackModal" role="dialog" aria-modal="true" aria-label="پیگیری سفارش">
+  <div class="modal" style="width:min(560px,100%)">
+    <div class="modal-head"><b><svg class="icon"><use href="#i-truck"/></svg> پیگیری سفارش</b><button class="modal-x" data-close="trackModal"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body">
+      <form class="track-row" id="trackFormM">
+        <input class="fld" id="trackInputM" type="text" placeholder="کد سفارش مثل AS-1024 یا شماره موبایل" aria-label="کد سفارش یا موبایل">
+        <button class="btn btn-brand" type="submit">جستجو</button>
+      </form>
+      <div class="timeline" id="timelineM" style="border-top:0;padding-top:16px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== مودال علاقه‌مندی‌ها ===== -->
+<div class="overlay" id="favModal" role="dialog" aria-modal="true" aria-label="علاقه‌مندی‌ها">
+  <div class="modal" style="width:min(560px,100%)">
+    <div class="modal-head"><b><svg class="icon"><use href="#i-heart"/></svg> علاقه‌مندی‌های من</b><button class="modal-x" data-close="favModal"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body" id="favList"></div>
+  </div>
+</div>
+
+<!-- ===== پنل کاربری (موبایل‌فرست) ===== -->
+<div class="panel-shell" id="userPanel" role="dialog" aria-modal="true" aria-label="پنل کاربری">
+  <div class="up-frame">
+    <div class="up-head">
+      <button class="up-x" id="panelClose" aria-label="بستن پنل"><svg class="icon"><use href="#i-x"/></svg></button>
+      <div class="row1">
+        <span class="up-av" id="upAv">م</span>
+        <div><div class="up-name" id="upName">مهمان گرامی</div><div class="up-phone" id="upPhone">برای فعال‌سازی پنل، یک خرید ثبت کنید</div></div>
+        <div class="up-tier"><b id="upTier">برنزی</b><span>سطح عضویت</span></div>
+      </div>
+      <div class="up-welcome" id="upWelcome">
+        <svg class="icon"><use href="#i-gift"/></svg>
+        <p id="upWelcomeText">به پنل اختصاصی <b>دانه‌سرا</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)</p>
+      </div>
+    </div>
+    <div class="up-stats" id="upStats"></div>
+    <div class="up-body">
+      <div class="up-view on" data-view="home" id="upHome"></div>
+      <div class="up-view" data-view="orders" id="upOrders"></div>
+      <div class="up-view" data-view="favs" id="upFavs"></div>
+      <div class="up-view" data-view="codes" id="upCodes"></div>
+      <div class="up-view" data-view="account" id="upAccount"></div>
+    </div>
+    <nav class="up-tabbar" id="upTabbar" aria-label="تب‌های پنل">
+      <button class="up-tab on" data-tab="home"><svg class="icon"><use href="#i-nut"/></svg> خانه</button>
+      <button class="up-tab" data-tab="orders"><svg class="icon"><use href="#i-box"/></svg> سفارش‌ها</button>
+      <button class="up-tab" data-tab="favs"><svg class="icon"><use href="#i-heart"/></svg> علاقه‌مندی</button>
+      <button class="up-tab" data-tab="codes"><svg class="icon"><use href="#i-percent"/></svg> کدهای من</button>
+      <button class="up-tab" data-tab="account"><svg class="icon"><use href="#i-user"/></svg> حساب</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ===== کارت شانس ===== -->
+<div class="overlay" id="luckyModal" role="dialog" aria-modal="true" aria-label="کارت شانس">
+  <div class="modal lucky-modal">
+    <div class="lucky-head">
+      <div class="gift-ic"><svg class="icon"><use href="#i-gift"/></svg></div>
+      <h3>کارت شانس دانه‌سرا</h3>
+      <p>هر بار که وارد سایت می‌شوید، یک کارت شانس پشت سر شماست! روی کارت بزنید و جایزه‌تان را ببینید.</p>
+    </div>
+    <div class="lucky-stage">
+      <div class="lc-inner" id="lcInner" tabindex="0" role="button" aria-label="باز کردن کارت شانس">
+        <div class="lc-face lc-front">
+          <div class="lc-shine"></div>
+          <span class="q">🎁</span>
+          <b>روی من کلیک کن!</b>
+          <span>جایزه‌ات پشت این کارت مخفی است</span>
+        </div>
+        <div class="lc-face lc-back" id="lcBack"></div>
+      </div>
+    </div>
+    <div class="lucky-foot">
+      <button class="btn btn-gold btn-block" id="luckyUse" style="display:none">عالی بود! ثبت جایزه و ادامه خرید</button>
+      <p class="hint">جایزه به‌صورت خودکار در پنل کاربری شما ذخیره می‌شود و هنگام پرداخت قابل استفاده است.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+/* ============================================================
+   دانه‌سرا — منطق فروشگاه | داده‌ها و ابزارها
+============================================================ */
+'use strict';
+
+/* ---------- ابزارها ---------- */
+const FA_D='۰۱۲۳۴۵۶۷۸۹';
+const toFa = s => String(s).replace(/\d/g, d => FA_D[d]);
+const money = n => toFa(Math.round(n).toLocaleString('en-US')).replace(/,/g,'٬');
+const $ = (s, c=document) => c.querySelector(s);
+const $$ = (s, c=document) => [...c.querySelectorAll(s)];
+const LS = {
+  get(k, def){ try{ const v=localStorage.getItem('asalat_'+k); return v?JSON.parse(v):def; }catch(e){ return def; } },
+  set(k, v){ try{ localStorage.setItem('asalat_'+k, JSON.stringify(v)); }catch(e){} }
+};
+const weightLabel = w => w===1 ? 'عدد' : w >= 1000 ? (w%1000===0 ? toFa(w/1000)+' کیلوگرم' : toFa((w/1000).toFixed(1)).replace('.','٫')+' کیلوگرم') : toFa(w)+' گرم';
+const priceOf = (p, w) => { const base=Math.round(p.price*w/1000); return p.disc? Math.round(base*(100-p.disc)/100/1000)*1000 : base; };
+
+/* ---------- دسته‌بندی‌ها (۱۳ دسته) ---------- */
+const CATS = [
+  {id:'ajil', name:'آجیل و مغزها', icon:'i-nut', subs:['آجیل مخلوط شور','آجیل مخلوط شیرین','آجیل چهارمغز','مغزهای خام','آجیل سویسالی','آجیل رژیمی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66fd0cba7ee8.jpg', t:'آجیل مخلوط دانه‌سرا', s:'پنج‌مغز منتخب؛ تازه بو داده'}},
+  {id:'pistachio', name:'پسته', icon:'i-nut', subs:['پسته اکبری','پسته احمدآقایی','پسته فندقی','پسته خوئی','مغز پسته سبز','پسته شور لیمویی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ec01895c5c0b.jpg', t:'پسته اکبری رفسنجان', s:'ملکه پسته‌های ایران'}},
+  {id:'almond', name:'بادام', icon:'i-nut', subs:['بادام درختی خام','بادام مامایی','بادام بو داده','مغز بادام','بادام پوست کاغذی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c6b8b1936b7c.jpg', t:'بادام بو داده نمکین', s:'عصرانه‌ای سالم و خوش‌طعم'}},
+  {id:'walnut', name:'گردو', icon:'i-nut', subs:['مغز گردو هفت‌پر','گردوی درشت چانچاله','گردوی تویسرکان','گردوی خشک'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/40ca66cd7225.webp', t:'مغز گردو هفت‌پر', s:'روشن و بدون تلخی'}},
+  {id:'hazelnut', name:'فندق', icon:'i-nut', subs:['فندق خام','فندق بو داده','فندق شکلاتی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/77db1fb48eed.jpg', t:'فندق درشت اردبیل', s:'تازه‌رس پاییز'}},
+  {id:'seeds', name:'تخمه و مغز تخمه', icon:'i-leaf', subs:['تخمه کدو گوشتی','مغز تخمه آفتابگردان','تخمه ژاپنی','مغز هندوانه','تخمه هلیله‌ای'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5675e680be54.jpg', t:'تخمه کدو گوشتی', s:'کم‌نمک و بو داده'}},
+  {id:'dryfruit', name:'میوه خشک', icon:'i-leaf', subs:['برگه زردآلو','آلو بخارا','چیپس میوه','میوه خشک مخلوط','لیمو عمانی خشک'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4aa5a36466e4.jpg', t:'میوه خشک مخلوط', s:'سفره رنگی میوه‌های آفتابی'}},
+  {id:'raisin', name:'کشمش و مویز', icon:'i-leaf', subs:['کشمش سبز قلمی','مویز بدون هسته','کشمش پلویی','کشمش مالایر','مویز آفتابی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/184fecd2458a.jpg', t:'کشمش سبز قلمی', s:'شیرین و ملایم ملایر'}},
+  {id:'date', name:'خرما و رطب', icon:'i-leaf', subs:['خرما پیارم','خرمای مضافتی','خرمای رطب مازافتی','خرمای شاهانی','خرمای کبکاب'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/42f5d4b9754e.jpg', t:'خرمای مضافتی بم', s:'شیرین و مرطوب'}},
+  {id:'mulberryfig', name:'توت خشک و انجیر', icon:'i-leaf', subs:['توت خشک سفید','انجیر خشک استهبان','انجیر پرورده','توت پرورده'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7b3e238840f4.jpeg', t:'انجیر استهبان', s:'شیرین‌ترین انجیر ایران'}},
+  {id:'saffron', name:'زعفران و ادویه', icon:'i-fire', subs:['زعفران سرگل','زعفران پوشال','زعفران نگین','ادویه پلویی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c259b7044c5.jpg', t:'زعفران سرگل قائنات', s:'قرمز و خوش‌رنگ، عطر بی‌نظیر'}},
+  {id:'tea', name:'دمنوش و محصولات طبیعی', icon:'i-leaf', subs:['دمنوش گاوزبان','دمنوش آرامش','چای ترش','دمنوش لاغری','عسل طبیعی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/36eff119ff2f.jpg', t:'دمنوش‌های گیاهی', s:'از دل طبیعت تا فنجان شما'}},
+  {id:'giftbox', name:'آجیل و پک‌های هدیه', icon:'i-gift', subs:['پک هدیه یلدا','پک هدیه نوروز','جعبه هدیه لوکس','پک سازمانی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed59578015d4.jpeg', t:'پک‌های هدیه دانه‌سرا', s:'بسته‌بندی لوکس با کارت تبریک', hot:true}},
+];
+
+/* ---------- محصولات (۲۸ محصول) ---------- */
+const IMG = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/';
+const PRODUCTS = [
+  {id:1, name:'پسته اکبری ممتاز رفسنجان', cat:'pistachio', img:IMG+'ec01895c5c0b.jpg', price:1980000, weights:[250,500,1000,2000], stock:42, disc:10, grade:'ممتاز', rate:4.9, sold:1240, tags:['پرفروش','ممتاز'], sec:['best','amz'], desc:'پسته اکبری درشت و خندار رفسنجان؛ بو داده با نمک دریا و کاملاً تازه. عالی برای مهمانی و شب یلدا.'},
+  {id:2, name:'پسته احمدآقایی ممتاز', cat:'pistachio', img:IMG+'f6d280936b47.jpg', price:1750000, weights:[250,500,1000,2000], stock:38, disc:0, grade:'ممتاز', rate:4.8, sold:980, tags:['پرفروش'], sec:['best'], desc:'پسته احمدآقایی باریک و خندان با مغز سبز تیره؛ محبوب‌ترین پسته برای پذیرایی.'},
+  {id:3, name:'پسته فندقی بو داده', cat:'pistachio', img:IMG+'e218521bb098.jpg', price:1450000, weights:[250,500,1000,2000], stock:55, disc:5, grade:'درجه یک', rate:4.7, sold:760, tags:[], sec:['best'], desc:'پسته فندقی ریز و خوش‌مزه؛ مناسب عصرانه و تنقلات روزانه خانواده.'},
+  {id:4, name:'مغز پسته سبز پرزدار', cat:'pistachio', img:IMG+'99b54d43d43f.jpg', price:2950000, weights:[250,500,1000], stock:22, disc:0, grade:'ممتاز', rate:4.9, sold:530, tags:['ممتاز'], sec:['best','new'], desc:'مغز پسته سبز درجه یک برای شیرینی‌پزی، سالاد و پذیرایی؛ رنگ و طعم بی‌نظیر.'},
+  {id:5, name:'بادام درختی خام (مامایی)', cat:'almond', img:IMG+'5f3a2793e06f.jpg', price:850000, weights:[250,500,1000,2000], stock:64, disc:0, grade:'درجه یک', rate:4.8, sold:1105, tags:['پرفروش'], sec:['best'], desc:'بادام مامایی درشت و پوست‌کاغذی؛ تازه از باغ‌های سمنان و ارسنجان.'},
+  {id:6, name:'بادام درختی بو داده نمکین', cat:'almond', img:IMG+'c6b8b1936b7c.jpg', price:920000, weights:[250,500,1000,2000], stock:47, disc:8, grade:'درجه یک', rate:4.7, sold:640, tags:[], sec:['amz'], desc:'بادام بو داده با نمک دریایی؛ روزانه تازه برشته می‌شود.'},
+  {id:7, name:'بادام هندی شور', cat:'ajil', img:IMG+'eddf227382bb.png', price:1450000, weights:[250,500,1000,2000], stock:51, disc:12, grade:'درجه یک', rate:4.8, sold:1520, tags:['پرفروش'], sec:['best','amz'], desc:'بادام هندی درشت و کرمی با نمک متعادل؛ محبوب‌ترین مغز مهمانی.'},
+  {id:8, name:'مغز گردو هفت‌پر تویسرکان', cat:'walnut', img:IMG+'40ca66cd7225.webp', price:1250000, weights:[250,500,1000,2000], stock:36, disc:15, grade:'ممتاز', rate:4.9, sold:870, tags:['پرفروش'], sec:['best','amz'], desc:'مغز گردو روشن و هفت‌پر بدون تلخی؛ سرشار از امگا۳.'},
+  {id:9, name:'فندق خام درشت', cat:'hazelnut', img:IMG+'77db1fb48eed.jpg', price:780000, weights:[250,500,1000,2000], stock:58, disc:0, grade:'درجه یک', rate:4.6, sold:690, tags:[], sec:['best'], desc:'فندق درشت اردبیل؛ خام و سالم، مناسب بو دادن خانگی و شکلات‌سازی.'},
+  {id:10, name:'تخمه کدو گوشتی بو داده', cat:'seeds', img:IMG+'5675e680be54.jpg', price:920000, weights:[250,500,1000,2000], stock:44, disc:10, grade:'درجه یک', rate:4.8, sold:930, tags:['پرفروش'], sec:['best','amz'], desc:'تخمه کدو گوشتی سبز و بدون پوست با نمک کم؛ میان‌وعده‌ای سالم برای همه سنین.'},
+  {id:11, name:'مغز تخمه آفتابگردان', cat:'seeds', img:IMG+'397a7c914638.png', price:690000, weights:[250,500,1000,2000], stock:70, disc:0, grade:'درجه یک', rate:4.5, sold:410, tags:[], sec:['new'], desc:'مغز تخمه آفتابگردان تمیز و تازه؛ برای سالاد، نان و آشپزی.'},
+  {id:12, name:'تخمه ژاپنی نمکین', cat:'seeds', img:IMG+'bacd7f52d5e8.jpg', price:290000, weights:[250,500,1000,2000], stock:88, disc:5, grade:'درجه یک', rate:4.4, sold:1240, tags:[], sec:[], desc:'تخمه ژاپنی خوش‌بهر با نمک لیمویی؛ همراه همیشگی دورهمی‌ها.'},
+  {id:13, name:'انجیر خشک استهبان ممتاز', cat:'mulberryfig', img:IMG+'7b3e238840f4.jpeg', price:640000, weights:[250,500,1000,2000], stock:40, disc:10, grade:'ممتاز', rate:4.9, sold:540, tags:['ممتاز'], sec:['new','amz'], desc:'انجیر خشک استهبان با گلوی سفید و شیرینی طبیعی؛ چیده‌شده از باغ‌های فارس.'},
+  {id:14, name:'توت خشک سفید درشت', cat:'mulberryfig', img:IMG+'83e1a888b37f.jpg', price:720000, weights:[250,500,1000,2000], stock:33, disc:0, grade:'ممتاز', rate:4.8, sold:470, tags:[], sec:['new'], desc:'توت خشک سفید درشت و پرشیرینی؛ جایگزین سالم قند کنار چای.'},
+  {id:15, name:'کشمش سبز قلمی ملایم', cat:'raisin', img:IMG+'184fecd2458a.jpg', price:380000, weights:[250,500,1000,2000], stock:76, disc:8, grade:'درجه یک', rate:4.7, sold:810, tags:[], sec:['new'], desc:'کشمش سبز قلمی با شیرینی ملایم؛ عالی برای پلئو، شیرینی و میان‌وعده.'},
+  {id:16, name:'مویز بدون هسته (کشمش سیاه)', cat:'raisin', img:IMG+'1e147cae76b8.jpg', price:420000, weights:[250,500,1000,2000], stock:62, disc:0, grade:'ممتاز', rate:4.8, sold:520, tags:[], sec:['new'], desc:'مویز تیره و آفتابی بدون هسته؛ سرشار از آهن و انرژی طبیعی.'},
+  {id:17, name:'کشمش پلویی طلایی', cat:'raisin', img:IMG+'aa25c7492bb4.jpg', price:260000, weights:[250,500,1000,2000], stock:90, disc:5, grade:'درجه یک', rate:4.5, sold:1150, tags:[], sec:[], desc:'کشمش پلویی روشن و کم‌شیرین؛ انتخاب اول قابلمه‌های ایرانی.'},
+  {id:18, name:'خرما پیارم ممتاز حصکوه', cat:'date', img:IMG+'fb2be35ef680.jpeg', price:890000, weights:[250,500,1000,2000], stock:29, disc:10, grade:'ممتاز', rate:4.9, sold:640, tags:['ممتاز'], sec:['new','amz'], desc:'خرما پیارم درشت و مرطوب با شیرینی کاراملی؛ لقب «خرمای شاهانه» را دارد.'},
+  {id:19, name:'خرمای مضافتی بم', cat:'date', img:IMG+'42f5d4b9754e.jpg', price:320000, weights:[250,500,1000,2000], stock:96, disc:12, grade:'درجه یک', rate:4.8, sold:1980, tags:['پرفروش'], sec:['amz'], desc:'خرمای مضافتی تازه و مرطوب بم؛ شیرین، نرم و محبوب همه.'},
+  {id:20, name:'برگه زردآلو آفتابی', cat:'dryfruit', img:IMG+'b2f2d1414a8d.jpg', price:560000, weights:[250,500,1000,2000], stock:37, disc:0, grade:'ممتاز', rate:4.7, sold:380, tags:[], sec:['new'], desc:'برگه زردآلو خشک‌شده زیر آفتاب بدون افزودن شکر؛ ترش و شیرین طبیعی.'},
+  {id:21, name:'آلو خشک بخارا', cat:'dryfruit', img:IMG+'3cb5b008199c.jpg', price:340000, weights:[250,500,1000,2000], stock:54, disc:5, grade:'درجه یک', rate:4.6, sold:760, tags:[], sec:[], desc:'آلو بخارای آبدار و گوشت‌دار؛ برای خورشت، پلئو و میان‌وعده.'},
+  {id:22, name:'چیپس میوه مخلوط بدون قند', cat:'dryfruit', img:IMG+'f668152a2bcf.png', price:480000, weights:[250,500,1000], stock:31, disc:15, grade:'درجه یک', rate:4.6, sold:290, tags:[], sec:['new','amz'], desc:'چیپس سیب، هلو و موز خشک‌شده بدون قند افزودنی؛ اسنک سالم بچه‌ها.'},
+  {id:23, name:'میوه خشک مخلوط مهمانی', cat:'dryfruit', img:IMG+'4aa5a36466e4.jpg', price:620000, weights:[250,500,1000,2000], stock:48, disc:0, grade:'ممتاز', rate:4.8, sold:450, tags:[], sec:['new'], desc:'ترکیبی رنگارنگ از برگه‌ها و میوه‌های خشک؛ پذیرایی متفاوت و سالم.'},
+  {id:24, name:'آجیل مخلوط شور (پنج‌مغز)', cat:'ajil', img:IMG+'66fd0cba7ee8.jpg', price:1680000, weights:[250,500,1000,2000], stock:26, disc:10, grade:'ممتاز', rate:4.9, sold:2100, tags:['پرفروش'], sec:['best','amz'], desc:'پسته، بادام، فندق، مغز گردو و بادام هندی؛ با نسبت طلایی و تازه بو داده.'},
+  {id:25, name:'آجیل مخلوط شیرین چهارمغز', cat:'ajil', img:IMG+'ca78178474b1.png', price:1590000, weights:[250,500,1000,2000], stock:34, disc:0, grade:'ممتاز', rate:4.7, sold:380, tags:[], sec:['best'], desc:'مغزهای بدون نمک برای بارداری، رژیم و ورزشکاران؛ ترکیب متعادل چهار مغز.'},
+  {id:26, name:'زعفران سرگل ممتاز قائنات', cat:'saffron', img:IMG+'2c259b7044c5.jpg', price:165000000, weights:[2,5,10,25], stock:60, disc:5, grade:'ممتاز', rate:5.0, sold:340, tags:['ممتاز'], sec:['new'], desc:'زعفران سرگل درجه یک قائنات با رنگ‌دهی فوق‌العاده؛ بسته‌بندی شکستنی با پلمپ.'},
+  {id:27, name:'دمنوش گل گاوزبان و سنبل‌الطیب', cat:'tea', img:IMG+'36eff119ff2f.jpg', price:380000, weights:[100,250,500], stock:65, disc:0, grade:'درجه یک', rate:4.8, sold:420, tags:[], sec:['new'], desc:'دمنوش آرام‌بخش با گل گاوزبان، سنبل‌الطیب و اسطوخودوس؛ آرامش شبانه.'},
+  {id:28, name:'دمنوش آرامش (به‌لیمو و گل محمدی)', cat:'tea', img:IMG+'e5e69256f8fd.jpg', price:420000, weights:[100,250,500], stock:52, disc:10, grade:'درجه یک', rate:4.7, sold:260, tags:[], sec:['amz'], desc:'ترکیب معطر به‌لیمو، گل محمدی و بهارنارنج؛ نوشیدنی برگزیده عصرها.'},
+];
+
+/* ---------- پک‌های تخفیفی کارت دورانی ---------- */
+const PACKS = [
+  {pid:24, w:500, old:1290000, now:969000, hours:24, name:'پک آجیل مهمانی', sub:'آجیل پنج‌مغز + بسته‌بندی مهمانی'},
+  {pid:4,  w:250, old:1150000, now:977000, hours:48, name:'پک مغز پسته سبز', sub:'مغز پسته + پسته شور ویژه'},
+  {pid:23, w:500, old:780000,  now:585000, hours:24, name:'پک میوه خشک سالم', sub:'میوه خشک مخلوط + چیپس میوه'},
+  {pid:27, w:250, old:520000,  now:416000, hours:48, name:'پک دمنوش آرامش', sub:'دو دمنوش گیاهی منتخب'},
+];
+
+/* ---------- خرید اطمینان (کالای هر روز، غیرخوراکی) ---------- */
+const TRUST = [
+  {day:6, name:'کاسه سرو چوبی دست‌ساز با دو قاشق', img:IMG+'c7db525d1daf.jpg', old:850000, price:637000, off:25},
+  {day:0, name:'کاسه سرامیک لعاب‌دار نارنجی (دست‌ساز لالجین)', img:IMG+'05508d4b4470.jpg', old:690000, price:586000, off:15},
+  {day:1, name:'سرویس استکان چای‌خوری طرح طلایی ۶ نفره', img:IMG+'12c552f00b7b.jpg', old:1850000, price:1480000, off:20},
+  {day:2, name:'سینی برجسته برنجی سنتی قلم‌زنی', img:IMG+'19d13838919c.jpg', old:2400000, price:1920000, off:20},
+  {day:3, name:'کاسه چوب گردو با لبه موجی', img:IMG+'cd5ba20a33e2.jpg', old:780000, price:624000, off:20},
+  {day:4, name:'سینی مسی قلم‌زنی‌شده اصفهان', img:IMG+'e569cfd83324.jpg', old:2150000, price:1612000, off:25},
+  {day:5, name:'کاسه سرامیک سبز مات دست‌ساز', img:IMG+'7f5b9c96c99e.jpg', old:640000, price:512000, off:20},
+];
+const TRUST_WHY = '<b>چرا این‌جا؟</b> اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب «غیرخوراکی» — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به دانه‌سرا اعتماد دارید، به ما مطمئنید.';
+
+/* محصولات مجازی بخش خرید اطمینان (قابل افزودن به سبد؛ در فروشگاه نمایش داده نمی‌شوند) */
+const TRUST_VPIDS = {};
+TRUST.forEach((t,i)=>{
+  const vpid = 90 + i;
+  TRUST_VPIDS[t.day] = vpid;
+  PRODUCTS.push({id:vpid, name:t.name, cat:'giftbox', img:t.img, price:t.price*1000, weights:[1], stock:8, disc:0, grade:'دست‌ساز', rate:4.9, sold:88, tags:['خرید اطمینان'], sec:[], hide:true, desc:'کالای منتخب غیرخوراکی بخش «خرید اطمینان»؛ هر روز با قیمت ویژه.'});
+});
+
+/* ---------- کارت شانس ---------- */
+const PRIZES = [
+  {c:'SHIP0',   t:'ارسال رایگان سفارش!',      d:'هزینه ارسال سفارش فعلی شما رایگان شد.',        ic:'i-truck',   w:20},
+  {c:'LUCK5',   t:'۵٪ تخفیف فوری',             d:'کد تخفیف ۵ درصدی برای همین سفارش.',            ic:'i-percent', w:26},
+  {c:'NEXT15',  t:'۱۵٪ تخفیف خرید بعدی',       d:'برای خرید بعدی‌تان ۱۵ درصد تخفیف بگیرید.',      ic:'i-tag',     w:17},
+  {c:'SAMEDAY', t:'اولویت ارسال همان روز',     d:'سفارش شما با اولویت «ارسال همان روز» پردازش می‌شود.', ic:'i-fire', w:10},
+  {c:'LUCK20',  t:'جایزه بزرگ: ۲۰٪ تخفیف!',    d:'شانس طلایی! ۲۰ درصد تخفیف ویژه دانه‌سرا.',        ic:'i-star',    w:5},
+  {c:'CASH50',  t:'۵۰٬۰۰۰ تومان اعتبار خرید',  d:'اعتبار ۵۰ هزار تومانی در کیف پول پنل شما.',    ic:'i-wallet',  w:12},
+];
+
+/* ---------- کدهای تخفیف ---------- */
+const COUPONS = {
+  WELCOME10:{type:'pct', val:10, min:500000, first:true,  label:'۱۰٪ تخفیف اولین خرید (حداقل ۵۰۰٬۰۰۰ تومان)'},
+  LUCK5:    {type:'pct', val:5,  min:0,      label:'۵٪ تخفیف کارت شانس'},
+  LUCK20:   {type:'pct', val:20, min:300000, label:'۲۰٪ تخفیف طلایی (حداقل ۳۰۰٬۰۰۰ تومان)'},
+  NEXT15:   {type:'pct', val:15, min:0,      label:'۱۵٪ تخفیف خرید بعدی'},
+  SHIP0:    {type:'ship',val:0,  min:0,      label:'ارسال رایگان'},
+  CASH50:   {type:'cash',val:50000, min:300000, label:'۵۰٬۰۰۰ تومان اعتبار (حداقل ۳۰۰٬۰۰۰ تومان)'},
+  SAMEDAY:  {type:'day', val:0,  min:0,      label:'اولویت ارسال همان روز'},
+};
+
+/* ---------- وضعیت برنامه ---------- */
+const state = {
+  cart:   LS.get('cart', []),
+  favs:   LS.get('favs', []),
+  codes:  LS.get('codes', []),   // کدهای برنده‌شده از کارت شانس
+  orders: LS.get('orders', []),
+  theme:  LS.get('theme', 'default'),
+  profile:LS.get('profile', {name:'', phone:''}),
+  coupon: null,
+};
+const saveState = () => { LS.set('cart', state.cart); LS.set('favs', state.favs); LS.set('codes', state.codes); LS.set('orders', state.orders); LS.set('profile', state.profile); };
+const prod = id => PRODUCTS.find(p => p.id === id);
+const firstOrder = () => state.orders.length === 0;
+</script>
+<script>
+/* ============================================================
+   رندر و منطق فروشگاه
+============================================================ */
+
+/* ---------- Toast ---------- */
+function toast(msg, type='ok', ms=3400){
+  const ic = type==='err' ? 'i-x' : type==='gold' ? 'i-gift' : 'i-check';
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `<svg class="icon"><use href="#${ic}"/></svg><span>${msg}</span>`;
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(), 320); }, ms);
+}
+
+/* ---------- ناوبری: مگامنو و دراور ---------- */
+function renderNav(){
+  const nav = $('#navList');
+  nav.innerHTML = CATS.map(c => `
+    <li class="nav-item ${c.hot?'hot':''}">
+      <a href="#shop" data-scroll="#shop" data-cat="${c.id}"><svg class="icon"><use href="#${c.icon}"/></svg> ${c.name}</a>
+      <div class="mega" role="menu">
+        <div class="container mega-inner">
+          <div class="mega-cats"><h5>زیرشاخه‌های ${c.name}</h5>${c.subs.map(s=>`<a href="#shop" data-scroll="#shop" data-cat="${c.id}" data-search="${s}">${s}</a>`).join('')}</div>
+          <div class="mega-cols"><div class="mega-links"><h5>محبوب‌ها</h5>${PRODUCTS.filter(p=>p.cat===c.id).slice(0,4).map(p=>`<a href="#shop" data-scroll="#shop" data-cat="${c.id}" data-search="${p.name}">${p.name}</a>`).join('')}</div>
+          <div class="mega-links"><h5>پیشنهاد دانه‌سرا</h5><a href="#packs" data-scroll="#packs">پک‌های تخفیفی امروز</a><a href="#gifts" data-scroll="#gifts">پک‌های هدیه</a><a href="#etemad" data-scroll="#etemad">خرید اطمینان روز</a><a href="#amazing" data-scroll="#amazing">شگفت‌انگیزها</a></div></div>
+          <a class="mega-feat" href="#shop" data-scroll="#shop" data-cat="${c.id}">
+            <img src="${c.feat.img}" alt="${c.feat.t}" loading="lazy">
+            <b>${c.feat.t}</b><span>${c.feat.s}</span>
+          </a>
+        </div>
+      </div>
+    </li>`).join('');
+
+  const dr = $('#drawerBody');
+  dr.innerHTML = CATS.map((c,i) => `
+    <div class="acc">
+      <button type="button" aria-expanded="false"><svg class="icon"><use href="#${c.icon}"/></svg> ${c.name} <svg class="icon chev"><use href="#i-chev"/></svg></button>
+      <div class="acc-panel"><div>${c.subs.map(s=>`<a href="#shop" data-scroll="#shop" data-cat="${c.id}" data-search="${s}">${s}</a>`).join('')}</div></div>
+    </div>`).join('') + `
+    <div style="height:10px"></div>
+    <div style="display:grid;gap:8px">
+      <a class="btn btn-brand btn-sm" href="#shop" data-scroll="#shop" style="justify-content:center">مشاهده همه محصولات</a>
+    </div>`;
+  $$('#drawerBody .acc > button').forEach(b => b.addEventListener('click', () => {
+    const acc = b.parentElement, open = acc.classList.contains('open');
+    $$('#drawerBody .acc').forEach(a=>a.classList.remove('open'));
+    if(!open) acc.classList.add('open');
+  }));
+}
+
+/* ---------- کارت محصول ---------- */
+function cardHTML(p){
+  const d = p.disc ? `<span class="p-disc"><span class="pulse-sun">٪${toFa(p.disc)}</span></span>` : '';
+  const tags = p.tags.map(t=>`<span class="tag ${t==='ممتاز'?'gold':t==='تخفیف‌دار'?'red':'green'}">${t}</span>`).join('');
+  const weights = p.weights.map((w,i)=>`<button type="button" class="w-chip ${i===1?'on':''}" data-w="${w}">${weightLabel(w)}</button>`).join('');
+  return `<article class="p-card" data-pid="${p.id}" data-w="${p.weights[1]??p.weights[0]}" data-qty="1">
+    <div class="p-media">
+      <img src="${p.img}" alt="${p.name}" loading="lazy" width="400" height="400">
+      <div class="p-tags">${tags || `<span class="tag green">${p.grade}</span>`}</div>
+      <button type="button" class="p-fav ${state.favs.includes(p.id)?'on':''}" data-fav="${p.id}" aria-label="افزودن به علاقه‌مندی‌ها"><svg class="icon"><use href="#i-heart"/></svg></button>
+      ${d}
+    </div>
+    <div class="p-body">
+      <span class="p-cat">${CATS.find(c=>c.id===p.cat)?.name || ''}</span>
+      <h3 class="p-name">${p.name}</h3>
+      <div class="p-meta"><span class="grade tag green">${p.grade}</span><span class="rate"><svg class="icon"><use href="#i-star"/></svg>${toFa(p.rate)}</span><span class="sold">${toFa(p.sold)} فروش</span></div>
+      <div class="p-weights" role="radiogroup" aria-label="انتخاب وزن">${weights}</div>
+      <p style="font-size:.72rem;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.desc}</p>
+      <div class="p-pricewrap">
+        <div class="p-price">
+          ${p.disc?`<span class="p-old">${money(p.price*p.weights[1]/1000)}</span>`:''}
+          <span class="p-now"><b class="pv">${money(priceOf(p, p.weights[1]??p.weights[0]))}</b><small>تومان</small></span>
+        </div>
+        <div class="p-actions">
+          <div class="qty"><button type="button" data-q="-1" aria-label="کاهش">−</button><span class="qv">۱</span><button type="button" data-q="1" aria-label="افزایش">+</button></div>
+        </div>
+      </div>
+      <button type="button" class="p-add" data-add="${p.id}"><svg class="icon"><use href="#i-cart"/></svg> افزودن به سبد</button>
+    </div>
+  </article>`;
+}
+
+function bindCards(root){
+  $$('.p-card', root).forEach(card => {
+    const p = prod(+card.dataset.pid);
+    $$('[data-w]', card).forEach(b => b.addEventListener('click', () => {
+      if(b.disabled) return;
+      $$('[data-w]', card).forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      card.dataset.w = b.dataset.w;
+      const w = +b.dataset.w;
+      const old = p.disc ? money(p.price*w/1000) : null;
+      const oldEl = $('.p-old', card);
+      if(p.disc){ if(oldEl){ oldEl.textContent = old; } }
+      $('.pv', card).textContent = money(priceOf(p, w));
+    }));
+    $$('[data-q]', card).forEach(b => b.addEventListener('click', () => {
+      let q = (+card.dataset.qty) + (+b.dataset.q);
+      q = Math.max(1, Math.min(9, q));
+      card.dataset.qty = q;
+      $('.qv', card).textContent = toFa(q);
+    }));
+    $('[data-add]', card)?.addEventListener('click', () => addToCart(p.id, +card.dataset.w, +card.dataset.qty));
+    $('[data-fav]', card)?.addEventListener('click', e => toggleFav(p.id, e.currentTarget));
+  });
+}
+
+function renderRail(elId, list){
+  const el = $('#'+elId);
+  el.innerHTML = list.map(cardHTML).join('');
+  bindCards(el);
+}
+
+/* ---------- بخش‌ها ---------- */
+function renderCats(){
+  const picks = ['ajil','pistachio','date','dryfruit','saffron','tea','giftbox','mulberryfig'];
+  $('#catsGrid').innerHTML = picks.map(id=>{
+    const c = CATS.find(x=>x.id===id);
+    return `<a class="cat-card" href="#shop" data-scroll="#shop" data-cat="${c.id}">
+      <img src="${c.feat.img}" alt="${c.name}" loading="lazy">
+      <div class="cat-info"><b>${c.name}</b><span>${toFa(c.subs.length)} زیرشاخه</span>
+      <span class="go"><svg class="icon"><use href="#i-chev"/></svg></span></div>
+    </a>`;
+  }).join('');
+}
+
+function packEnd(pack){
+  const key = 'packend_' + pack.pid;
+  let end = LS.get(key, 0);
+  const ms = pack.hours * 3600 * 1000;
+  if(!end || end - Date.now() < 1000 || end - Date.now() > ms){
+    end = Date.now() + ms; LS.set(key, end);
+  }
+  return end;
+}
+function renderPacks(){
+  $('#packsRail').innerHTML = PACKS.map(pk=>{
+    const p = prod(pk.pid);
+    return `<div class="pack" data-pid="${pk.pid}" data-w="${pk.w}">
+      <div class="pack-circle">
+        <span class="pack-disc pulse-sun md">٪${toFa(Math.round((1-pk.now/pk.old)*100))}</span>
+        <div class="ph"><img src="${p.img}" alt="${pk.name}" loading="lazy"></div>
+      </div>
+      <h3>${pk.name}</h3>
+      <span class="pk-sub">${pk.sub}</span>
+      <div class="pk-price"><del>${money(pk.old)}</del><b>${money(pk.now)}</b><small>تومان</small></div>
+      <div class="pack-timer"><svg class="icon"><use href="#i-clock"/></svg><b data-cd>—</b><span>فرصت باقی‌مانده</span></div>
+      <button class="btn btn-brand btn-sm" data-packadd="${pk.pid}" data-w="${pk.w}">خرید سریع پک</button>
+    </div>`;
+  }).join('');
+  $$('[data-packadd]').forEach(b => b.addEventListener('click', () => {
+    addToCart(+b.dataset.packadd, +b.dataset.w, 1, true);
+  }));
+}
+
+/* ---------- سبد خرید ---------- */
+function addToCart(pid, w, qty=1, pack=false){
+  const p = prod(pid);
+  if(!p) return;
+  const line = state.cart.find(c => c.pid===pid && c.w===w);
+  if(line){ line.qty = Math.min(20, line.qty + qty); }
+  else state.cart.push({pid, w, qty});
+  saveState(); syncCart();
+  toast(`${pack?'پک':'محصول'} «${p.name}» به سبد اضافه شد ✅`, 'ok');
+  $('#cartBtn').animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}], {duration:420});
+  if(window.innerWidth < 768) $('#mCartBar').classList.add('show');
+}
+function cartCount(){ return state.cart.reduce((s,c)=>s+c.qty,0); }
+function cartSub(){ return state.cart.reduce((s,c)=>s + priceOf(prod(c.pid), c.w)*c.qty, 0); }
+
+function renderCart(){
+  const box = $('#cdItems');
+  if(!state.cart.length){
+    box.innerHTML = `<div class="cart-empty"><svg class="icon"><use href="#i-cart"/></svg><p>سبد خرید شما خالی است!</p><button class="btn btn-brand btn-sm" data-open="shop-goto">مشاهده محصولات</button></div>`;
+  } else {
+    box.innerHTML = state.cart.map((c,i)=>{
+      const p = prod(c.pid);
+      return `<div class="cart-item">
+        <div class="ci-media"><img src="${p.img}" alt="${p.name}"></div>
+        <div class="ci-info">
+          <div class="ci-name">${p.name}</div>
+          <span class="ci-w">${weightLabel(c.w)}</span>
+          <div class="ci-row">
+            <div class="ci-qty">
+              <button data-ci="${i}" data-op="+" aria-label="افزایش">+</button>
+              <span>${toFa(c.qty)}</span>
+              <button data-ci="${i}" data-op="-" aria-label="کاهش">−</button>
+            </div>
+            <span class="ci-price">${money(priceOf(p,c.w)*c.qty)} <small>تومان</small></span>
+            <button class="ci-del" data-ci="${i}" data-op="del" aria-label="حذف"><svg class="icon"><use href="#i-trash"/></svg></button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  $$('[data-op]', box).forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.ci, op = b.dataset.op;
+    if(op==='del'){ state.cart.splice(i,1); toast('محصول از سبد حذف شد','ok'); }
+    else if(op==='+'){ state.cart[i].qty = Math.min(20, state.cart[i].qty+1); }
+    else { state.cart[i].qty--; if(state.cart[i].qty<1) state.cart.splice(i,1); }
+    saveState(); syncCart();
+  }));
+  $$('[data-open="shop-goto"]', box).forEach(b => b.addEventListener('click', () => { closeCart(); scrollToShop(); }));
+}
+
+function couponVal(code){
+  if(!code) return {off:0, ship:0};
+  const def = COUPONS[code.toUpperCase()];
+  let c = null;
+  if(def && (!def.first || firstOrder())) c = def;
+  else {
+    const lucky = state.codes.find(x => x.code===code.toUpperCase());
+    if(lucky && COUPONS[lucky.code]) c = COUPONS[lucky.code];
+  }
+  if(!c) return {off:0, ship:0};
+  const sub = cartSub();
+  if(sub < (c.min||0)) return {off:0, ship:0};
+  if(c.type==='pct')  return {off: Math.round(sub*c.val/100), ship:0, type:'pct', val:c.val};
+  if(c.type==='cash') return {off: Math.min(c.val, sub), ship:0, type:'cash', val:c.val};
+  if(c.type==='ship') return {off:0, ship:1, type:'ship'};
+  if(c.type==='day')  return {off:0, ship:0, type:'day'};
+  return {off:0, ship:0};
+}
+
+const FREE_SHIP = 1500000;
+function syncCart(){
+  const n = cartCount(), sub = cartSub();
+  const cv = couponVal(state.coupon);
+  $$('.cart-count').forEach(el => { el.textContent = toFa(n); el.classList.toggle('hidden', n===0); });
+  $('#cdCount').textContent = toFa(n);
+  const remain = Math.max(0, FREE_SHIP - sub);
+  $('#shipMsg').innerHTML = remain>0
+    ? `تا <b>ارسال رایگان</b> ${money(remain)} تومان باقی مانده 🚚`
+    : `<b>🎉 تبریک!</b> هزینه ارسال شما رایگان شد.`;
+  $('#shipBar').style.width = Math.min(100, sub/FREE_SHIP*100) + '%';
+  renderCart();
+  $('#tSub').textContent = money(sub) + ' تومان';
+  $('#tOff').textContent = '−' + money(cv.off) + ' تومان';
+  const shipCost = sub===0 ? 0 : (remain<=0 || cv.ship ? 0 : 89000);
+  $('#tShip').innerHTML = sub===0 ? '—' : (shipCost===0 ? '<span class="free">رایگان 🎉</span>' : money(shipCost)+' تومان');
+  $('#tGrand').textContent = money(Math.max(0, sub - cv.off + shipCost)) + ' تومان';
+  $('#mCartTotal').textContent = money(sub) + ' تومان';
+  $('#mCartItems').textContent = n===0 ? 'سبد خرید خالی است' : `${toFa(n)} کالا در سبد`;
+  $('#mCartBar').classList.toggle('show', n>0 && !$('#cartDrawer').classList.contains('open'));
+  const mb = $('#checkoutBtn'); mb.disabled = n===0; mb.style.opacity = n===0 ? .5 : 1;
+}
+
+/* ---------- علاقه‌مندی‌ها ---------- */
+function toggleFav(pid, btn){
+  const i = state.favs.indexOf(pid);
+  if(i>-1){ state.favs.splice(i,1); toast('از علاقه‌مندی‌ها حذف شد','ok'); }
+  else { state.favs.push(pid); toast('به علاقه‌مندی‌ها اضافه شد ❤️','gold'); }
+  saveState(); syncFavs();
+  if(btn) btn.classList.toggle('on', state.favs.includes(pid));
+  $$(`[data-fav="${pid}"]`).forEach(b=>b.classList.toggle('on', state.favs.includes(pid)));
+  renderFavModal();
+}
+function syncFavs(){
+  const el = $('#favCount');
+  el.textContent = toFa(state.favs.length);
+  el.classList.toggle('hidden', state.favs.length===0);
+}
+function renderFavModal(){
+  const box = $('#favList');
+  if(!state.favs.length){ box.innerHTML = `<div class="up-empty"><svg class="icon"><use href="#i-heart"/></svg><p>هنوز محصولی به علاقه‌مندی‌ها اضافه نکرده‌اید. روی ❤️ کارت هر محصول بزنید.</p></div>`; return; }
+  box.innerHTML = state.favs.map(id=>{
+    const p = prod(id);
+    return `<div class="fav-row">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      <div><b>${p.name}</b><span>${money(priceOf(p, p.weights[1]))} تومان</span></div>
+      <div class="fav-acts">
+        <button class="btn btn-brand btn-sm" data-favadd="${p.id}">افزودن</button>
+        <button class="btn btn-light btn-sm" data-favdel="${p.id}">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+  $$('[data-favadd]', box).forEach(b=>b.addEventListener('click',()=>{ addToCart(+b.dataset.favadd, prod(+b.dataset.favadd).weights[1], 1); }));
+  $$('[data-favdel]', box).forEach(b=>b.addEventListener('click',()=>{ toggleFav(+b.dataset.favdel); renderFavModal(); }));
+}
+
+/* ---------- جستجو ---------- */
+function searchProducts(q){
+  q = q.trim();
+  if(!q) return [];
+  return PRODUCTS.filter(p => !p.hide && (p.name+' '+p.desc+' '+p.grade+' '+(CATS.find(c=>c.id===p.cat)?.name||'')).includes(q)).slice(0,6);
+}
+function bindSearch(inputId, ddId, btnId){
+  const inp = $('#'+inputId), dd = $('#'+ddId);
+  inp.addEventListener('input', () => {
+    const res = searchProducts(inp.value);
+    if(!inp.value.trim()){ dd.classList.remove('open'); return; }
+    dd.innerHTML = res.length
+      ? res.map(p=>`<a class="sr-item" href="#shop" data-scroll="#shop" data-cat="${p.cat}" data-search="${p.name}"><img src="${p.img}" alt=""><div><div class="n">${p.name}</div><div class="p">${money(priceOf(p,p.weights[1]))} تومان</div></div></a>`).join('')
+      : `<div class="sr-empty">محصولی برای «${inp.value}» پیدا نشد</div>`;
+    dd.classList.add('open');
+  });
+  inp.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); goSearch(inp.value); } });
+  $('#'+btnId).addEventListener('click', () => goSearch(inp.value));
+  document.addEventListener('click', e => { if(!e.target.closest('.search-wrap') && !e.target.closest('.m-search')) dd.classList.remove('open'); });
+}
+function goSearch(q){
+  $$('.search-dd').forEach(d=>d.classList.remove('open'));
+  scrollToShop();
+  $('#searchInput').value = q; $('#searchInputM').value = q;
+  shopFilter.q = q.trim();
+  applyShop();
+}
+
+/* ---------- فیلتر و مرتب‌سازی فروشگاه ---------- */
+const shopFilter = { cat:'all', q:'', min:null, max:null, sort:'pop', shown:12 };
+function applyShop(){
+  let list = PRODUCTS.filter(p =>
+    !p.hide &&
+    (shopFilter.cat==='all' || p.cat===shopFilter.cat) &&
+    (!shopFilter.q || (p.name+' '+p.desc+' '+p.grade).includes(shopFilter.q)) &&
+    (shopFilter.min==null || priceOf(p, p.weights[0]) >= shopFilter.min) &&
+    (shopFilter.max==null || priceOf(p, p.weights[0]) <= shopFilter.max)
+  );
+  const price0 = p => priceOf(p, p.weights[0]);
+  if(shopFilter.sort==='cheap') list.sort((a,b)=>price0(a)-price0(b));
+  if(shopFilter.sort==='exp')   list.sort((a,b)=>price0(b)-price0(a));
+  if(shopFilter.sort==='rate')  list.sort((a,b)=>b.rate-a.rate);
+  if(shopFilter.sort==='disc')  list.sort((a,b)=>b.disc-a.disc);
+  if(shopFilter.sort==='pop')   list.sort((a,b)=>b.sold-a.sold);
+  const total = list.length;
+  list = list.slice(0, shopFilter.shown);
+  const grid = $('#shopGrid');
+  grid.innerHTML = list.map(cardHTML).join('');
+  bindCards(grid);
+  $('#shopEmpty').classList.toggle('hidden', total>0);
+  $('#showMore').style.display = total > shopFilter.shown ? '' : 'none';
+  $('#shopMeta').innerHTML = `<b>${toFa(total)}</b> محصول یافت شد`;
+}
+function scrollToShop(){ $('#shop').scrollIntoView({behavior:'smooth'}); }
+</script>
+<script>
+/* ============================================================
+   پک هدیه، خرید اطمینان، چیپس دسته‌ها
+============================================================ */
+const GIFTS = [
+  {name:'پک آجیل شب یلدا', sub:'جعبه ۹ خانه؛ آجیل، خشکبار و تنقلات شب یلدا', price:2450000, img:IMG+'ed59578015d4.jpeg', tag:'مخصوص یلدا', pid:24, w:1000},
+  {name:'پک آجیل عید نوروز', sub:'سینی چهاربخشی نوروزی با خشکبار ممتاز', price:1890000, img:IMG+'5566c0e933d2.jpg', tag:'نوروز ۱۴۰۵', pid:25, w:1000},
+  {name:'جعبه هدیه خشکبار لوکس', sub:'جعبه چوبی لوکس با روبان ساتن و کارت تبریک', price:3200000, img:IMG+'9bc7483dee00.jpg', tag:'لوکس‌ترین', pid:4, w:250},
+  {name:'پک سازمانی و شرکتی', sub:'هماهنگ برای هدیه کارکنان؛ لوگو اختصاصی رایگان', price:1280000, img:IMG+'a707f4274c3f.png', tag:'سفارش سازمانی', pid:1, w:1000},
+];
+function renderGifts(){
+  $('#giftGrid').innerHTML = GIFTS.map(g=>`
+    <div class="gift-card">
+      <div class="g-media"><img src="${g.img}" alt="${g.name}" loading="lazy"></div>
+      <div class="g-body">
+        <span class="g-tag">${g.tag}</span>
+        <h3 class="g-title">${g.name}</h3>
+        <p class="g-text">${g.sub}</p>
+        <div class="g-foot">
+          <span class="g-price"><b>${money(g.price)}</b> <small>تومان</small></span>
+          <button class="btn-gold-o" data-giftadd="${g.pid}" data-w="${g.w}">سفارش پک</button>
+        </div>
+      </div>
+    </div>`).join('');
+  $$('[data-giftadd]').forEach(b=>b.addEventListener('click',()=>{
+    addToCart(+b.dataset.giftadd, +b.dataset.w, 1, true);
+    toast('پک هدیه به سبد اضافه شد؛ بسته‌بندی لوکس و کارت تبریک همراهش می‌آید 🎁','gold');
+  }));
+}
+
+const DAY_NAMES = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+function renderTrust(){
+  const jsDay = new Date().getDay();              // 0=یکشنبه … 6=شنبه
+  const item = TRUST.find(t=>t.day===jsDay) || TRUST[0];
+  $('#trustImg').src = item.img;
+  $('#trustImg').alt = item.name;
+  $('#trustName').textContent = item.name;
+  $('#trustDay').textContent = 'ویژه ' + DAY_NAMES[jsDay];
+  $('#trustOld').textContent = money(item.old);
+  $('#trustPrice').textContent = money(item.price);
+  $('#trustOff').textContent = '٪' + toFa(item.off) + ' تخفیف امروز';
+  $('#trustWhy').innerHTML = TRUST_WHY;
+  $('#trustDays').innerHTML = '<span>کالای هر روز هفته متفاوت است:</span>' +
+    TRUST.map(t=>`<i class="${t.day===jsDay?'on':''}" title="${DAY_NAMES[t.day]}"></i>`).join('') +
+    `<span>امروز: ${DAY_NAMES[jsDay]}</span>`;
+  $('#trustAdd').onclick = () => {
+    const vpid = TRUST_VPIDS[jsDay] ?? TRUST_VPIDS[TRUST[0].day];
+    addToCart(vpid, 1, 1, true);
+    toast(`«${item.name}» به سبد اضافه شد؛ نماد اعتماد دانه‌سرا در راه است 🛡️`,'gold');
+  };
+}
+
+/* ============================================================
+   شمارش معکوس‌ها
+============================================================ */
+function fmtHMS(ms){
+  const s = Math.max(0, Math.floor(ms/1000));
+  const h = String(Math.floor(s/3600)).padStart(2,'0'), m = String(Math.floor(s%3600/60)).padStart(2,'0'), x = String(s%60).padStart(2,'0');
+  return toFa(`${h}:${m}:${x}`);
+}
+function startCountdowns(){
+  setInterval(() => {
+    $$('.pack-timer').forEach(el => {
+      const pk = PACKS.find(p => $('.pack[data-pid="'+p.pid+'"]')?.contains(el));
+      if(!pk) return;
+      const end = packEnd(pk);
+      const txt = fmtHMS(end - Date.now());
+      const b = $('[data-cd]', el);
+      if(b) b.textContent = txt;
+      el.title = fmtHMS(end - Date.now());
+    });
+    const now = new Date();
+    const midnight = new Date(now); midnight.setHours(24,0,0,0);
+    $('#cdH').textContent = toFa(String(Math.floor((midnight-now)/3600000)).padStart(2,'0'));
+    $('#cdM').textContent = toFa(String(Math.floor((midnight-now)%3600000/60000)).padStart(2,'0'));
+    $('#cdS').textContent = toFa(String(Math.floor((midnight-now)%60000/1000)).padStart(2,'0'));
+  }, 1000);
+  $$('.pack-timer').forEach(el => { const pk = PACKS.find(p => $('.pack[data-pid="'+p.pid+'"]')?.contains(el)); if(pk) $('[data-cd]',el).textContent = fmtHMS(packEnd(pk)-Date.now()); });
+}
+
+/* ============================================================
+   اسلایدر هیرو
+============================================================ */
+let heroIdx = 0, heroTimer = null;
+const heroN = 3;
+function heroGo(i){
+  heroIdx = (i + heroN) % heroN;
+  $('#heroSlides').style.transform = `translateX(${heroIdx*100}%)`;
+  $$('#heroDots .dot').forEach((d,k)=>d.classList.toggle('on', k===heroIdx));
+}
+function heroInit(){
+  $('#heroDots').innerHTML = Array.from({length:heroN},(_,i)=>`<button class="dot ${i===0?'on':''}" data-i="${i}" aria-label="اسلاید ${toFa(i+1)}"></button>`).join('');
+  $$('#heroDots .dot').forEach(d=>d.addEventListener('click',()=>{ heroGo(+d.dataset.i); heroRestart(); }));
+  $('#heroNext').addEventListener('click',()=>{ heroGo(heroIdx+1); heroRestart(); });
+  $('#heroPrev').addEventListener('click',()=>{ heroGo(heroIdx-1); heroRestart(); });
+  heroRestart();
+}
+function heroRestart(){ clearInterval(heroTimer); heroTimer = setInterval(()=>heroGo(heroIdx+1), 6000); }
+
+/* ============================================================
+   تم رنگی (سوییچر، مطابق پنل انتخاب رنگ)
+============================================================ */
+const THEMES = [
+  {id:'default', name:'پسته‌ای', color:'#358500'},
+  {id:'anari',   name:'اناری', color:'#c03045'},
+  {id:'zeitoni', name:'زیتونی طبیعی', color:'#6d8f2f'},
+  {id:'gahvei',  name:'قهوه‌ای کلاسیک', color:'#6b4a2b'},
+  {id:'tousi',   name:'طوسی مدرن', color:'#5c6b75'},
+  {id:'banafsh', name:'بنفش اسطوخودوس', color:'#7a5fa8'},
+  {id:'abi',     name:'آبی نفتی', color:'#1f5a73'},
+];
+function renderThemeDots(){
+  $('#themeDots').innerHTML = THEMES.map(t=>`<button class="t-dot ${state.theme===t.id?'on':''}" data-settheme="${t.id}" title="${t.name}" aria-label="${t.name}"><i style="background:${t.color}"></i></button>`).join('');
+  $$('[data-settheme]').forEach(b=>b.addEventListener('click',()=>{
+    state.theme = b.dataset.settheme; LS.set('theme', state.theme);
+    document.documentElement.dataset.theme = state.theme==='default' ? '' : state.theme;
+    renderThemeDots();
+    toast('تم رنگی به «'+THEMES.find(t=>t.id===state.theme).name+'» تغییر کرد 🎨','gold');
+  }));
+}
+function applyTheme(){
+  document.documentElement.dataset.theme = state.theme==='default' ? '' : state.theme;
+  renderThemeDots();
+}
+
+/* ============================================================
+   کشوها و مودال‌ها
+============================================================ */
+function openCart(){ $('#cartDrawer').classList.add('open'); $('#cartVeil').classList.add('open'); syncCart(); }
+function closeCart(){ $('#cartDrawer').classList.remove('open'); $('#cartVeil').classList.remove('open'); }
+function openDrawer(){ $('#navDrawer').classList.add('open'); $('#drawerVeil').classList.add('open'); }
+function closeDrawer(){ $('#navDrawer').classList.remove('open'); $('#drawerVeil').classList.remove('open'); }
+function openOverlay(id){ $('#'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeOverlay(id){ $('#'+id).classList.remove('open'); document.body.style.overflow=''; }
+function closeAllOverlays(){ $$('.overlay.open').forEach(o=>o.classList.remove('open')); $('#userPanel').classList.remove('open'); document.body.style.overflow=''; }
+
+/* ============================================================
+   کوپن
+============================================================ */
+function applyCoupon(code){
+  code = (code||'').trim().toUpperCase();
+  if(!code) return toast('کد تخفیف را وارد کنید','err');
+  const def = COUPONS[code];
+  const lucky = state.codes.find(c=>c.code===code);
+  if(!def && !lucky) return toast('کد تخفیف نامعتبر است ❌','err');
+  if(def && def.first && !firstOrder()) return toast('کد WELCOME10 فقط برای اولین خرید است','err');
+  const sub = cartSub();
+  const rule = COUPONS[code] || COUPONS[lucky.code];
+  if(sub < (rule.min||0)) return toast(`این کد برای سفارش بالای ${money(rule.min)} تومان است`,'err');
+  state.coupon = code;
+  syncCart();
+  toast(`کد ${code} اعمال شد ✅ (${rule.label})`,'gold');
+}
+function markCouponUsed(code){
+  const c = state.codes.find(c=>c.code===code);
+  if(c) c.used = true; saveState();
+}
+
+/* ============================================================
+   تسویه حساب + پیامک
+============================================================ */
+let coShip = {type:'peyk', cost:89000, days:'همان روز'};
+const toEn = s => String(s).replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+function coStep(n){
+  $$('#coModal .co-step').forEach((s,i)=>{
+    s.classList.toggle('on', i===n);
+    s.classList.toggle('done', i<n);
+  });
+  $$('.co-pane').forEach((p,i)=>p.classList.toggle('on', i===n));
+}
+function coCollect(){
+  return {
+    name: $('#coName').value.trim(),
+    phone: toEn($('#coPhone').value).replace(/\D/g,''),
+    prov: $('#coProvince').value,
+    city: $('#coCity').value.trim(),
+    addr: $('#coAddr').value.trim(),
+  };
+}
+function coInit(){
+  $('#coNext').addEventListener('click', () => {
+    const f = coCollect();
+    if(!f.name) return toast('نام و نام خانوادگی را وارد کنید','err');
+    if(!/^09\d{9}$/.test(f.phone)) return toast('شماره موبایل معتبر وارد کنید (۰۹…)','err');
+    if(!f.addr || f.city==='') return toast('شهر و آدرس کامل را وارد کنید','err');
+    const sub = cartSub(), cv = couponVal(state.coupon);
+    const remain = Math.max(0, FREE_SHIP - sub);
+    const shipCost = (remain<=0 || cv.ship) ? 0 : coShip.cost;
+    const total = Math.max(0, sub - cv.off + shipCost);
+    $('#coSummary').innerHTML = `
+      <b style="display:block;margin-bottom:8px">فاکتور سفارش شما</b>
+      ${state.cart.map(c=>{const p=prod(c.pid);return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:.82rem;padding:3px 0"><span>${p.name} <small style="color:var(--ink-3)">(${weightLabel(c.w)} × ${toFa(c.qty)})</small></span><b>${money(priceOf(p,c.w)*c.qty)}</b></div>`;}).join('')}
+      <div style="border-top:1px dashed var(--line);margin:8px 0;padding-top:8px"></div>
+      <div style="display:flex;justify-content:space-between"><span>جمع کالاها</span><b>${money(sub)}</b></div>
+      ${cv.off?`<div style="display:flex;justify-content:space-between;color:var(--red)"><span>تخفیف (${state.coupon})</span><b>−${money(cv.off)}</b></div>`:''}
+      <div style="display:flex;justify-content:space-between"><span>ارسال (${coShip.type==='peyk'?'پیک فوری':coShip.type==='post'?'پست پیشتاز':'تیپاکس'} — ${coShip.days})</span><b>${shipCost===0?'رایگان 🎉':money(shipCost)}</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:1rem;padding-top:8px"><b>قابل پرداخت</b><b style="color:var(--brand-700)">${money(total)} تومان</b></div>
+      <div style="margin-top:10px;font-size:.78rem;color:var(--ink-2)">📍 ${f.prov}، ${f.city}، ${f.addr} — ${f.name} (${toFa(f.phone)})</div>`;
+    coStep(1);
+  });
+  $$('input[name="ship"]').forEach(r => r.addEventListener('change', () => {
+    $$('#shipOpts .ship-opt').forEach(o=>o.classList.remove('on'));
+    r.closest('.ship-opt').classList.add('on');
+    const sub = cartSub();
+    coShip = {type:r.value, cost:+r.dataset.cost, days:r.dataset.days};
+    $$('#shipOpts [data-pr]').forEach((pr,i)=>{
+      const rr = $$('input[name="ship"]')[i];
+      const free = sub >= FREE_SHIP;
+      pr.textContent = free ? 'رایگان 🎉' : money(+rr.dataset.cost);
+      pr.classList.toggle('free', free);
+    });
+  }));
+  $('#coPay').addEventListener('click', () => {
+    const btn = $('#coPay');
+    btn.disabled = true; btn.innerHTML = 'در حال اتصال به درگاه پرداخت… ⏳';
+    setTimeout(() => {
+      const f = coCollect();
+      const sub = cartSub(), cv = couponVal(state.coupon);
+      const remain = Math.max(0, FREE_SHIP - sub);
+      const shipCost = (remain<=0 || cv.ship) ? 0 : coShip.cost;
+      const total = Math.max(0, sub - cv.off + shipCost);
+      const code = 'AS-' + (1000 + state.orders.length + Math.floor(Math.random()*90));
+      const order = {code, ts:Date.now(), items:state.cart.map(c=>({...c})), sub, off:cv.off, coupon:state.coupon, shipCost, shipType:coShip.type, total, addr:f};
+      state.orders.unshift(order);
+      if(state.coupon && state.coupon!=='WELCOME10') markCouponUsed(state.coupon);
+      state.cart = []; state.coupon = null;
+      if(!state.profile.name){ state.profile = {name:f.name, phone:f.phone}; }
+      saveState(); syncCart();
+      $('#coOrdCode').textContent = code;
+      $('#coSmsPhone').textContent = toFa(f.phone);
+      coStep(2);
+      btn.disabled = false; btn.innerHTML = '<svg class="icon"><use href="#i-lock"/></svg> پرداخت و ثبت نهایی سفارش';
+      setTimeout(()=>toast(`📱 پیامک تأیید سفارش ${code} به شماره ${toFa(f.phone)} ارسال شد`,'gold',5200), 700);
+      setTimeout(()=>toast('کد تخفیف WELCOME10 پس از این سفارش مصرف شد؛ کدهای کارت شانس در پنل شماست','ok',5200), 6400);
+    }, 1500);
+  });
+}
+
+/* ============================================================
+   پیگیری سفارش
+============================================================ */
+function orderStep(o){
+  const m = (Date.now() - o.ts) / 60000;   // مقیاس نمایشی: هر مرحله چند دقیقه
+  return m<2?0 : m<6?1 : m<15?2 : 3;
+}
+function renderTimeline(o, el){
+  const cur = orderStep(o);
+  const steps = [
+    {t:'ثبت سفارش', s:new Date(o.ts).toLocaleDateString('fa-IR') + ' — ' + new Date(o.ts).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})},
+    {t:'آماده‌سازی و بسته‌بندی', s:'وزن‌شدن روز، بسته‌بندی وکیوم بهداشتی'},
+    {t:o.shipType==='peyk'?'تحویل به پیک':'تحویل به پست', s:o.shipType==='peyk'?'پیک فوری دانه‌سرا در راه است 🛵':'کد رهگیری پستی پیامک می‌شود'},
+    {t:'تحویل شد ✅', s:'امیدواریم لذت برده باشید! مرجوعی رایگان تا ۷ روز'},
+  ];
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+      <b>سفارش ${o.code}</b><span class="tag green">${['در حال ثبت','در حال آماده‌سازی','در مسیر ارسال','تحویل شده'][cur]}</span></div>` +
+    steps.map((s,i)=>`
+      <div class="tl-item ${i<=cur?'on':''} ${i===cur&&cur<3?'cur':''}">
+        <span class="tl-dot">${i<cur?'<svg class="icon" style="width:13px;height:13px"><use href="#i-check"/></svg>':'●'}</span>
+        <div><b>${s.t}</b><span>${s.s}</span></div>
+      </div>`).join('') +
+    `<div class="sms-note"><svg class="icon"><use href="#i-sms"/></svg><span>📱 پیامک وضعیت این سفارش به شماره ${toFa(o.addr.phone||state.profile.phone||' شما ')} ارسال شد.</span></div>` +
+    (cur===3 ? `<button class="btn btn-gold btn-sm btn-block" data-reorder="${o.code}">سفارش مجدد همین اقلام</button>` : '');
+  $$('[data-reorder]', el).forEach(b=>b.addEventListener('click',()=>{
+    const o2 = state.orders.find(x=>x.code===b.dataset.reorder);
+    o2.items.forEach(c=>addToCart(c.pid, c.w, c.qty, true));
+    closeOverlay('trackModal'); openCart();
+  }));
+}
+function findOrder(q){
+  q = toEn(q).trim().toUpperCase();
+  if(!q) return null;
+  if(!q.startsWith('AS-')) q = 'AS-' + q.replace(/^0+/,'');
+  return state.orders.find(o => o.code===q || (toEn(o.addr.phone||'') === toEn($('#trackInputM').value).replace(/\D/g,'') && o.addr.phone!=='')) || null;
+}
+function doTrack(inputId, timelineId){
+  const q = $('#'+inputId).value;
+  let o = null;
+  const qe = toEn(q).replace(/\D/g,'');
+  if(/^09\d{9}$/.test(qe)) o = state.orders.find(x=>x.addr.phone===qe) || null;
+  if(!o) o = state.orders.find(x=>x.code.toUpperCase()===toEn(q).trim().toUpperCase()) || null;
+  if(!o && qe.length<10) o = state.orders.find(x=>x.code===toEn(q).trim().toUpperCase().replace(/^(\d+)$/,'AS-$1')) || null;
+  const el = $('#'+timelineId);
+  if(o){ renderTimeline(o, el); }
+  else if(q.trim()){
+    el.innerHTML = `<div class="up-empty"><svg class="icon"><use href="#i-search"/></svg><p>سفارشی با این کد/شماره پیدا نشد.</p>
+      <button class="btn btn-light btn-sm" id="demoTrack">مشاهده نمونه پیش‌نمایش پیگیری</button></div>`;
+    $('#demoTrack', el)?.addEventListener('click', () => renderTimeline({
+      code:'AS-1024', ts:Date.now()-9*60000, shipType:'peyk',
+      addr:{phone:state.profile.phone||'۰۹۱۲۳۴۵۶۷۸۹'},
+    }, el));
+  } else toast('کد سفارش یا شماره موبایل را وارد کنید','err');
+  el.classList.add('open');
+}
+
+/* ============================================================
+   پنل کاربری (موبایل‌فرست، متفاوت پس از خرید)
+============================================================ */
+function spentTotal(){ return state.orders.reduce((s,o)=>s+o.total,0); }
+function tierOf(t){ return t>=15000000?{n:'طلایی',i:'🥇'} : t>=5000000?{n:'نقره‌ای',i:'🥈'} : {n:'برنزی',i:'🥉'}; }
+function renderPanel(){
+  const buyer = state.orders.length > 0;
+  const name = state.profile.name || (buyer? state.orders[0].addr.name : '') || 'مهمان گرامی';
+  const phone = state.profile.phone || (buyer? state.orders[0].addr.phone : '');
+  $('#upAv').textContent = name.trim()[0] || 'م';
+  $('#upName').textContent = name;
+  $('#upPhone').textContent = phone ? toFa(phone) : 'برای فعال‌سازی پنل، یک خرید ثبت کنید';
+  const tier = tierOf(spentTotal());
+  $('#upTier').textContent = tier.i + ' ' + tier.n;
+  const pts = Math.floor(spentTotal()/100000);
+  $('#upStats').innerHTML = `
+    <div class="up-stat"><b>${toFa(state.orders.length)}</b><span>سفارش موفق</span></div>
+    <div class="up-stat"><b>${toFa(pts)}</b><span>امتیاز باشگاه</span></div>
+    <div class="up-stat"><b>${toFa(state.codes.filter(c=>!c.used).length)}</b><span>کد تخفیف فعال</span></div>`;
+  $('#upWelcome').style.display = buyer ? 'none' : '';
+  $('#upWelcomeText').innerHTML = buyer
+    ? `<b>${name.split(' ')[0]} عزیز، خوش برگشتی!</b> امتیازها و سفارش‌هایت این‌جاست 🌰`
+    : 'به پنل اختصاصی <b>دانه‌سرا</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)';
+
+  /* --- خانه --- */
+  const last = state.orders[0];
+  $('#upHome').innerHTML = buyer ? `
+    <div class="up-sec-title"><svg class="icon"><use href="#i-box"/></svg> آخرین سفارش شما</div>
+    ${last ? orderCardHTML(last, true) : ''}
+    <div class="up-sec-title"><svg class="icon"><use href="#i-sms"/></svg> پیامک‌های دانه‌سرا</div>
+    ${state.orders.slice(0,2).map(o=>`<div class="msg-card"><span class="msg-ic"><svg class="icon"><use href="#i-sms"/></svg></span>
+      <div><b>تأیید سفارش ${o.code}</b><p>مشتری گرامی، سفارش ${money(o.total)} تومانی شما ثبت شد. پیگیری: بخش «پیگیری سفارش». — دانه‌سرا</p><time>${new Date(o.ts).toLocaleDateString('fa-IR')}</time></div></div>`).join('')}
+    <div class="up-sec-title"><svg class="icon"><use href="#i-refresh"/></svg> دسترسی سریع</div>
+    <div class="up-actions">
+      <button class="up-act" data-open="track"><svg class="icon"><use href="#i-truck"/></svg> پیگیری سفارش</button>
+      <a class="up-act" href="tel:02191092000"><svg class="icon"><use href="#i-headset"/></svg> پشتیبانی تلفنی</a>
+      <button class="up-act" data-panel-scroll="#consult"><svg class="icon"><use href="#i-user"/></svg> مشاوره خرید</button>
+      <button class="up-act" data-open="lucky"><svg class="icon"><use href="#i-gift"/></svg> کارت شانس امروز</button>
+    </div>` : `
+    <div class="up-empty"><svg class="icon"><use href="#i-box"/></svg>
+      <p>هنوز سفارشی ثبت نکرده‌اید!<br>اولین خرید شما بالای ۵۰۰٬۰۰۰ تومان، <b>۱۰٪ تخفیف</b> دارد.</p>
+      <button class="btn btn-brand btn-sm" data-panel-goto="#shop">شروع خرید با تخفیف اولین خرید</button></div>`;
+
+  /* --- سفارش‌ها --- */
+  $('#upOrders').innerHTML = buyer
+    ? state.orders.map(o=>orderCardHTML(o,false)).join('')
+    : `<div class="up-empty"><svg class="icon"><use href="#i-doc"/></svg><p>لیست سفارش‌ها پس از اولین خرید فعال می‌شود.</p></div>`;
+
+  /* --- علاقه‌مندی‌ها --- */
+  $('#upFavs').innerHTML = state.favs.length
+    ? state.favs.map(id=>{const p=prod(id);return `<div class="fav-row"><img src="${p.img}" alt=""><div><b>${p.name}</b><span>${money(priceOf(p,p.weights[1]))} تومان</span></div>
+        <div class="fav-acts"><button class="btn btn-brand btn-sm" data-favadd="${p.id}">خرید</button></div></div>`}).join('')
+    : `<div class="up-empty"><svg class="icon"><use href="#i-heart"/></svg><p>لیست علاقه‌مندی‌های شما خالی است.</p></div>`;
+
+  /* --- کدهای من --- */
+  $('#upCodes').innerHTML =
+    `<div class="code-card"><div><span class="cc-c">WELCOME10</span><b>۱۰٪ تخفیف اولین خرید</b><span>حداقل سفارش: ۵۰۰٬۰۰۰ تومان ${firstOrder()?'':'— استفاده شده'}</span></div></div>` +
+    (state.codes.length ? state.codes.map(c=>`<div class="code-card ${c.used?'used':''}"><div><span class="cc-c">${c.code}</span><b>${c.label}</b><span>${c.used?'استفاده شده':'فعال — هنگام پرداخت اعمال کنید'} | ${new Date(c.ts).toLocaleDateString('fa-IR')}</span></div>
+      ${!c.used?`<button class="btn btn-gold btn-sm use" data-usecode="${c.code}">کپی/اعمال</button>`:''}</div>`).join('')
+    : `<div class="up-empty"><svg class="icon"><use href="#i-gift"/></svg><p>کارت شانس را باز کنید؛ کدهای تخفیف این‌جا ذخیره می‌شوند.</p>
+       <button class="btn btn-gold btn-sm" data-open="lucky">باز کردن کارت شانس 🎁</button></div>`);
+
+  /* --- حساب --- */
+  $('#upAccount').innerHTML = `
+    <div class="up-sec-title"><svg class="icon"><use href="#i-user"/></svg> اطلاعات من</div>
+    <div class="fld w profile-fld"><label>نام و نام خانوادگی</label><input id="pfName" value="${state.profile.name||''}" placeholder="نام شما"></div>
+    <div class="fld w profile-fld"><label>شماره موبایل</label><input id="pfPhone" value="${state.profile.phone||''}" inputmode="tel" placeholder="۰۹۱۲…"></div>
+    <button class="btn btn-brand btn-sm btn-block" id="pfSave">ذخیره اطلاعات</button>
+    <div class="up-sec-title" style="margin-top:20px"><svg class="icon"><use href="#i-wallet"/></svg> سطح عضویت</div>
+    <div class="co-summary" style="font-size:.82rem">
+      مجموع خرید شما: <b>${money(spentTotal())} تومان</b> — سطح فعلی: <b>${tier.i} ${tier.n}</b><br>
+      <small style="color:var(--ink-3)">🥉 برنزی: شروع | 🥈 نقره‌ای: بالای ۵ میلیون | 🥇 طلایی: بالای ۱۵ میلیون (ارسال همیشه رایگان)</small>
+    </div>
+    <button class="btn btn-light btn-sm btn-block" id="pfExit" style="margin-top:14px;border-color:#f7cdc9;color:var(--red)">خروج از حساب</button>`;
+
+  $$('[data-favadd]').forEach(b=>b.onclick=()=>addToCart(+b.dataset.favadd, prod(+b.dataset.favadd).weights[1],1,true));
+  $('#pfSave') && ($('#pfSave').onclick = () => {
+    const n = $('#pfName').value.trim(), p = toEn($('#pfPhone').value).replace(/\D/g,'');
+    if(p && !/^09\d{9}$/.test(p)) return toast('شماره موبایل معتبر نیست','err');
+    state.profile = {name:n, phone:p}; saveState(); renderPanel();
+    toast('اطلاعات شما ذخیره شد ✅');
+  });
+  $('#pfExit') && ($('#pfExit').onclick = () => { state.profile={name:'',phone:''}; saveState(); renderPanel(); toast('از حساب خارج شدید','ok'); });
+  $$('[data-usecode]').forEach(b=>b.onclick=()=>{
+    navigator.clipboard?.writeText(b.dataset.usecode).catch(()=>{});
+    toast(`کد ${b.dataset.usecode} کپی شد؛ هنگام پرداخت وارد کنید`,'gold');
+  });
+  $$('[data-panel-goto]').forEach(b=>b.onclick=()=>{ closePanel(); scrollToShop(); });
+  $$('[data-panel-scroll]').forEach(b=>b.onclick=()=>{ closePanel(); setTimeout(()=>$(b.dataset.panelScroll)?.scrollIntoView({behavior:'smooth'}),120); });
+  $$('[data-reorder]', $('#upOrders')).forEach(b=>b.onclick=()=>{
+    const o = state.orders.find(x=>x.code===b.dataset.reorder);
+    o.items.forEach(c=>addToCart(c.pid,c.w,c.qty,true)); openCart();
+  });
+  $$('[data-mini-track]').forEach(b=>b.onclick=()=>{ closePanel(); openOverlay('trackModal'); $('#trackInputM').value=b.dataset.miniTrack; doTrack('trackInputM','timelineM'); });
+  $$('[data-reorder2]').forEach(b=>b.onclick=()=>{
+    const o = state.orders.find(x=>x.code===b.dataset.reorder2);
+    o.items.forEach(c=>addToCart(c.pid,c.w,c.qty,true)); openCart();
+  });
+}
+function orderCardHTML(o, mini){
+  const cur = orderStep(o);
+  const st = ['در حال ثبت','در حال آماده‌سازی','در مسیر ارسال','تحویل شده'][cur];
+  const items = o.items.map(c=>`${prod(c.pid)?.name||''} (${weightLabel(c.w)} × ${toFa(c.qty)})`).join(' + ');
+  return `<div class="order-card">
+    <div class="oc-head"><span class="oc-code">${o.code}</span><span class="oc-date">${new Date(o.ts).toLocaleDateString('fa-IR')}</span><span class="oc-status tag ${cur===3?'green':'gold'}">${st}</span></div>
+    <p class="oc-items-line">${items}</p>
+    <div class="mini-tl">${[0,1,2,3].map(i=>`<i class="${i<=cur?'on':''} ${i===cur&&cur<3?'cur':''}">${i<cur?'✓':''}</i>`).join('')}</div>
+    <div class="mini-tl-lbl"><b>ثبت</b><span>آماده‌سازی</span><span>ارسال</span><span>تحویل</span></div>
+    <div class="oc-foot">
+      <span class="oc-total">${money(o.total)} <small>تومان</small></span>
+      <div class="oc-actions">
+        <button class="btn btn-light btn-sm" data-mini-track="${o.code}">پیگیری</button>
+        <button class="btn btn-gold btn-sm" data-reorder2="${o.code}">سفارش مجدد</button>
+      </div>
+    </div></div>`;
+}
+function openPanel(){ $('#userPanel').classList.add('open'); document.body.style.overflow='hidden'; renderPanel(); }
+function closePanel(){ $('#userPanel').classList.remove('open'); document.body.style.overflow=''; }
+function panelInit(){
+  $$('#upTabbar .up-tab').forEach(t=>t.addEventListener('click',()=>{
+    $$('#upTabbar .up-tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    $$('.up-view').forEach(v=>v.classList.toggle('on', v.dataset.view===t.dataset.tab));
+    $('#upBody').scrollTop = 0;
+    renderPanel();
+  }));
+}
+
+/* ============================================================
+   کارت شانس
+============================================================ */
+let luckyPrize = null, luckyFlipped = false;
+function pickPrize(){
+  const tot = PRIZES.reduce((s,p)=>s+p.w,0);
+  let r = Math.random()*tot;
+  for(const p of PRIZES){ if((r-=p.w) <= 0) return p; }
+  return PRIZES[1];
+}
+function openLucky(){
+  if(luckyFlipped && luckyPrize){ renderBack(luckyPrize); }
+  openOverlay('luckyModal');
+}
+function renderBack(p){
+  $('#lcBack').innerHTML = `
+    <span class="lc-prize-ic"><svg class="icon"><use href="#${p.ic}"/></svg></span>
+    <h4>${p.t}</h4>
+    <span class="lc-code">${p.c}</span>
+    <p>${p.d}</p>`;
+  $('#luckyUse').style.display = '';
+}
+function luckyInit(){
+  $('#lcInner').addEventListener('click', () => {
+    if(luckyFlipped) return;
+    luckyFlipped = true;
+    luckyPrize = pickPrize();
+    renderBack(luckyPrize);
+    $('#luckyModal .lucky-modal').classList.add('flipped');
+    setTimeout(()=>toast('🎉 جایزه شما ثبت شد! کد در پنل کاربری ذخیره شد','gold',4200), 900);
+  });
+  $('#lcInner').addEventListener('keydown', e => { if(e.key==='Enter') $('#lcInner').click(); });
+  $('#luckyUse').addEventListener('click', () => {
+    if(luckyPrize && !state.codes.some(c=>c.code===luckyPrize.c)){
+      state.codes.push({code:luckyPrize.c, label:luckyPrize.t, used:false, ts:Date.now()});
+      saveState();
+    }
+    closeOverlay('luckyModal');
+    toast('جایزه در «پنل کاربری ← کدهای من» ذخیره شد 🎁','gold');
+  });
+  /* هر بار ورود به سایت (هر سشن جدید)، کارت شانس باز می‌شود */
+  setTimeout(() => {
+    if(!sessionStorage.getItem('asalat_lucky_seen')){
+      sessionStorage.setItem('asalat_lucky_seen','1');
+      openLucky();
+    }
+  }, 1600);
+}
+
+/* ============================================================
+   رویدادهای سراسری و راه‌اندازی
+============================================================ */
+document.addEventListener('click', e => {
+  const open = e.target.closest('[data-open]');
+  if(open){
+    const m = open.dataset.open;
+    if(m==='cart') openCart();
+    if(m==='track'){ openOverlay('trackModal'); setTimeout(()=>$('#trackInputM').focus(),200); }
+    if(m==='panel') openPanel();
+    if(m==='lucky') openLucky();
+    if(m==='fav'){ openOverlay('favModal'); renderFavModal(); }
+    return;
+  }
+  const close = e.target.closest('[data-close]');
+  if(close){ closeOverlay(close.dataset.close); return; }
+  if(e.target.classList.contains('overlay')){ closeAllOverlays(); return; }
+
+  const sc = e.target.closest('[data-scroll]');
+  if(sc){
+    e.preventDefault();
+    closeDrawer();
+    const t = $(sc.dataset.scroll);
+    t && t.scrollIntoView({behavior:'smooth'});
+    if(sc.dataset.cat){ setShopCat(sc.dataset.cat); }
+    if(sc.dataset.search){ shopFilter.q = sc.dataset.search; $('#searchInput').value = sc.dataset.search; $('#searchInputM').value = sc.dataset.search; applyShop(); }
+    return;
+  }
+  const dt = e.target.closest('[data-toast]');
+  if(dt){ e.preventDefault(); toast(dt.dataset.toast,'ok',4200); return; }
+  const cp = e.target.closest('[data-coupon]');
+  if(cp){ $('#couponInput').value = cp.dataset.coupon; applyCoupon(cp.dataset.coupon); return; }
+  const st = e.target.closest('[data-setcat]');
+  if(st){ setShopCat(st.dataset.setcat); scrollToShop(); return; }
+});
+function setShopCat(id){
+  shopFilter.cat = id; shopFilter.shown = 12;
+  $$('#catChips .chip').forEach(c=>c.classList.toggle('on', c.dataset.cat===id));
+  applyShop();
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeAllOverlays(); closeCart(); closeDrawer(); } });
+
+function bindShopControls(){
+  const chips = [{id:'all', name:'همه محصولات'}].concat(CATS);
+  $('#catChips').innerHTML = chips.map(c=>`<button class="chip ${c.id==='all'?'on':''}" data-cat="${c.id}">${c.name}</button>`).join('');
+  $$('#catChips .chip').forEach(c=>c.addEventListener('click',()=>setShopCat(c.dataset.cat)));
+  $('#priceMin').addEventListener('change', e=>{ shopFilter.min = e.target.value? +e.target.value : null; applyShop(); });
+  $('#priceMax').addEventListener('change', e=>{ shopFilter.max = e.target.value? +e.target.value : null; applyShop(); });
+  $('#sortSel').addEventListener('change', e=>{ shopFilter.sort = e.target.value; applyShop(); });
+  $('#showMore').addEventListener('click', ()=>{ shopFilter.shown += 12; applyShop(); });
+}
+
+function syncHeaderButtons(){
+  const mobile = window.innerWidth < 992;
+  $('#loginBtnM').style.display = mobile ? 'grid' : 'none';
+}
+window.addEventListener('resize', syncHeaderButtons);
+
+function init(){
+  renderNav();
+  renderCats();
+  renderPacks();
+  renderRail('bestRail', PRODUCTS.filter(p=>p.sec.includes('best')).sort((a,b)=>b.sold-a.sold).slice(0,8));
+  renderRail('newRail',  PRODUCTS.filter(p=>p.sec.includes('new')).slice(0,10));
+  $('#amzRail').innerHTML = '';
+  renderRail('amzRail',  PRODUCTS.filter(p=>p.sec.includes('amz')).sort((a,b)=>b.disc-a.disc).slice(0,6));
+  renderGifts();
+  renderTrust();
+  bindShopControls();
+  applyShop();
+  bindSearch('searchInput','searchDD','searchBtn');
+  bindSearch('searchInputM','searchDDM','searchBtnM');
+  applyTheme();
+  heroInit();
+  startCountdowns();
+  coInit();
+  panelInit();
+  luckyInit();
+  syncCart(); syncFavs(); syncHeaderButtons();
+
+  /* هدر و کشوها */
+  $('#burgerBtn').addEventListener('click', openDrawer);
+  $('#drawerClose').addEventListener('click', closeDrawer);
+  $('#drawerVeil').addEventListener('click', closeDrawer);
+  $('#cartBtn').addEventListener('click', openCart);
+  $('#cartClose').addEventListener('click', closeCart);
+  $('#cartVeil').addEventListener('click', closeCart);
+  $('#favBtn').addEventListener('click', ()=>{ openOverlay('favModal'); renderFavModal(); });
+  $('#loginBtn').addEventListener('click', openPanel);
+  $('#loginBtnM').addEventListener('click', openPanel);
+  $('#themeBtn').addEventListener('click', e=>{ e.stopPropagation(); $('#themePop').classList.toggle('open'); });
+  document.addEventListener('click', e=>{ if(!e.target.closest('#themePop') && !e.target.closest('#themeBtn')) $('#themePop').classList.remove('open'); });
+  $('#panelClose').addEventListener('click', closePanel);
+  $('#fabTop').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+  /* کوپن و تسویه */
+  $('#couponBtn').addEventListener('click', ()=>applyCoupon($('#couponInput').value));
+  $('#checkoutBtn').addEventListener('click', ()=>{
+    if(!cartCount()) return toast('سبد خرید خالی است','err');
+    closeCart(); coStep(0); openOverlay('coModal');
+  });
+
+  /* فرم‌ها */
+  $('#newsForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    toast('عضویت شما ثبت شد! کد WELCOME10 برای اولین خرید فعال است 🎁','gold',4600);
+    $('#newsInput').value='';
+  });
+  $('#consultForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const ph = toEn($('#consPhone').value).replace(/\D/g,'');
+    if(!/^09\d{9}$/.test(ph)) return toast('شماره موبایل معتبر وارد کنید','err');
+    toast('درخواست مشاوره ثبت شد؛ کارشناس دانه‌سرا تا ۳۰ دقیقه دیگر با شما تماس می‌گیرد 📞','ok',5200);
+    e.target.reset();
+  });
+  $('#trackFormM').addEventListener('submit', e=>{ e.preventDefault(); doTrack('trackInputM','timelineM'); });
+  $('#trackFormS').addEventListener('submit', e=>{
+    e.preventDefault();
+    const el = $('#timelineS');
+    const q = $('#trackInputS').value, qe = toEn(q).replace(/\D/g,'');
+    let o = null;
+    if(/^09\d{9}$/.test(qe)) o = state.orders.find(x=>x.addr.phone===qe) || null;
+    if(!o) o = state.orders.find(x=>x.code.toUpperCase()===toEn(q).trim().toUpperCase()) || null;
+    if(o) renderTimeline(o, el);
+    else if(q.trim()){ el.innerHTML = '<p style="font-size:.82rem;color:var(--ink-3)">سفارشی یافت نشد؛ از دکمه «پیگیری سفارش» بالای صفحه با کد صحیح امتحان کنید.</p>'; }
+    else toast('کد سفارش یا شماره موبایل را وارد کنید','err');
+    el.classList.add('open');
+  });
+}
+init();
+</script>
+</body>
+</html>
