@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>دانه‌سرا | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی</title>
-<meta name="description" content="خرید آنلاین بهترین آجیل، پسته، بادام، گردو، خرما، زعفران و پک‌های هدیه با تضمین تازگی، ارسال سریع سراسری و مرجوعی رایگان از فروشگاه دانه‌سرا">
+<title>خانم گل | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی</title>
+<meta name="description" content="خرید آنلاین بهترین آجیل، پسته، بادام، گردو، خرما، زعفران و پک‌های هدیه با تضمین تازگی، ارسال سریع سراسری و مرجوعی رایگان از فروشگاه خانم گل">
 <meta name="keywords" content="آجیل, خشکبار, پسته, بادام, گردو, خرما, زعفران, پک هدیه, فروشگاه اینترنتی خشکبار">
-<meta property="og:title" content="دانه‌سرا | طعم اصالت، کیفیت در هر دانه">
+<meta property="og:title" content="خانم گل | طعم اصالت، کیفیت در هر دانه">
 <meta property="og:description" content="انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#358500">
@@ -15,11 +15,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Lalezar&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Store","name":"فروشگاه خشکبار دانه‌سرا","description":"فروشگاه اینترنتی آجیل و خشکبار","telephone":"+982191092000","priceRange":"$$","address":{"@type":"PostalAddress","addressCountry":"IR","addressLocality":"تهران"},"openingHours":"Mo-Su 09:00-21:00"}
+{"@context":"https://schema.org","@type":"Store","name":"فروشگاه خشکبار خانم گل","description":"فروشگاه اینترنتی آجیل و خشکبار","telephone":"+982191092000","priceRange":"$$","address":{"@type":"PostalAddress","addressCountry":"IR","addressLocality":"تهران"},"openingHours":"Mo-Su 09:00-21:00"}
 </script>
 <style>
 /* ============================================================
-   دانه‌سرا — فروشگاه خشکبار | Design Tokens
+   خانم گل — فروشگاه خشکبار | Design Tokens
    Palette: brand #358500 | gold #c29800 | bg #ffffff
 ============================================================ */
 :root{
@@ -504,29 +504,68 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .btn-gold-o:hover{background:var(--gold);color:#fff}
 @media(min-width:992px){.gift-grid{grid-template-columns:repeat(4,1fr)}.gift-sec{padding:44px 36px}}
 
-/* ================= خرید اطمینان ================= */
-.trust-sec{background:linear-gradient(120deg,var(--gold-050),#fff 55%,var(--brand-050))}
-.trust-wrap{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
-.trust-card{background:#fff;border:2px solid var(--gold-100);border-radius:var(--r-xl);box-shadow:var(--sh-md);overflow:hidden;display:grid;grid-template-columns:1fr;position:relative}
-.t-ribbon{position:absolute;top:18px;right:-42px;transform:rotate(-45deg);background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#fff;
-  padding:6px 50px;font-size:.76rem;font-weight:800;box-shadow:0 4px 12px rgba(194,152,0,.4);z-index:3;letter-spacing:.3px}
+/* ================= خرید اطمینان (بازطراحی — نوار تیره لوکس) ================= */
+.trust-sec{background:linear-gradient(165deg,#2a1a0b,var(--brand-700) 52%,var(--brand));position:relative;overflow:hidden}
+.trust-sec::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;border:2px dashed rgba(212,175,55,.18);top:-120px;inset-inline-end:-90px;animation:spin 40s linear infinite;pointer-events:none}
+.trust-sec .sec-title{color:#fff}
+.trust-sec .sec-title i{color:var(--gold);font-style:normal}
+.trust-sec .sec-sub{color:#d9c9a8}
+.trust-head{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.t-count{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.07);border:1px solid rgba(212,175,55,.45);color:#ffe9b8;
+  padding:9px 16px;border-radius:99px;font-size:.78rem;font-weight:700;backdrop-filter:blur(4px)}
+.t-count .icon{width:15px;height:15px;fill:var(--gold)}
+.t-count b{font-family:var(--f-display);font-weight:400;font-size:1.02rem;color:var(--gold);letter-spacing:1px;min-width:86px;text-align:center}
+.trust-wrap{display:grid;grid-template-columns:1fr;gap:16px;margin-top:18px}
+.trust-card{position:relative;background:rgba(255,255,255,.055);border:1px solid rgba(212,175,55,.35);border-radius:22px;overflow:hidden;
+  display:grid;grid-template-columns:1fr;box-shadow:0 18px 44px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
 .t-media{position:relative;aspect-ratio:16/10;overflow:hidden}
-.t-media img{width:100%;height:100%;object-fit:cover}
-.t-off{position:absolute;bottom:12px;inset-inline-start:12px}
-.t-body{padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px}
-.t-kicker{font-size:.76rem;color:var(--gold-600);font-weight:800;display:flex;align-items:center;gap:6px}
-.t-title{font-size:1.15rem;font-weight:800}
-.t-why{font-size:.84rem;color:var(--ink-2);background:var(--brand-soft);border:1px dashed var(--brand-100);border-radius:12px;padding:10px 13px}
-.t-why b{color:var(--brand-700)}
-.t-price{display:flex;align-items:baseline;gap:10px}
-.t-price del{color:var(--ink-3);font-size:.85rem}
-.t-price b{font-size:1.3rem;color:var(--brand-700)}
-.t-price small{color:var(--ink-3);font-size:.75rem}
-.t-days{display:flex;gap:7px;align-items:center}
-.t-days i{width:11px;height:11px;border-radius:50%;background:var(--line-2);transition:var(--tr)}
-.t-days i.on{background:var(--gold);transform:scale(1.25);box-shadow:0 0 0 3px var(--gold-100)}
-.t-days span{font-size:.72rem;color:var(--ink-3);margin-inline-start:4px}
-@media(min-width:820px){.trust-card{grid-template-columns:1.05fr 1fr}.t-media{aspect-ratio:auto;min-height:300px}}
+.t-media img{width:100%;height:100%;object-fit:cover;transition:transform .55s ease}
+.trust-card:hover .t-media img{transform:scale(1.05)}
+.t-off{position:absolute;bottom:12px;inset-inline-start:12px;background:linear-gradient(135deg,var(--red),var(--red-600));color:#fff;border:2px solid var(--gold);font-weight:800}
+.t-daychip{position:absolute;top:12px;inset-inline-end:12px;background:rgba(24,14,4,.74);border:1px solid rgba(212,175,55,.55);color:#ffe9b8;
+  padding:6px 13px;border-radius:99px;font-size:.72rem;font-weight:800;backdrop-filter:blur(4px)}
+.t-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:11px;color:#f4ead6}
+.t-kicker{font-size:.74rem;color:var(--gold);font-weight:800;display:flex;align-items:center;gap:7px}
+.t-kicker .icon{width:14px;height:14px;fill:var(--gold)}
+.t-title{font-size:1.18rem;font-weight:800;color:#fff;line-height:1.5}
+.t-why{font-size:.82rem;color:#e7dcc4;background:rgba(255,255,255,.05);border:1px dashed rgba(212,175,55,.45);border-radius:12px;padding:10px 13px;line-height:1.9}
+.t-why b{color:var(--gold)}
+.t-price{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.t-price del{color:#b9a98c;font-size:.86rem}
+.t-price b{font-size:1.4rem;color:var(--gold);font-family:var(--f-display);font-weight:400}
+.t-price small{color:#b9a98c;font-size:.72rem}
+.t-save{font-size:.72rem;font-weight:800;color:#9fe7b0;background:rgba(60,180,110,.16);border:1px solid rgba(110,220,150,.4);padding:5px 12px;border-radius:99px}
+.t-stock{font-size:.72rem;font-weight:700;color:#e7dcc4}
+.t-stock .bar{height:7px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
+.t-stock .bar i{display:block;height:100%;width:38%;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--gold));animation:barPulse 2.4s ease-in-out infinite}
+@keyframes barPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.t-days{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.t-days .lbl{font-size:.72rem;color:#b9a98c}
+.t-daypill{border:1px solid rgba(212,175,55,.4);background:rgba(255,255,255,.05);color:#e7dcc4;border-radius:99px;
+  padding:5px 12px;font-size:.72rem;font-weight:700;cursor:pointer;transition:var(--tr);font-family:inherit}
+.t-daypill:hover{border-color:var(--gold);color:#ffe9b8}
+.t-daypill.on{background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#241704;border-color:transparent;box-shadow:0 4px 12px rgba(194,152,0,.4)}
+.t-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:2px}
+.btn-ghostd{background:transparent;border:2px solid rgba(212,175,55,.5);color:#ffe9b8}
+.btn-ghostd:hover{background:rgba(212,175,55,.12)}
+.trust-side{display:flex;flex-direction:column;gap:14px}
+.ts-card{background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.28);border-radius:18px;padding:16px 17px}
+.ts-card h4{color:#fff;font-size:.95rem;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.ts-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed rgba(212,175,55,.25)}
+.ts-item:last-child{border-bottom:0;padding-bottom:2px}
+.ts-item .ti{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.4)}
+.ts-item .ti .icon{width:16px;height:16px;fill:var(--gold)}
+.ts-item b{display:block;font-size:.82rem;color:#fff;margin-bottom:2px}
+.ts-item span{font-size:.72rem;color:#c9b892;line-height:1.8}
+.ts-note{font-size:.78rem;color:#e7dcc4;line-height:2}
+.ts-note b{color:var(--gold)}
+@media(min-width:820px){
+  .trust-head{flex-direction:row;align-items:flex-end;justify-content:space-between}
+  .trust-card{grid-template-columns:1.05fr 1fr}
+  .t-media{aspect-ratio:auto;min-height:330px}
+  .t-body{padding:22px 24px 24px}
+}
+@media(min-width:1200px){.trust-wrap{grid-template-columns:1.72fr 1fr;align-items:stretch}}
 
 /* ================= مشاوره خرید + پیگیری ================= */
 .cons-grid{display:grid;grid-template-columns:1fr;gap:14px}
@@ -557,7 +596,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .tl-item span{font-size:.72rem;color:var(--ink-3)}
 @media(min-width:992px){.cons-grid{grid-template-columns:1fr 1fr 1fr}}
 
-/* ================= چرا دانه‌سرا ================= */
+/* ================= چرا خانم گل ================= */
 .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .why-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 16px;text-align:center;transition:var(--tr)}
 .why-card:hover{transform:translateY(-6px);box-shadow:var(--sh-md);border-color:var(--gold-100)}
@@ -587,31 +626,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .story-pts{display:flex;gap:10px;flex-wrap:wrap}
 .story-pts .tag{font-size:.76rem;padding:7px 13px}
 @media(min-width:992px){.story-grid{grid-template-columns:1fr 1.15fr}}
-
-/* ================= نظرات مشتریان ================= */
-.rev-grid{display:grid;grid-template-columns:1fr;gap:12px}
-.rev-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh-sm);position:relative}
-.rev-card::before{content:"”";position:absolute;top:6px;left:16px;font-family:var(--f-serif);font-size:3.4rem;color:var(--gold-100);line-height:1}
-.stars{display:flex;gap:2px;color:var(--star);margin-bottom:8px}
-.stars .icon{width:15px;height:15px;fill:var(--star)}
-.rev-text{font-size:.85rem;color:var(--ink-2);margin-bottom:12px;min-height:66px}
-.rev-user{display:flex;align-items:center;gap:10px}
-.rev-av{width:40px;height:40px;border-radius:50%;background:var(--brand-050);color:var(--brand-700);display:grid;place-items:center;font-weight:800;font-size:.95rem;flex:none}
-.rev-user b{font-size:.85rem;display:block}
-.rev-user span{font-size:.7rem;color:var(--ink-3)}
-.rev-prod{margin-inline-start:auto;font-size:.68rem;color:var(--gold-600);background:var(--gold-050);border:1px solid var(--gold-100);padding:4px 10px;border-radius:99px;font-weight:700}
-@media(min-width:768px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1200px){.rev-grid{grid-template-columns:repeat(3,1fr)}}
-
-/* ================= خبرنامه ================= */
-.news-box{background:linear-gradient(135deg,var(--brand-600),var(--brand));border-radius:var(--r-xl);padding:30px 22px;color:#fff;text-align:center;position:relative;overflow:hidden}
-.news-box::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:2px dashed rgba(255,255,255,.2);top:-90px;inset-inline-end:-70px}
-.news-box h3{font-family:var(--f-display);font-weight:400;font-size:1.5rem;margin-bottom:6px}
-.news-box p{font-size:.86rem;color:#e2efda;max-width:520px;margin:0 auto 18px}
-.news-form{display:flex;gap:9px;max-width:480px;margin:0 auto;background:#fff;padding:6px;border-radius:16px;box-shadow:var(--sh-md)}
-.news-form input{flex:1;border:0;outline:none;padding:10px 14px;border-radius:12px;font-size:.9rem;min-width:0}
-.news-note{font-size:.72rem;color:#d7e6cd;margin-top:12px}
-.news-note b{color:var(--gold)}
 
 /* ================= Footer ================= */
 .footer{background:linear-gradient(180deg,#20340f,#142408);color:#dbe6cf;margin-top:60px}
@@ -952,9 +966,9 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <div class="container">
     <div class="hd-inner">
       <button class="burger" id="burgerBtn" aria-label="باز کردن منو"><svg class="icon"><use href="#i-menu"/></svg></button>
-      <a class="logo" href="#" aria-label="فروشگاه دانه‌سرا">
+      <a class="logo" href="#" aria-label="فروشگاه خانم گل">
         <span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span>
-        <span class="logo-text"><b>دانه‌سرا</b><small>خشکبار و محصولات طبیعی</small></span>
+        <span class="logo-text"><b>خانم گل</b><small>خشکبار و محصولات طبیعی</small></span>
       </a>
       <div class="search-wrap">
         <div class="search-box">
@@ -1010,7 +1024,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 <aside class="drawer" id="navDrawer" aria-label="منوی اصلی">
   <div class="drawer-head">
     <span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span>
-    <b>دانه‌سرا</b>
+    <b>خانم گل</b>
     <button id="drawerClose" aria-label="بستن منو"><svg class="icon"><use href="#i-x"/></svg></button>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
@@ -1018,7 +1032,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
     <a href="tel:02191092000"><svg class="icon"><use href="#i-phone"/></svg> ۰۲۱-۹۱۰۹۲۰۰۰</a>
     <a href="#consult" data-scroll="#consult"><svg class="icon"><use href="#i-headset"/></svg> مشاوره خرید</a>
     <a href="#track" data-open="track"><svg class="icon"><use href="#i-doc"/></svg> پیگیری سفارش</a>
-    <a href="#story" data-scroll="#story"><svg class="icon"><use href="#i-leaf"/></svg> داستان دانه‌سرا</a>
+    <a href="#story" data-scroll="#story"><svg class="icon"><use href="#i-leaf"/></svg> داستان خانم گل</a>
   </div>
 </aside>
 
@@ -1041,7 +1055,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       <div class="slide">
         <div class="s-media"><img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e218521bb098.jpg" alt="پسته تازه در کاسه چوبی" loading="lazy"></div>
         <div class="s-content">
-          <span class="s-tag"><svg class="icon"><use href="#i-fire"/></svg> پرفروش‌ترین‌های دانه‌سرا</span>
+          <span class="s-tag"><svg class="icon"><use href="#i-fire"/></svg> پرفروش‌ترین‌های خانم گل</span>
           <h2 class="s-title">پسته، بادام و گردوی <em>درجه‌یک</em></h2>
           <p class="s-text">محصولات ما مستقیماً از باغ‌های رفسنجان، سمنان و تویسرکان تهیه و روزانه بو داده می‌شوند.</p>
           <div class="s-ctas">
@@ -1141,7 +1155,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <div class="container">
     <div class="sec-head">
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-leaf"/></svg></span>
-        <div><h2 class="sec-title">تازه‌ها و <i>ممتازترین‌ها</i></h2><span class="sec-sub">جدیدترین محصولات رسیدۀ به قفسه‌های دانه‌سرا</span></div></span>
+        <div><h2 class="sec-title">تازه‌ها و <i>ممتازترین‌ها</i></h2><span class="sec-sub">جدیدترین محصولات رسیدۀ به قفسه‌های خانم گل</span></div></span>
       <div class="sec-actions">
         <button class="rail-arrow" data-rail="newRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
         <button class="rail-arrow" data-rail="newRail" data-dir="-1" aria-label="قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
@@ -1155,7 +1169,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <div class="container">
     <div class="sec-head">
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-search"/></svg></span>
-        <div><h2 class="sec-title">فروشگاه <i>دانه‌سرا</i></h2><span class="sec-sub">جستجو، فیلتر و مقایسه میان همه محصولات</span></div></span>
+        <div><h2 class="sec-title">فروشگاه <i>خانم گل</i></h2><span class="sec-sub">جستجو، فیلتر و مقایسه میان همه محصولات</span></div></span>
       <div class="sec-actions"><span class="shop-meta" id="shopMeta"></span></div>
     </div>
     <div class="shop-tools">
@@ -1194,7 +1208,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
     <div class="gift-sec">
       <div class="sec-head">
         <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-gift"/></svg></span>
-          <div><h2 class="sec-title">پک‌های <i>هدیه</i> دانه‌سرا</h2><span class="sec-sub">جعبه‌های لوکس برای لحظه‌های خاص؛ با کارت تبریک و بسته‌بندی طلایی</span></div></span>
+          <div><h2 class="sec-title">پک‌های <i>هدیه</i> خانم گل</h2><span class="sec-sub">جعبه‌های لوکس برای لحظه‌های خاص؛ با کارت تبریک و بسته‌بندی طلایی</span></div></span>
       </div>
       <div class="gift-grid" id="giftGrid"></div>
     </div>
@@ -1204,26 +1218,41 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 <!-- ===== خرید اطمینان ===== -->
 <section class="section trust-sec" id="etemad" aria-label="خرید اطمینان">
   <div class="container">
-    <div class="sec-head">
+    <div class="sec-head trust-head">
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-shield"/></svg></span>
-        <div><h2 class="sec-title">قسمت <i>خرید اطمینان</i></h2><span class="sec-sub">هر روز یک کالای منتخب غیرخوراکی با قیمت ویژه</span></div></span>
+        <div><h2 class="sec-title">خرید <i>اطمینان</i></h2><span class="sec-sub">هر روز یک کالای منتخب غیرخوراکی با قیمت ویژه؛ چون به نام ما اعتماد دارید، با خیال راحت بخرید</span></div></span>
+      <div class="t-count" id="trustCount"><svg class="icon"><use href="#i-clock"/></svg><span>تا پایان پیشنهاد امروز</span><b>۰۰:۰۰:۰۰</b></div>
     </div>
     <div class="trust-wrap">
-      <div class="trust-card" id="trustCard">
-        <span class="t-ribbon">پیشنهاد ویژه اطمینان</span>
-        <div class="t-media"><img id="trustImg" src="" alt="کالای روز خرید اطمینان" loading="lazy"><span class="t-off tag red" id="trustOff">٪۱۵ تخفیف امروز</span></div>
+      <article class="trust-card" id="trustCard">
+        <div class="t-media">
+          <img id="trustImg" src="" alt="کالای روز خرید اطمینان" loading="lazy">
+          <span class="t-daychip" id="trustDay">پیشنهاد امروز</span>
+          <span class="t-off tag red" id="trustOff">٪۱۵ تخفیف امروز</span>
+        </div>
         <div class="t-body">
-          <span class="t-kicker"><svg class="icon"><use href="#i-shield"/></svg> پیشنهاد <span id="trustDay">امروز</span></span>
+          <span class="t-kicker"><svg class="icon"><use href="#i-shield"/></svg> کالای غیرخوراکی منتخب خانم گل</span>
           <h3 class="t-title" id="trustName">—</h3>
           <p class="t-why" id="trustWhy"><b>چرا این‌جا؟</b> </p>
-          <div class="t-price"><del id="trustOld">—</del><b id="trustPrice">—</b><small>تومان</small></div>
-          <div class="t-days" id="trustDays"><span>کالای هر روز هفته متفاوت است:</span></div>
-          <div style="display:flex;gap:9px;flex-wrap:wrap">
-            <button class="btn btn-brand" id="trustAdd"><svg class="icon"><use href="#i-cart"/></svg> افزودن به سبد</button>
-            <button class="btn btn-light" data-open="track">این هم اعتماد ماست؛ سفارش خود را پیگیری کنید</button>
+          <div class="t-price"><del id="trustOld">—</del><b id="trustPrice">—</b><small>تومان</small><span class="t-save" id="trustSave">—</span></div>
+          <div class="t-stock">موجودی امروز محدود است<div class="bar"><i></i></div></div>
+          <div class="t-days" id="trustDays"></div>
+          <div class="t-actions">
+            <button class="btn btn-gold" id="trustAdd"><svg class="icon"><use href="#i-cart"/></svg> افزودن به سبد</button>
+            <button class="btn btn-ghostd" data-open="track">سفارش‌های قبلی‌تان را پیگیری کنید</button>
           </div>
         </div>
-      </div>
+      </article>
+      <aside class="trust-side">
+        <div class="ts-card">
+          <h4><span class="pulse-sun sm">✓</span> زیر یک سقف با شما</h4>
+          <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-shield"/></svg></span><div><b>کیفیت‌سنجی تیم خانم گل</b><span>هر کالا پیش از عرضه توسط تیم ما بررسی و تأیید می‌شود.</span></div></div>
+          <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-percent"/></svg></span><div><b>تضمین بازگشت ۷ روزه</b><span>راضی نبودید؟ بدون سؤال و با کد تخفیف هدیه پس بگیرید.</span></div></div>
+          <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-truck"/></svg></span><div><b>ارسال سریع و ضربه‌گیر</b><span>بسته‌بندی چندلایه و رهگیری لحظه‌ای مرسوله.</span></div></div>
+          <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-wallet"/></svg></span><div><b>پرداخت مطمئن</b><span>درگاه بانکی معتبر یا پرداخت در محل، به انتخاب شما.</span></div></div>
+        </div>
+        <div class="ts-card ts-note"><b>چرا غیرخوراکی؟</b> چون وقتی نام «خانم گل» پشت کالایی است، کیفیتش را تضمین می‌کنیم — خوراکی یا هر چیز دیگر. کالای امروز را از دست ندهید؛ فردا با پیشنهاد تازه‌ای برمی‌گردیم! ☀️</div>
+      </aside>
     </div>
   </div>
 </section>
@@ -1233,7 +1262,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <div class="container">
     <div class="sec-head">
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-headset"/></svg></span>
-        <div><h2 class="sec-title"><i>مشاوره خرید</i> و پیگیری سفارش</h2><span class="sec-sub">کارشناسان دانه‌سرا پاسخگوی انتخاب‌های شما هستند</span></div></span>
+        <div><h2 class="sec-title"><i>مشاوره خرید</i> و پیگیری سفارش</h2><span class="sec-sub">کارشناسان خانم گل پاسخگوی انتخاب‌های شما هستند</span></div></span>
     </div>
     <div class="cons-grid">
       <div class="cons-card hl">
@@ -1283,12 +1312,12 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   </div>
 </section>
 
-<!-- ===== چرا دانه‌سرا ===== -->
+<!-- ===== چرا خانم گل ===== -->
 <section class="section" id="why" style="padding-top:0" aria-label="مزایای فروشگاه">
   <div class="container">
     <div class="sec-head">
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-shield"/></svg></span>
-        <div><h2 class="sec-title">چرا <i>دانه‌سرا</i>؟</h2><span class="sec-sub">چهار دلیل برای اعتماد هزاران خانواده ایرانی</span></div></span>
+        <div><h2 class="sec-title">چرا <i>خانم گل</i>؟</h2><span class="sec-sub">چهار دلیل برای اعتماد هزاران خانواده ایرانی</span></div></span>
     </div>
     <div class="why-grid">
       <div class="why-card"><span class="wi"><svg class="icon"><use href="#i-leaf"/></svg></span><b>تضمین تازگی و کیفیت</b><p>محصولات روزانه از باغ‌ها دریافت و بو داده می‌شوند؛ اگر راضی نبودید، مرجوعی رایگان است.</p></div>
@@ -1300,7 +1329,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 </section>
 
 <!-- ===== داستان ما ===== -->
-<section class="section story-sec" id="story" aria-label="داستان دانه‌سرا">
+<section class="section story-sec" id="story" aria-label="داستان خانم گل">
   <div class="container">
     <div class="story-grid">
       <div class="story-media">
@@ -1309,10 +1338,10 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       </div>
       <div class="story-body">
         <div class="sec-head" style="margin-bottom:10px"><span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-leaf"/></svg></span>
-          <h2 class="sec-title">داستان <i>دانه‌سرا</i></h2></span></div>
-        <p>قصه ما از یک مغازه کوچک در راسته خشکبار بازار قدیم شروع شد؛ جایی که پدربزرگ با یک ترازوی برنجی و یک عهد ساده کار می‌کرد: «به مشتری همان را بده که برای خانه خودت برمی‌داری.» امروز دانه‌سرا همان عهد را با ابزارهای امروزی ادامه می‌دهد؛ خرید مستقیم از باغ‌داران رفسنجان، سمنان، استهبان و قائنات.</p>
+          <h2 class="sec-title">داستان <i>خانم گل</i></h2></span></div>
+        <p>قصه ما از یک مغازه کوچک در راسته خشکبار بازار قدیم شروع شد؛ جایی که پدربزرگ با یک ترازوی برنجی و یک عهد ساده کار می‌کرد: «به مشتری همان را بده که برای خانه خودت برمی‌داری.» امروز خانم گل همان عهد را با ابزارهای امروزی ادامه می‌دهد؛ خرید مستقیم از باغ‌داران رفسنجان، سمنان، استهبان و قائنات.</p>
         <p>ما هیچ محصولی را انبار نمی‌کنیم؛ سفارش‌ها روز ثبت، وزن و بسته‌بندی می‌شوند و با بسته‌بندی بهداشتی و وکیوم به دست شما می‌رسند. کیفیت هر محموله قبل از ورود در آزمایشگاه کنترل می‌شود.</p>
-        <blockquote>«به مشتری همان را بده که برای خانه خودت برمی‌داری.» — بنیان‌گذار دانه‌سرا، ۱۳۶۵</blockquote>
+        <blockquote>«به مشتری همان را بده که برای خانه خودت برمی‌داری.» — بنیان‌گذار خانم گل، ۱۳۶۵</blockquote>
         <div class="story-pts">
           <span class="tag green"><svg class="icon"><use href="#i-check"/></svg> خرید مستقیم از باغ‌دار</span>
           <span class="tag gold">بدون واسطه</span>
@@ -1324,69 +1353,13 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   </div>
 </section>
 
-<!-- ===== نظرات مشتریان ===== -->
-<section class="section" id="reviews" aria-label="نظرات مشتریان">
-  <div class="container">
-    <div class="sec-head">
-      <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-star"/></svg></span>
-        <div><h2 class="sec-title">مشتریان ما چه <i>می‌گویند</i>؟</h2><span class="sec-sub">امتیاز ۴.۸ از ۵ بر اساس بیش از ۱۲٬۴۰۰ نظر ثبت‌شده</span></div></span>
-    </div>
-    <div class="rev-grid">
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
-        <p class="rev-text">پسته اکبری‌شون واقعاً عالی بود؛ تازه، خوش‌طعم و بسته‌بندی بی‌نقص. سفارش صبح ثبت شد و فردا ظهر تحویل گرفتم.</p>
-        <div class="rev-user"><span class="rev-av">س</span><div><b>سارا محمدی</b><span>تهران</span></div><span class="rev-prod">پسته اکبری ممتاز</span></div>
-      </div>
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
-        <p class="rev-text">پک هدیه یلدا رو برای خانواده گرفتم؛ جعبه‌ش آن‌قدر شیک بود که همتون گفتن از کجا خریدی! خشکبارش هم فوق‌العاده تازه بود.</p>
-        <div class="rev-user"><span class="rev-av">ا</span><div><b>امیر رضایی</b><span>مشهد</span></div><span class="rev-prod">پک هدیه یلدا</span></div>
-      </div>
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon" style="opacity:.25"><use href="#i-star"/></svg></div>
-        <p class="rev-text">مغز گردو هفت‌پر بود و هیچ تلخی‌ای نداشت. فقط ای‌کاش ارسال به شهرستان یه روز سریع‌تر بود؛ ولی کیفیت واقعاً ارزشش رو داشت.</p>
-        <div class="rev-user"><span class="rev-av">ف</span><div><b>فاطمه کریمی</b><span>اصفهان</span></div><span class="rev-prod">مغز گردو</span></div>
-      </div>
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
-        <p class="rev-text">زعفران سرگلشون رنگ و عطر بی‌نظیری داره. تیم مشاوره هم با صبوری راهنماییم کردن که چه مقدار بخرم. مشتری ثابت‌تون شدم.</p>
-        <div class="rev-user"><span class="rev-av">ن</span><div><b>نگار حسینی</b><span>شیراز</span></div><span class="rev-prod">زعفران سرگل قائنات</span></div>
-      </div>
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
-        <p class="rev-text">خرما پیارم درست همون چیزی بود که تو توضیحات نوشته بودن. بسته‌بندی وکیوم و تاریخ شمسی روی کارتن؛ حرفه‌ای کار می‌کنن.</p>
-        <div class="rev-user"><span class="rev-av">ح</span><div><b>حسین موسوی</b><span>تبریز</span></div><span class="rev-prod">خرما پیارم</span></div>
-      </div>
-      <div class="rev-card">
-        <div class="stars"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></div>
-        <p class="rev-text">مرجوعی رایگان رو با شک داشتم، تست کردم! یه بسته فندق رو بدون هیچ سوالی پس گرفتن و هزینه‌ش هم برگشت. همین یعنی اعتماد به نفس.</p>
-        <div class="rev-user"><span class="rev-av">م</span><div><b>مریم احمدی</b><span>کرج</span></div><span class="rev-prod">فندق خام</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== خبرنامه ===== -->
-<section class="section" id="newsletter" style="padding-top:0" aria-label="خبرنامه">
-  <div class="container">
-    <div class="news-box">
-      <h3>عضو خانوادۀ دانه‌سرا شوید</h3>
-      <p>اولین کسی باشید که از تخفیف‌ها، محصولات تازه‌رس و پک‌های فصلی باخبر می‌شود.</p>
-      <form class="news-form" id="newsForm">
-        <input type="text" id="newsInput" placeholder="شماره موبایل یا ایمیل خود را وارد کنید" aria-label="شماره موبایل یا ایمیل" required>
-        <button class="btn btn-gold" type="submit">عضویت</button>
-      </form>
-      <p class="news-note">🎁 هدیه عضویت: کد تخفیف <b>WELCOME10</b> — ۱۰٪ تخفیف اولین خرید بالای ۵۰۰٬۰۰۰ تومان</p>
-    </div>
-  </div>
-</section>
 <!-- ===== فوتر ===== -->
 <footer class="footer" aria-label="پاورقی">
   <div class="container">
     <div class="f-top">
       <div class="f-col f-about">
-        <div class="f-logo"><span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span><b>دانه‌سرا</b></div>
-        <p>دانه‌سرا، فروشگاه اینترنتی خشکبار و محصولات طبیعی؛ بیش از سه دهه است که تازه‌ترین آجیل، خشکبار، زعفران و دمنوش‌ها را مستقیم از باغ‌داران ایرانی تهیه و با بسته‌بندی بهداشتی به سراسر ایران می‌رساند.</p>
+        <div class="f-logo"><span class="logo-mark"><svg class="icon"><use href="#i-nut"/></svg></span><b>خانم گل</b></div>
+        <p>خانم گل، فروشگاه اینترنتی خشکبار و محصولات طبیعی؛ بیش از سه دهه است که تازه‌ترین آجیل، خشکبار، زعفران و دمنوش‌ها را مستقیم از باغ‌داران ایرانی تهیه و با بسته‌بندی بهداشتی به سراسر ایران می‌رساند.</p>
         <div class="socials">
           <a href="#" aria-label="اینستاگرام"><svg class="icon"><use href="#i-instagram"/></svg></a>
           <a href="#" aria-label="تلگرام"><svg class="icon"><use href="#i-telegram"/></svg></a>
@@ -1415,7 +1388,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       <div class="f-col">
         <h4 class="f-title">تماس با ما</h4>
         <ul class="f-contact">
-          <li><svg class="icon"><use href="#i-pin"/></svg> تهران، خیابان ولی‌عصر، مجتمع تجاری دانه‌سرا، طبقه ۲</li>
+          <li><svg class="icon"><use href="#i-pin"/></svg> تهران، خیابان ولی‌عصر، مجتمع تجاری خانم گل، طبقه ۲</li>
           <li><svg class="icon"><use href="#i-phone"/></svg> ۰۲۱-۹۱۰۹۲۰۰۰ (۷ خط)</li>
           <li><svg class="icon"><use href="#i-sms"/></svg> info@asalat-shop.ir</li>
           <li><svg class="icon"><use href="#i-clock"/></svg> شنبه تا پنجشنبه ۹ تا ۲۱</li>
@@ -1428,7 +1401,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       </div>
     </div>
     <div class="f-bottom">
-      <span>© ۱۴۰۴ فروشگاه خشکبار <b>دانه‌سرا</b> — تمامی حقوق محفوظ است.</span>
+      <span>© ۱۴۰۴ فروشگاه خشکبار <b>خانم گل</b> — تمامی حقوق محفوظ است.</span>
       <span>طراحی‌شده با <b>♥</b> برای طعم‌های اصیل ایران</span>
     </div>
   </div>
@@ -1514,7 +1487,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
           <svg class="icon"><use href="#i-lock"/></svg> پرداخت به‌صورت امن از طریق درگاه بانکی انجام می‌شود (نسخه نمایشی؛ پرداخت واقعی انجام نمی‌شود).
         </div>
         <button class="btn btn-brand btn-lg btn-block co-pay-btn" id="coPay"><svg class="icon"><use href="#i-lock"/></svg> پرداخت و ثبت نهایی سفارش</button>
-        <p class="pay-note"><svg class="icon"><use href="#i-shield"/></svg> با ثبت سفارش، قوانین فروشگاه دانه‌سرا را می‌پذیرید.</p>
+        <p class="pay-note"><svg class="icon"><use href="#i-shield"/></svg> با ثبت سفارش، قوانین فروشگاه خانم گل را می‌پذیرید.</p>
       </div>
       <div class="co-pane" id="coPane3">
         <div class="co-success">
@@ -1567,7 +1540,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       </div>
       <div class="up-welcome" id="upWelcome">
         <svg class="icon"><use href="#i-gift"/></svg>
-        <p id="upWelcomeText">به پنل اختصاصی <b>دانه‌سرا</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)</p>
+        <p id="upWelcomeText">به پنل اختصاصی <b>خانم گل</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)</p>
       </div>
     </div>
     <div class="up-stats" id="upStats"></div>
@@ -1593,7 +1566,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <div class="modal lucky-modal">
     <div class="lucky-head">
       <div class="gift-ic"><svg class="icon"><use href="#i-gift"/></svg></div>
-      <h3>کارت شانس دانه‌سرا</h3>
+      <h3>کارت شانس خانم گل</h3>
       <p>هر بار که وارد سایت می‌شوید، یک کارت شانس پشت سر شماست! روی کارت بزنید و جایزه‌تان را ببینید.</p>
     </div>
     <div class="lucky-stage">
@@ -1618,7 +1591,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script>
 /* ============================================================
-   دانه‌سرا — منطق فروشگاه | داده‌ها و ابزارها
+   خانم گل — منطق فروشگاه | داده‌ها و ابزارها
 ============================================================ */
 'use strict';
 
@@ -1637,7 +1610,7 @@ const priceOf = (p, w) => { const base=Math.round(p.price*w/1000); return p.disc
 
 /* ---------- دسته‌بندی‌ها (۱۳ دسته) ---------- */
 const CATS = [
-  {id:'ajil', name:'آجیل و مغزها', icon:'i-nut', subs:['آجیل مخلوط شور','آجیل مخلوط شیرین','آجیل چهارمغز','مغزهای خام','آجیل سویسالی','آجیل رژیمی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66fd0cba7ee8.jpg', t:'آجیل مخلوط دانه‌سرا', s:'پنج‌مغز منتخب؛ تازه بو داده'}},
+  {id:'ajil', name:'آجیل و مغزها', icon:'i-nut', subs:['آجیل مخلوط شور','آجیل مخلوط شیرین','آجیل چهارمغز','مغزهای خام','آجیل سویسالی','آجیل رژیمی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66fd0cba7ee8.jpg', t:'آجیل مخلوط خانم گل', s:'پنج‌مغز منتخب؛ تازه بو داده'}},
   {id:'pistachio', name:'پسته', icon:'i-nut', subs:['پسته اکبری','پسته احمدآقایی','پسته فندقی','پسته خوئی','مغز پسته سبز','پسته شور لیمویی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ec01895c5c0b.jpg', t:'پسته اکبری رفسنجان', s:'ملکه پسته‌های ایران'}},
   {id:'almond', name:'بادام', icon:'i-nut', subs:['بادام درختی خام','بادام مامایی','بادام بو داده','مغز بادام','بادام پوست کاغذی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c6b8b1936b7c.jpg', t:'بادام بو داده نمکین', s:'عصرانه‌ای سالم و خوش‌طعم'}},
   {id:'walnut', name:'گردو', icon:'i-nut', subs:['مغز گردو هفت‌پر','گردوی درشت چانچاله','گردوی تویسرکان','گردوی خشک'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/40ca66cd7225.webp', t:'مغز گردو هفت‌پر', s:'روشن و بدون تلخی'}},
@@ -1649,7 +1622,7 @@ const CATS = [
   {id:'mulberryfig', name:'توت خشک و انجیر', icon:'i-leaf', subs:['توت خشک سفید','انجیر خشک استهبان','انجیر پرورده','توت پرورده'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7b3e238840f4.jpeg', t:'انجیر استهبان', s:'شیرین‌ترین انجیر ایران'}},
   {id:'saffron', name:'زعفران و ادویه', icon:'i-fire', subs:['زعفران سرگل','زعفران پوشال','زعفران نگین','ادویه پلویی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c259b7044c5.jpg', t:'زعفران سرگل قائنات', s:'قرمز و خوش‌رنگ، عطر بی‌نظیر'}},
   {id:'tea', name:'دمنوش و محصولات طبیعی', icon:'i-leaf', subs:['دمنوش گاوزبان','دمنوش آرامش','چای ترش','دمنوش لاغری','عسل طبیعی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/36eff119ff2f.jpg', t:'دمنوش‌های گیاهی', s:'از دل طبیعت تا فنجان شما'}},
-  {id:'giftbox', name:'آجیل و پک‌های هدیه', icon:'i-gift', subs:['پک هدیه یلدا','پک هدیه نوروز','جعبه هدیه لوکس','پک سازمانی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed59578015d4.jpeg', t:'پک‌های هدیه دانه‌سرا', s:'بسته‌بندی لوکس با کارت تبریک', hot:true}},
+  {id:'giftbox', name:'آجیل و پک‌های هدیه', icon:'i-gift', subs:['پک هدیه یلدا','پک هدیه نوروز','جعبه هدیه لوکس','پک سازمانی'], feat:{img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed59578015d4.jpeg', t:'پک‌های هدیه خانم گل', s:'بسته‌بندی لوکس با کارت تبریک', hot:true}},
 ];
 
 /* ---------- محصولات (۲۸ محصول) ---------- */
@@ -1703,7 +1676,7 @@ const TRUST = [
   {day:4, name:'سینی مسی قلم‌زنی‌شده اصفهان', img:IMG+'e569cfd83324.jpg', old:2150000, price:1612000, off:25},
   {day:5, name:'کاسه سرامیک سبز مات دست‌ساز', img:IMG+'7f5b9c96c99e.jpg', old:640000, price:512000, off:20},
 ];
-const TRUST_WHY = '<b>چرا این‌جا؟</b> اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب «غیرخوراکی» — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به دانه‌سرا اعتماد دارید، به ما مطمئنید.';
+const TRUST_WHY = '<b>چرا این‌جا؟</b> اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب «غیرخوراکی» — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به خانم گل اعتماد دارید، به ما مطمئنید.';
 
 /* محصولات مجازی بخش خرید اطمینان (قابل افزودن به سبد؛ در فروشگاه نمایش داده نمی‌شوند) */
 const TRUST_VPIDS = {};
@@ -1719,7 +1692,7 @@ const PRIZES = [
   {c:'LUCK5',   t:'۵٪ تخفیف فوری',             d:'کد تخفیف ۵ درصدی برای همین سفارش.',            ic:'i-percent', w:26},
   {c:'NEXT15',  t:'۱۵٪ تخفیف خرید بعدی',       d:'برای خرید بعدی‌تان ۱۵ درصد تخفیف بگیرید.',      ic:'i-tag',     w:17},
   {c:'SAMEDAY', t:'اولویت ارسال همان روز',     d:'سفارش شما با اولویت «ارسال همان روز» پردازش می‌شود.', ic:'i-fire', w:10},
-  {c:'LUCK20',  t:'جایزه بزرگ: ۲۰٪ تخفیف!',    d:'شانس طلایی! ۲۰ درصد تخفیف ویژه دانه‌سرا.',        ic:'i-star',    w:5},
+  {c:'LUCK20',  t:'جایزه بزرگ: ۲۰٪ تخفیف!',    d:'شانس طلایی! ۲۰ درصد تخفیف ویژه خانم گل.',        ic:'i-star',    w:5},
   {c:'CASH50',  t:'۵۰٬۰۰۰ تومان اعتبار خرید',  d:'اعتبار ۵۰ هزار تومانی در کیف پول پنل شما.',    ic:'i-wallet',  w:12},
 ];
 
@@ -1773,7 +1746,7 @@ function renderNav(){
         <div class="container mega-inner">
           <div class="mega-cats"><h5>زیرشاخه‌های ${c.name}</h5>${c.subs.map(s=>`<a href="#shop" data-scroll="#shop" data-cat="${c.id}" data-search="${s}">${s}</a>`).join('')}</div>
           <div class="mega-cols"><div class="mega-links"><h5>محبوب‌ها</h5>${PRODUCTS.filter(p=>p.cat===c.id).slice(0,4).map(p=>`<a href="#shop" data-scroll="#shop" data-cat="${c.id}" data-search="${p.name}">${p.name}</a>`).join('')}</div>
-          <div class="mega-links"><h5>پیشنهاد دانه‌سرا</h5><a href="#packs" data-scroll="#packs">پک‌های تخفیفی امروز</a><a href="#gifts" data-scroll="#gifts">پک‌های هدیه</a><a href="#etemad" data-scroll="#etemad">خرید اطمینان روز</a><a href="#amazing" data-scroll="#amazing">شگفت‌انگیزها</a></div></div>
+          <div class="mega-links"><h5>پیشنهاد خانم گل</h5><a href="#packs" data-scroll="#packs">پک‌های تخفیفی امروز</a><a href="#gifts" data-scroll="#gifts">پک‌های هدیه</a><a href="#etemad" data-scroll="#etemad">خرید اطمینان روز</a><a href="#amazing" data-scroll="#amazing">شگفت‌انگیزها</a></div></div>
           <a class="mega-feat" href="#shop" data-scroll="#shop" data-cat="${c.id}">
             <img src="${c.feat.img}" alt="${c.feat.t}" loading="lazy">
             <b>${c.feat.t}</b><span>${c.feat.s}</span>
@@ -2115,25 +2088,44 @@ function renderGifts(){
 }
 
 const DAY_NAMES = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
-function renderTrust(){
-  const jsDay = new Date().getDay();              // 0=یکشنبه … 6=شنبه
+const WEEK_ORDER = [6,0,1,2,3,4,5];               // ترتیب هفته فارسی: شنبه تا جمعه
+function paintTrust(jsDay, isToday){
   const item = TRUST.find(t=>t.day===jsDay) || TRUST[0];
   $('#trustImg').src = item.img;
   $('#trustImg').alt = item.name;
   $('#trustName').textContent = item.name;
-  $('#trustDay').textContent = 'ویژه ' + DAY_NAMES[jsDay];
+  $('#trustDay').textContent = isToday ? ('پیشنهاد امروز — ' + DAY_NAMES[jsDay]) : ('پیش‌نمایش ' + DAY_NAMES[jsDay]);
   $('#trustOld').textContent = money(item.old);
   $('#trustPrice').textContent = money(item.price);
-  $('#trustOff').textContent = '٪' + toFa(item.off) + ' تخفیف امروز';
+  $('#trustOff').textContent = '٪' + toFa(item.off) + ' تخفیف';
   $('#trustWhy').innerHTML = TRUST_WHY;
-  $('#trustDays').innerHTML = '<span>کالای هر روز هفته متفاوت است:</span>' +
-    TRUST.map(t=>`<i class="${t.day===jsDay?'on':''}" title="${DAY_NAMES[t.day]}"></i>`).join('') +
-    `<span>امروز: ${DAY_NAMES[jsDay]}</span>`;
+  $('#trustSave').textContent = 'سود شما: ' + money(item.old - item.price) + ' تومان';
   $('#trustAdd').onclick = () => {
     const vpid = TRUST_VPIDS[jsDay] ?? TRUST_VPIDS[TRUST[0].day];
     addToCart(vpid, 1, 1, true);
-    toast(`«${item.name}» به سبد اضافه شد؛ نماد اعتماد دانه‌سرا در راه است 🛡️`,'gold');
+    toast(`«${item.name}» به سبد اضافه شد؛ نماد اعتماد خانم گل در راه است 🛡️`,'gold');
   };
+}
+function renderTrust(){
+  const jsDay = new Date().getDay();              // 0=یکشنبه … 6=شنبه
+  paintTrust(jsDay, true);
+  $('#trustDays').innerHTML = '<span class="lbl">پیشنهاد هر روز هفته:</span>' +
+    WEEK_ORDER.map(d=>`<button type="button" class="t-daypill ${d===jsDay?'on':''}" data-day="${d}">${DAY_NAMES[d]}</button>`).join('');
+  $$('#trustDays .t-daypill').forEach(b=>b.addEventListener('click',()=>{
+    const d = +b.dataset.day;
+    $$('#trustDays .t-daypill').forEach(x=>x.classList.toggle('on', +x.dataset.day===d));
+    paintTrust(d, d===new Date().getDay());
+  }));
+  /* شمارش معکوس تا پایان پیشنهاد امروز (نیمه‌شب) */
+  const tickCount = () => {
+    const el = $('#trustCount b');
+    if(!el) return;
+    const now = new Date(), end = new Date(now);
+    end.setHours(24,0,0,0);
+    el.textContent = fmtHMS(end - now);
+  };
+  tickCount();
+  setInterval(tickCount, 1000);
 }
 
 /* ============================================================
@@ -2334,7 +2326,7 @@ function renderTimeline(o, el){
   const steps = [
     {t:'ثبت سفارش', s:new Date(o.ts).toLocaleDateString('fa-IR') + ' — ' + new Date(o.ts).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})},
     {t:'آماده‌سازی و بسته‌بندی', s:'وزن‌شدن روز، بسته‌بندی وکیوم بهداشتی'},
-    {t:o.shipType==='peyk'?'تحویل به پیک':'تحویل به پست', s:o.shipType==='peyk'?'پیک فوری دانه‌سرا در راه است 🛵':'کد رهگیری پستی پیامک می‌شود'},
+    {t:o.shipType==='peyk'?'تحویل به پیک':'تحویل به پست', s:o.shipType==='peyk'?'پیک فوری خانم گل در راه است 🛵':'کد رهگیری پستی پیامک می‌شود'},
     {t:'تحویل شد ✅', s:'امیدواریم لذت برده باشید! مرجوعی رایگان تا ۷ روز'},
   ];
   el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:12px">
@@ -2400,16 +2392,16 @@ function renderPanel(){
   $('#upWelcome').style.display = buyer ? 'none' : '';
   $('#upWelcomeText').innerHTML = buyer
     ? `<b>${name.split(' ')[0]} عزیز، خوش برگشتی!</b> امتیازها و سفارش‌هایت این‌جاست 🌰`
-    : 'به پنل اختصاصی <b>دانه‌سرا</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)';
+    : 'به پنل اختصاصی <b>خانم گل</b> خوش آمدید! اولین خرید بالای ۵۰۰٬۰۰۰ تومان = کد تخفیف ۱۰٪ (WELCOME10)';
 
   /* --- خانه --- */
   const last = state.orders[0];
   $('#upHome').innerHTML = buyer ? `
     <div class="up-sec-title"><svg class="icon"><use href="#i-box"/></svg> آخرین سفارش شما</div>
     ${last ? orderCardHTML(last, true) : ''}
-    <div class="up-sec-title"><svg class="icon"><use href="#i-sms"/></svg> پیامک‌های دانه‌سرا</div>
+    <div class="up-sec-title"><svg class="icon"><use href="#i-sms"/></svg> پیامک‌های خانم گل</div>
     ${state.orders.slice(0,2).map(o=>`<div class="msg-card"><span class="msg-ic"><svg class="icon"><use href="#i-sms"/></svg></span>
-      <div><b>تأیید سفارش ${o.code}</b><p>مشتری گرامی، سفارش ${money(o.total)} تومانی شما ثبت شد. پیگیری: بخش «پیگیری سفارش». — دانه‌سرا</p><time>${new Date(o.ts).toLocaleDateString('fa-IR')}</time></div></div>`).join('')}
+      <div><b>تأیید سفارش ${o.code}</b><p>مشتری گرامی، سفارش ${money(o.total)} تومانی شما ثبت شد. پیگیری: بخش «پیگیری سفارش». — خانم گل</p><time>${new Date(o.ts).toLocaleDateString('fa-IR')}</time></div></div>`).join('')}
     <div class="up-sec-title"><svg class="icon"><use href="#i-refresh"/></svg> دسترسی سریع</div>
     <div class="up-actions">
       <button class="up-act" data-open="track"><svg class="icon"><use href="#i-truck"/></svg> پیگیری سفارش</button>
@@ -2667,7 +2659,7 @@ function init(){
     e.preventDefault();
     const ph = toEn($('#consPhone').value).replace(/\D/g,'');
     if(!/^09\d{9}$/.test(ph)) return toast('شماره موبایل معتبر وارد کنید','err');
-    toast('درخواست مشاوره ثبت شد؛ کارشناس دانه‌سرا تا ۳۰ دقیقه دیگر با شما تماس می‌گیرد 📞','ok',5200);
+    toast('درخواست مشاوره ثبت شد؛ کارشناس خانم گل تا ۳۰ دقیقه دیگر با شما تماس می‌گیرد 📞','ok',5200);
     e.target.reset();
   });
   $('#trackFormM').addEventListener('submit', e=>{ e.preventDefault(); doTrack('trackInputM','timelineM'); });
