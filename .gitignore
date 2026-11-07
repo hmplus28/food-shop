@@ -6,4 +6,5 @@ scripts/
 .env
 dev.log
 *.local
+src/
 .DS_Store

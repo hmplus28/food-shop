@@ -60,7 +60,9 @@ input,select,textarea{font-family:inherit;font-size:1rem;color:var(--ink)}
 ul,ol{list-style:none}
 h1,h2,h3,h4{line-height:1.45;font-weight:800}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
-::selection{background:var(--brand-100)}
+/* متن انتخاب‌شده: پس‌زمینه تیره + متن سفید تا روی هر پس‌زمینه‌ای خوانا بماند */
+::selection{background:var(--brand-700);color:#fff}
+::-moz-selection{background:var(--brand-700);color:#fff}
 .container{width:min(1320px,100% - 28px);margin-inline:auto}
 .section{padding:52px 0;position:relative}
 .hidden{display:none!important}
@@ -139,11 +141,12 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 /* ================= نوار ارتباط با مشتری (فونت جداگانه: امیری) ================= */
 .topbar{background:linear-gradient(90deg,var(--brand-800),var(--brand-700));color:#fff;font-size:.86rem;position:relative;z-index:60}
 .topbar .container{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:42px;flex-wrap:wrap;padding-block:4px}
-.tb-comm{font-family:var(--f-serif);font-size:1.04rem;display:flex;align-items:center;gap:10px;color:#fdf6df}
-.tb-comm .phone{font-weight:700;color:#fff;letter-spacing:.5px;direction:ltr;font-family:var(--f-body);font-size:.92rem}
+/* فونت یکدست نوار بالا: وزیرمتن برای همه بخش‌ها */
+.tb-comm{font-family:var(--f-body);font-size:.88rem;font-weight:600;display:flex;align-items:center;gap:10px;color:#fdf6df}
+.tb-comm .phone{font-weight:800;color:#fff;letter-spacing:.5px;direction:ltr;font-family:var(--f-body);font-size:.92rem}
 .tb-comm a.phone:hover{color:var(--gold)}
 .tb-links{display:flex;align-items:center;gap:4px}
-.tb-links button{color:#e7f2df;padding:6px 10px;border-radius:8px;font-size:.82rem;display:inline-flex;gap:6px;align-items:center;transition:var(--tr)}
+.tb-links button{color:#e7f2df;padding:6px 10px;border-radius:8px;font-size:.86rem;font-weight:600;font-family:var(--f-body);display:inline-flex;gap:6px;align-items:center;transition:var(--tr)}
 .tb-links button:hover{background:rgba(255,255,255,.14);color:#fff}
 .tb-sep{width:1px;height:16px;background:rgba(255,255,255,.25)}
 @media(max-width:640px){.tb-links button span.lbl{display:none}.tb-comm{font-size:.9rem;flex:1;min-width:0;flex-wrap:wrap;gap:2px 8px}.tb-comm .tb-tail{display:none}}
@@ -297,8 +300,9 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;
   background:rgba(255,255,255,.9);color:var(--brand-700);display:grid;place-items:center;box-shadow:var(--sh-md);transition:var(--tr)}
 .hero-arrow:hover{background:var(--gold);color:#fff}
-.hero-arrow.next{inset-inline-start:16px}
-.hero-arrow.prev{inset-inline-end:16px}
+/* در RTL اسلاید بعدی سمت چپ است؛ فلش بعدی: لبه چپ با آیکون چپ‌گرد */
+.hero-arrow.next{inset-inline-end:16px}
+.hero-arrow.prev{inset-inline-start:16px}
 .hero-dots{position:absolute;bottom:16px;inset-inline-start:50%;transform:translateX(50%);display:flex;gap:7px;z-index:5}
 .hero-dots .dot{width:9px;height:9px;border-radius:99px;background:rgba(255,255,255,.5);transition:var(--tr);border:0}
 .hero-dots .dot.on{width:26px;background:var(--gold)}
@@ -363,6 +367,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .sec-actions{margin-inline-start:auto;display:flex;gap:8px;align-items:center}
 .rail-arrow{width:38px;height:38px;border-radius:11px;background:#fff;border:1.5px solid var(--line-2);color:var(--ink-2);display:grid;place-items:center;transition:var(--tr)}
 .rail-arrow:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-050)}
+/* در دسکتاپ ریل گرید می‌شود و فلش‌ها بی‌معنا هستند */
+@media(min-width:992px){.rail-arrow{display:none}}
 .link-more{font-size:.85rem;font-weight:700;color:var(--brand-700);display:inline-flex;align-items:center;gap:5px}
 .link-more:hover{color:var(--gold-600)}
 
@@ -401,7 +407,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 @media(min-width:992px){.amz-wrap{grid-template-columns:240px 1fr}.amz-side{border-inline-end:1px dashed rgba(255,255,255,.3)}}
 
 /* ================= کارت محصول ================= */
-.p-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;
+.p-card{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;
   transition:var(--tr);position:relative}
 .p-card:hover{box-shadow:var(--sh-md);border-color:var(--gold-100);transform:translateY(-5px)}
 .p-media{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg-warm)}
@@ -438,7 +444,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .qty{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:11px;overflow:hidden;background:#fff}
 .qty button{width:30px;height:36px;display:grid;place-items:center;color:var(--brand-700);font-weight:900;font-size:1.05rem}
 .qty button:hover{background:var(--brand-050)}
-.qty span{min-width:26px;text-align:center;font-size:.88rem;font-weight:700}
+.qty span{min-width:26px;text-align:center;font-size:.88rem;font-weight:700;color:var(--ink)}
 .p-add{flex:1;background:var(--brand);color:#fff;border-radius:11px;padding:9px 6px;font-size:.82rem;font-weight:700;
   display:flex;align-items:center;justify-content:center;gap:6px;transition:var(--tr)}
 .p-add:hover{background:var(--brand-600)}
@@ -928,14 +934,14 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-6 4h10v2H7v-2zm0 4h10v2H7v-2z"/></symbol>
 </svg>
 
-<!-- ===== نوار ارتباط با مشتری (فونت امیری) ===== -->
+<!-- ===== نوار ارتباط با مشتری (فونت یکدست: وزیرمتن) ===== -->
 <div class="topbar">
   <div class="container">
     <div class="tb-comm">
       <svg class="icon"><use href="#i-headset"/></svg>
       <span>ارتباط با مشتری:</span>
       <a class="phone" href="tel:02191092000" dir="ltr">۰۲۱-۹۱۰۹۲۰۰۰</a>
-      <span class="tb-tail">ـ پاسخگویی شبانه‌روزی، همیشه در کنار شما</span>
+      <span class="tb-tail">— پاسخگویی شبانه‌روزی، همیشه در کنار شما</span>
     </div>
     <nav class="tb-links" aria-label="دسترسی سریع">
       <button type="button" data-open="track"><svg class="icon"><use href="#i-doc"/></svg><span class="lbl">پیگیری سفارش</span></button>
@@ -1075,8 +1081,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
         </div>
       </div>
     </div>
-    <button class="hero-arrow next" id="heroNext" aria-label="اسلاید بعدی"><svg class="icon"><use href="#i-chev"/></svg></button>
-    <button class="hero-arrow prev" id="heroPrev" aria-label="اسلاید قبلی" style="transform:translateY(-50%) rotate(180deg)"><svg class="icon"><use href="#i-chev"/></svg></button>
+    <button class="hero-arrow next" id="heroNext" aria-label="اسلاید بعدی" style="transform:translateY(-50%) rotate(180deg)"><svg class="icon"><use href="#i-chev"/></svg></button>
+    <button class="hero-arrow prev" id="heroPrev" aria-label="اسلاید قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
     <div class="hero-dots" id="heroDots"></div>
   </div>
 </section>
@@ -1142,8 +1148,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-fire"/></svg></span>
         <div><h2 class="sec-title">پرفروش‌ترین <i>محصولات</i></h2><span class="sec-sub">انتخاب هزاران مشتری در سراسر ایران</span></div></span>
       <div class="sec-actions">
-        <button class="rail-arrow" data-rail="bestRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
         <button class="rail-arrow" data-rail="bestRail" data-dir="-1" aria-label="قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
+        <button class="rail-arrow" data-rail="bestRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
       </div>
     </div>
     <div class="rail" id="bestRail"></div>
@@ -1157,8 +1163,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-leaf"/></svg></span>
         <div><h2 class="sec-title">تازه‌ها و <i>ممتازترین‌ها</i></h2><span class="sec-sub">جدیدترین محصولات رسیدۀ به قفسه‌های خانم گل</span></div></span>
       <div class="sec-actions">
-        <button class="rail-arrow" data-rail="newRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
         <button class="rail-arrow" data-rail="newRail" data-dir="-1" aria-label="قبلی"><svg class="icon"><use href="#i-chev"/></svg></button>
+        <button class="rail-arrow" data-rail="newRail" data-dir="1" aria-label="بعدی"><svg class="icon" style="transform:rotate(180deg)"><use href="#i-chev"/></svg></button>
       </div>
     </div>
     <div class="rail" id="newRail"></div>
@@ -1906,9 +1912,9 @@ function renderCart(){
           <span class="ci-w">${weightLabel(c.w)}</span>
           <div class="ci-row">
             <div class="ci-qty">
-              <button data-ci="${i}" data-op="+" aria-label="افزایش">+</button>
-              <span>${toFa(c.qty)}</span>
               <button data-ci="${i}" data-op="-" aria-label="کاهش">−</button>
+              <span>${toFa(c.qty)}</span>
+              <button data-ci="${i}" data-op="+" aria-label="افزایش">+</button>
             </div>
             <span class="ci-price">${money(priceOf(p,c.w)*c.qty)} <small>تومان</small></span>
             <button class="ci-del" data-ci="${i}" data-op="del" aria-label="حذف"><svg class="icon"><use href="#i-trash"/></svg></button>
@@ -2493,7 +2499,7 @@ function panelInit(){
     $$('#upTabbar .up-tab').forEach(x=>x.classList.remove('on'));
     t.classList.add('on');
     $$('.up-view').forEach(v=>v.classList.toggle('on', v.dataset.view===t.dataset.tab));
-    $('#upBody').scrollTop = 0;
+    $('.up-body').scrollTop = 0;
     renderPanel();
   }));
 }
@@ -2605,6 +2611,30 @@ function syncHeaderButtons(){
 }
 window.addEventListener('resize', syncHeaderButtons);
 
+/* ---- فلش‌های ریل افقی (سازگار با RTL) ----
+   dir=1 «بعدی»: در RTL محتوا به سمت چپ می‌رود؛ در مرورگرهای استاندارد scrollLeft منفی می‌شود،
+   در وِب‌کیت قدیمی مثبت؛ با تشخیص رفتار مرورگر جهت درست انتخاب می‌شود. */
+const RTL_SCROLL_NEGATIVE = (() => {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:absolute;top:-9999px;inset-inline-start:-9999px;direction:rtl;width:100px;overflow:scroll';
+  d.innerHTML = '<div style="display:inline-block;width:300px;height:1px"></div>';
+  document.body.appendChild(d);
+  d.scrollLeft = -50;
+  const neg = (d.scrollLeft === -50);
+  d.remove();
+  return neg;
+})();
+function railGo(rail, dir){
+  const max = rail.scrollWidth - rail.clientWidth;
+  if(max <= 4) return;
+  const step = Math.max(240, rail.clientWidth * .8) * dir;
+  rail.scrollBy({left: (RTL_SCROLL_NEGATIVE ? -step : step), behavior:'smooth'});
+}
+$$('.rail-arrow').forEach(b => b.addEventListener('click', () => {
+  const rail = document.getElementById(b.dataset.rail);
+  rail && railGo(rail, +b.dataset.dir);
+}));
+
 function init(){
   renderNav();
   renderCats();
@@ -2650,11 +2680,6 @@ function init(){
   });
 
   /* فرم‌ها */
-  $('#newsForm').addEventListener('submit', e=>{
-    e.preventDefault();
-    toast('عضویت شما ثبت شد! کد WELCOME10 برای اولین خرید فعال است 🎁','gold',4600);
-    $('#newsInput').value='';
-  });
   $('#consultForm').addEventListener('submit', e=>{
     e.preventDefault();
     const ph = toEn($('#consPhone').value).replace(/\D/g,'');
