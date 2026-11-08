@@ -5,3 +5,6 @@ app/dist/
 # فایل‌های سیستم
 .DS_Store
 Thumbs.db
+.env
+skills/
+upload/
