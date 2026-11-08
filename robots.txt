@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hmplus28.github.io/food-shop/sitemap.xml

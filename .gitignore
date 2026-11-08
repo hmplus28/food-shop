@@ -1,10 +1,7 @@
-node_modules/
-dist/
-upload/
-skills/
-scripts/
-.env
-dev.log
-*.local
-src/
+# وابستگی‌ها و خروجی ساخت
+app/node_modules/
+app/dist/
+
+# فایل‌های سیستم
 .DS_Store
+Thumbs.db

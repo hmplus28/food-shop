@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>صفحه پیدا نشد | خانم گل</title>
+  <meta name="robots" content="noindex">
+  <script>
+    /* بازگردانی مسیرهای عمیق SPA روی GitHub Pages:
+       هر آدرس ناشناخته به این صفحه می‌رسد و به ریشهٔ اپ با پارامتر p هدایت می‌شود؛
+       اسکریپت داخل index.html مسیر را بازیابی و مسیریاب Vue آن را رندر می‌کند. */
+    (function () {
+      var l = location;
+      var target = '/food-shop/' + '?p=' + encodeURIComponent(l.pathname + l.search + l.hash);
+      l.replace(target);
+    })();
+  </script>
+</head>
+<body style="font-family:Tahoma;text-align:center;padding:40px">
+  <p>در حال انتقال به فروشگاه خانم گل…</p>
+  <a href="/food-shop/" style="color:#398f00">اگر منتقل نشدید این‌جا کلیک کنید</a>
+</body>
+</html>
