@@ -30,7 +30,7 @@
   --bg:#ffffff; --bg-warm:#faf8f1; --bg-mint:#f2f8ec;
   --ink:#1e2b16; --ink-2:#57664d; --ink-3:#8a9681;
   --line:#e8e8de; --line-2:#d9dccb;
-  --star:#f2a413;
+  --star:#c29800; /* طلایی رسمی برند */
   --f-body:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
   --f-display:'Lalezar','Vazirmatn',sans-serif;
   --f-serif:'Amiri','Vazirmatn',serif;
@@ -1726,6 +1726,15 @@ const state = {
 const saveState = () => { LS.set('cart', state.cart); LS.set('favs', state.favs); LS.set('codes', state.codes); LS.set('orders', state.orders); LS.set('profile', state.profile); };
 const prod = id => PRODUCTS.find(p => p.id === id);
 const firstOrder = () => state.orders.length === 0;
+
+/* مهاجرت یک‌بارهٔ هویت رنگی برند (سبز #358500 / طلایی #c29800):
+   تم قدیمیِ ذخیره‌شده در مرورگر یک بار پاک می‌شود تا رنگ رسمی «خانم گل» حتماً نمایش داده شود؛
+   سوییچر تم بعد از این مهاجرت همچنان مثل قبل کار می‌کند. */
+if (LS.get('brandVer', 0) < 2) {
+  LS.set('theme', 'default');
+  LS.set('brandVer', 2);
+  state.theme = 'default';
+}
 </script>
 <script>
 /* ============================================================
