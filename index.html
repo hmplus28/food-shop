@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>خانم گل | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی</title>
-<meta name="description" content="خرید آنلاین بهترین آجیل، پسته، بادام، گردو، خرما، زعفران و پک‌های هدیه با تضمین تازگی، ارسال سریع سراسری و مرجوعی رایگان از فروشگاه خانم گل">
-<meta name="keywords" content="آجیل, خشکبار, پسته, بادام, گردو, خرما, زعفران, پک هدیه, فروشگاه اینترنتی خشکبار">
+<meta name="description" content="خرید آنلاین بهترین آجیل، پسته، بادام، گردو، خرما و زعفران با تضمین تازگی، ارسال سریع سراسری و مرجوعی رایگان از فروشگاه خانم گل">
+<meta name="keywords" content="آجیل, خشکبار, پسته, بادام, گردو, خرما, زعفران, فروشگاه اینترنتی خشکبار">
 <meta property="og:title" content="خانم گل | طعم اصالت، کیفیت در هر دانه">
 <meta property="og:description" content="انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.">
 <meta property="og:type" content="website">
@@ -84,7 +84,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes bounceIn{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes ringPulse{0%{box-shadow:0 0 0 0 rgba(204,160,0,.55)}70%{box-shadow:0 0 0 14px rgba(204,160,0,0)}100%{box-shadow:0 0 0 0 rgba(204,160,0,0)}}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(50%)}}
 
 /* ================= دایره قرمز با هاله طلایی (مثل خورشید + ضربان قلب) ================= */
 .pulse-sun{
@@ -150,14 +149,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .tb-links button:hover{background:rgba(255,255,255,.14);color:#fff}
 .tb-sep{width:1px;height:16px;background:rgba(255,255,255,.25)}
 @media(max-width:640px){.tb-links button span.lbl{display:none}.tb-comm{font-size:.9rem;flex:1;min-width:0;flex-wrap:wrap;gap:2px 8px}.tb-comm .tb-tail{display:none}}
-
-/* ================= نوار اطلاع‌رسانی ================= */
-.announce{background:var(--brand);color:#fff;overflow:hidden;position:relative;z-index:59;font-size:.85rem;font-weight:600}
-.an-track{display:flex;width:max-content;animation:marquee 28s linear infinite}
-.announce:hover .an-track{animation-play-state:paused}
-.an-item{display:inline-flex;align-items:center;gap:8px;padding:8px 26px;white-space:nowrap}
-.an-item .icon{color:var(--gold-100)}
-.an-item b{color:#ffe9a8;font-weight:800}
 
 /* ================= Header ================= */
 .site-header{position:sticky;top:0;z-index:55;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
@@ -297,37 +288,13 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .s-title em{font-style:normal;color:var(--gold);position:relative}
 .s-text{font-size:clamp(.9rem,1.6vw,1.05rem);color:#eef3e8;max-width:480px;margin-bottom:22px}
 .s-ctas{display:flex;gap:12px;flex-wrap:wrap}
-.hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.9);color:var(--brand-700);display:grid;place-items:center;box-shadow:var(--sh-md);transition:var(--tr)}
-.hero-arrow:hover{background:var(--gold);color:#fff}
-/* در RTL اسلاید بعدی سمت چپ است؛ فلش بعدی: لبه چپ با آیکون چپ‌گرد */
-.hero-arrow.next{inset-inline-end:16px}
-.hero-arrow.prev{inset-inline-start:16px}
-.hero-dots{position:absolute;bottom:16px;inset-inline-start:50%;transform:translateX(50%);display:flex;gap:7px;z-index:5}
-.hero-dots .dot{width:9px;height:9px;border-radius:99px;background:rgba(255,255,255,.5);transition:var(--tr);border:0}
-.hero-dots .dot.on{width:26px;background:var(--gold)}
 @media(max-width:767px){
   .hero-frame,.slide{min-height:440px;border-radius:var(--r-lg)}
   .s-content{padding:30px 24px}
   .slide .s-media::after{background:linear-gradient(0deg,rgba(20,32,10,.85) 22%,rgba(20,32,10,.25) 65%)}
   .s-content{align-self:flex-end}
   .slide{align-items:flex-end}
-  .hero-arrow{display:none}
 }
-
-/* ================= نوار خدمات ================= */
-.services{margin-top:-30px;position:relative;z-index:6}
-.srv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.srv{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:14px;display:flex;align-items:center;gap:12px;
-  box-shadow:var(--sh-sm);transition:var(--tr)}
-.srv:hover{transform:translateY(-4px);box-shadow:var(--sh-md);border-color:var(--gold-100)}
-.srv .si{width:46px;height:46px;flex:none;border-radius:13px;display:grid;place-items:center;background:var(--brand-050);color:var(--brand-700)}
-.srv:nth-child(2) .si{background:var(--gold-050);color:var(--gold-600)}
-.srv:nth-child(3) .si{background:#fdeceb;color:var(--red)}
-.srv:nth-child(4) .si{background:#eaf3f7;color:#1f5a73}
-.srv b{font-size:.86rem;display:block}
-.srv span{font-size:.72rem;color:var(--ink-3);display:block}
-@media(min-width:768px){.srv-grid{grid-template-columns:repeat(4,1fr)}}
 
 /* ================= پک‌های تخفیفی کارت دورانی ================= */
 .packs-sec{background:radial-gradient(circle at 20% 10%,var(--gold-050),transparent 45%),radial-gradient(circle at 85% 90%,var(--brand-050),transparent 40%),var(--bg-warm);
@@ -897,7 +864,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
-@media print{.topbar,.announce,.site-header,.fab-wrap,.m-cart-bar,.overlay,.panel-shell,.toasts{display:none!important}}
+@media print{.topbar,.site-header,.fab-wrap,.m-cart-bar,.overlay,.panel-shell,.toasts{display:none!important}}
 </style>
 </head>
 <body>
@@ -956,20 +923,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
       <i class="tb-sep"></i>
       <button type="button" data-open="lucky"><svg class="icon"><use href="#i-gift"/></svg><span class="lbl">کارت شانس</span></button>
     </nav>
-  </div>
-</div>
-
-<!-- ===== نوار اطلاع‌رسانی ===== -->
-<div class="announce" aria-label="اطلاع‌رسانی فروشگاه">
-  <div class="an-track">
-    <span class="an-item"><svg class="icon"><use href="#i-truck"/></svg>ارسال <b>رایگان</b> سفارش‌های بالای ۱٬۵۰۰٬۰۰۰ تومان</span>
-    <span class="an-item"><svg class="icon"><use href="#i-shield"/></svg><b>۷ روز</b> ضمانت بازگشت کالا بدون قید و شرط و مرجوعی رایگان</span>
-    <span class="an-item"><svg class="icon"><use href="#i-tag"/></svg>تخفیف ویژه خرید عمده و همکاری با فروشگاه‌ها تا <b>۲۵٪</b></span>
-    <span class="an-item"><svg class="icon"><use href="#i-leaf"/></svg>تضمین تازگی؛ مستقیم از باغ تا سفره شما</span>
-    <span class="an-item"><svg class="icon"><use href="#i-truck"/></svg>ارسال <b>رایگان</b> سفارش‌های بالای ۱٬۵۰۰٬۰۰۰ تومان</span>
-    <span class="an-item"><svg class="icon"><use href="#i-shield"/></svg><b>۷ روز</b> ضمانت بازگشت کالا بدون قید و شرط و مرجوعی رایگان</span>
-    <span class="an-item"><svg class="icon"><use href="#i-tag"/></svg>تخفیف ویژه خرید عمده و همکاری با فروشگاه‌ها تا <b>۲۵٪</b></span>
-    <span class="an-item"><svg class="icon"><use href="#i-leaf"/></svg>تضمین تازگی؛ مستقیم از باغ تا سفره شما</span>
   </div>
 </div>
 
@@ -1063,27 +1016,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
           </div>
         </div>
       </div>
-      <div class="slide">
-        <div class="s-media"><img src="https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e218521bb098.jpg" alt="پسته تازه در کاسه چوبی" loading="lazy"></div>
-        <div class="s-content">
-          <span class="s-tag"><svg class="icon"><use href="#i-fire"/></svg> پرفروش‌ترین‌های خانم گل</span>
-          <h2 class="s-title">پسته، بادام و گردوی <em>درجه‌یک</em></h2>
-          <p class="s-text">محصولات ما مستقیماً از باغ‌های رفسنجان، سمنان و تویسرکان تهیه و روزانه بو داده می‌شوند.</p>
-          <div class="s-ctas">
-            <a class="btn btn-gold btn-lg" href="#best" data-scroll="#best">مشاهده پرفروش‌ها</a>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-</section>
-<!-- ===== نوار خدمات ===== -->
-<section class="services container" aria-label="خدمات فروشگاه">
-  <div class="srv-grid">
-    <div class="srv"><span class="si"><svg class="icon"><use href="#i-truck"/></svg></span><div><b>ارسال سریع سراسری</b><span>پیک فوری تهران، پست به همه نقاط</span></div></div>
-    <div class="srv"><span class="si"><svg class="icon"><use href="#i-shield"/></svg></span><div><b>ضمانت تازگی</b><span>مرجوعی رایگان تا ۷ روز</span></div></div>
-    <div class="srv"><span class="si"><svg class="icon"><use href="#i-box"/></svg></span><div><b>بسته‌بندی بهداشتی</b><span>بسته‌بندی واکیوم و هدیه</span></div></div>
-    <div class="srv"><span class="si"><svg class="icon"><use href="#i-scale"/></svg></span><div><b>قیمت منصفانه</b><span>خرید مستقیم از باغ‌دار</span></div></div>
   </div>
 </section>
 
