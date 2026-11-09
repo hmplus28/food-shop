@@ -506,6 +506,14 @@ RewriteRule (^|/)(app|deploy|scripts|download|upload|skills|tool-results)(/|$) -
     <FilesMatch "index\.html$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
     </FilesMatch>
+    # هدرهای امنیتی پایه (امن و بدون اثر بر کارکرد)
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+    # Content-Security-Policy — پیشنهادی؛ قبل از فعال‌سازی همین بلوک را با دامنهٔ
+    # واقعی بک‌اند در connect-src چک کنید (کد اپ هیچ inline-script اجرایی ندارد):
+    # Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' https://z-cdn.chatglm.cn data:; connect-src 'self' https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
 </IfModule>
 
 # مسیریابی SPA — هر درخواست غیرِ فایل/پوشهٔ واقعی به index.html برمی‌گردد
