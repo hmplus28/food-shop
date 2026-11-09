@@ -118,8 +118,14 @@ function buildBase() {
 }
 
 export const products = reactive(buildBase());
-const saved = LS.get('adminProducts', null);
-if (Array.isArray(saved) && saved.length) products.splice(0, products.length, ...saved);
+
+/* اعمال ویرایش‌های آزمایشی پنل مدیر (LocalStorage) روی فهرست فعلی —
+   بعد از همگام‌سازی بک‌اند هم دوباره صدا زده می‌شود تا ویرایش‌ها حفظ شوند. */
+export function applyAdminOverrides() {
+  const saved = LS.get('adminProducts', null);
+  if (Array.isArray(saved) && saved.length) products.splice(0, products.length, ...saved);
+}
+applyAdminOverrides();
 
 export const prod = id => products.find(p => p.id === Number(id));
 export const catOf = id => CATS.find(c => c.id === id);

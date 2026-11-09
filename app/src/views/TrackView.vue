@@ -28,7 +28,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSeo } from '../composables/useSeo';
-import { findOrder, findByPhone } from '../stores/orders';
+import { findOrder, findByPhone, refreshOrderStatus } from '../stores/orders';
 import Timeline from '../components/Timeline.vue';
 
 useSeo({ title: 'پیگیری سفارش', description: 'پیگیری لحظه‌ای وضعیت سفارش‌های فروشگاه خانم گل با کد سفارش یا شماره موبایل', path: '/track' });
@@ -39,11 +39,13 @@ const found = ref(null);
 const demoOrder = ref(null);
 const searched = ref(false);
 
-function doTrack() {
+async function doTrack() {
   searched.value = true;
   demoOrder.value = null;
   const byPhone = findByPhone(q.value);
   found.value = byPhone[0] || findOrder(q.value) || null;
+  /* وضعیت واقعی سفارش از بک‌اند (اگر فعال باشد)؛ در نبودش همان وضعیت محلی نمایش داده می‌شود */
+  if (found.value) await refreshOrderStatus(found.value.code);
 }
 function demo() {
   demoOrder.value = { code: 'AS-1024', ts: Date.now() - 9 * 60000, shipType: 'peyk', addr: { phone: '۰۹۱۲۳۴۵۶۷۸۹' }, items: [] };

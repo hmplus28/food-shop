@@ -34,7 +34,7 @@ app/
 └── src/
     ├── assets/main.css       ← کل سیستم طراحی قالب اصلی (بدون تغییر)
     ├── data/                 ← catalog.js (محصولات/دسته‌ها/کدها) ، site.js (ابزارها)
-    ├── services/             ← لایه اتصال به بک‌اند (فعلاً Mock/LocalStorage)
+    ├── services/api.js        ← لایهٔ اتصال به بک‌اند REST (محصولات/سفارش‌ها/ورود) با فالبک دادهٔ محلی
     ├── stores/               ← cart ، fav ، auth ، orders ، ui (واکنش‌گرا)
     ├── composables/useSeo.js ← عنوان/توضیح/کنونیکال/OG/JSON-LD هر صفحه
     ├── router/               ← مسیرها + گارد پنل کاربری
@@ -63,6 +63,7 @@ app/
 - 🎟 **کارت شانس روزانه** با جایزه‌های وزن‌دار و ذخیره کد در پنل
 - 🤝 بخش **خرید اطمینان** با کالای روز، انتخاب روز هفته و شمارش معکوس
 - 🎨 **تغییر تم زنده**: ۷ پالت آماده + ذخیره انتخاب کاربر
+- 🎛 ابزار موقت **تنظیم روشنایی سبز برند** (دکمهٔ شناور 🎨؛ هم‌رفتار در نسخهٔ HTML و Vue، با ذخیره در مرورگر و دکمهٔ کپی کد)
 - ❤️ علاقه‌مندی‌ها، سبد و سفارش‌ها با ذخیره در **LocalStorage**
 
 ## 🔍 سئو
@@ -73,9 +74,29 @@ app/
 - `sitemap.xml` شامل همهٔ مسیرها و محصولات + `robots.txt`
 - HTML معنایی: یک `h1` در هر صفحه، breadcrumb، لینک‌سازی داخلی مگامنو، `alt` تصاویر، `loading="lazy"`
 
-## 🔌 اتصال بک‌اند (آینده)
+## 🔌 اتصال بک‌اند (REST)
 
-تمام داده‌ها فعلاً از `LocalStorage` خوانده/نوشته می‌شوند. برای اتصال به بک‌اند واقعی کافی است بدنهٔ توابع در `app/src/stores/*` و `app/src/data/catalog.js` را با `fetch` به API خودتان جایگزین کنید؛ کامپوننت‌ها و صفحات بدون تغییر می‌مانند. ساختار سفارش و محصول در همان فایل‌ها مستند شده است.
+لایهٔ اتصال در `app/src/services/api.js` پیاده‌سازی شده است و با متغیرهای محیطیِ زمانِ بیلد تنظیم می‌شود (نمونهٔ کامل: `app/.env.example`):
+
+```
+VITE_API_ENABLED=false            # true = اتصال فعال
+VITE_API_BASE=https://…/api/v1    # ریشهٔ API
+VITE_API_TIMEOUT=6000             # سقف انتظار (میلی‌ثانیه)
+```
+
+نقاط پایانی مورد انتظار: `GET /products`، `POST /orders`، `GET|PATCH /orders/{code}`، `POST /auth/register`، `POST /auth/login`، `GET /health` — همه JSON. اگر بک‌اند فعال ولی در دسترس نباشد، فروشگاه **بی‌صدا** به دادهٔ محلی (LocalStorage) برمی‌گردد و هیچ‌وقت نمی‌شکند؛ توکن JWT با `Authorization: Bearer` ارسال می‌شود.
+
+## 🖥 استقرار روی هاست cPanel
+
+اسکریپت آماده در `deploy/deploy_cpanel.sh` (و راهنمای کامل فارسی در `deploy/GUIDE-CPANEL-FA.md`):
+
+```bash
+bash deploy/deploy_cpanel.sh                     # کپی بیلدِ commit‌شده به ~/public_html — بدون نیاز به Node
+bash deploy/deploy_cpanel.sh --build             # بیلد روی خود هاست با مسیر پایهٔ / (مناسب دامنهٔ اختصاصی)
+bash deploy/deploy_cpanel.sh --build --api-base https://…/api/v1 --api-enabled
+```
+
+اسکریپت غیرمخرب و idempotent است: فقط `index.html`، `assets/` و فایل‌های عمومی کپی می‌شوند، `.htaccess` (fallback اسپا + gzip + کش + مسدودسازی مسیرهای حساس ریپو) ساخته/به‌روز می‌شود و هشدارهای مسیر پایه و بک‌اند را نمایش می‌دهد.
 
 ## 🧾 نکات دمو
 

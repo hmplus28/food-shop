@@ -1,0 +1,116 @@
+# راهنمای استقرار فروشگاه خانم گل روی هاست اشتراکی cPanel
+
+این راهنما برای انتشار نسخهٔ **Vue 3 + Vite** فروشگاه روی هاست cPanel است
+(برای GitHub Pages نیازی به این مراحل نیست — بیلد در ریشهٔ ریپو همان انتشار است).
+
+## خلاصهٔ سریع
+
+```bash
+# روی هاست (ترمینال cPanel یا SSH):
+git clone https://github.com/hmplus28/food-shop.git   # یا git pull برای به‌روزرسانی
+cd food-shop
+bash deploy/deploy_cpanel.sh --webroot ~/public_html
+```
+
+همین! بیلدِ آماده در گیت هست و روی هاست به Node نیازی نیست.
+
+## روش‌های بردن ریپو روی هاست
+
+| روش | مراحل |
+| --- | --- |
+| **Git_version_control در cPanel** (پیشنهادی) | cPanel → «Git™ Version Control» → Create → آدرس ریپو → Clone |
+| SSH | `ssh user@host` سپس `git clone …` |
+| آپلود دستی | دانلود ZIP از GitHub → آپلود در File Manager → Extract (به‌روزرسانی‌های بعدی دستی می‌شود) |
+
+> بهتر است ریپو **خارج از ریشهٔ وب** باشد (مثلاً `~/repos/food-shop`) و اسکریپت فقط
+> فایل‌های انتشار را به `~/public_html` کپی کند؛ اگر ریپو داخل ریشهٔ وب است نگران
+> نباشید — `.htaccess` ساخته‌شده مسیرهای `app/`, `deploy/`, `scripts/`, `download/`,
+> `upload/`, `skills/` و `.git` را مسدود می‌کند.
+
+## گزینه‌های اسکریپت
+
+```bash
+bash deploy/deploy_cpanel.sh                          # پیش‌فرض: کپی بیلد commit‌شده
+bash deploy/deploy_cpanel.sh --webroot ~/public_html  # تعیین ریشهٔ وب مقصد
+bash deploy/deploy_cpanel.sh --clean                  # پاک‌سازی کامل ریشهٔ وب قبل از کپی (احتیاط!)
+bash deploy/deploy_cpanel.sh --build                  # بیلد روی خود هاست (نیاز به Node ≥18)
+bash deploy/deploy_cpanel.sh --build --base /         # بیلد با مسیر پایهٔ دامنهٔ اختصاصی (پیش‌فرض)
+bash deploy/deploy_cpanel.sh --build --api-base https://api.example.ir/api/v1 --api-enabled
+```
+
+## دو نکتهٔ مهم دربارهٔ مسیر پایه و بک‌اند
+
+### ۱) مسیر پایه (VITE_BASE)
+
+بیلدِ commit‌شده در ریشهٔ ریپو برای **GitHub Pages** با مسیر پایهٔ `/food-shop/`
+بسته شده است. اگر دامنهٔ cPanel را مستقیم روی ریشهٔ وب نشانه بروید، css/js لود
+نمی‌شود. اسکریپت این را تشخیص می‌دهد و هشدار می‌دهد؛ کافی است یک‌بار بگیرید:
+
+```bash
+bash deploy/deploy_cpanel.sh --build        # Vite با VITE_BASE=/ بیلد می‌گیرد
+```
+
+### ۲) اتصال به بک‌اند (VITE_API_BASE)
+
+آدرس بک‌اند در **زمان بیلد** داخل باندل می‌رود (بعد از build، تغییر `.env` بی‌اثر است).
+
+```bash
+# روی هاست:
+bash deploy/deploy_cpanel.sh --build \
+  --api-base https://دامنه-بک‌اند/api/v1 --api-enabled
+```
+
+یا دستی: `app/.env` را ویرایش کنید (`VITE_API_ENABLED=true` و `VITE_API_BASE=…`)
+و `--build` بگیرید. قرارداد کامل نقاط پایانی در `app/.env.example` هست:
+
+| نقطهٔ پایانی | روش | پاسخ |
+| --- | --- | --- |
+| `{BASE}/products` | GET | آرایهٔ محصولات یا `{results|data:[…]}` |
+| `{BASE}/orders` | POST | `{code, status?}` |
+| `{BASE}/orders/{code}` | GET | `{code, status}` |
+| `{BASE}/orders/{code}` | PATCH | `{code, status}` (تغییر وضعیت مدیر) |
+| `{BASE}/auth/register` | POST | `{ok, user?, token?}` |
+| `{BASE}/auth/login` | POST | `{ok, user?, token?}` |
+
+تا بک‌اند در دسترس نباشد یا پاسخ ندهد، فروشگاه **بی‌صدا** به دادهٔ محلی برمی‌گردد
+(هیچ‌وقت صفحهٔ خطا نمی‌بینید).
+
+## SSL و دامنه
+
+1. cPanel → **Domains / Subdomains**: ریشهٔ وب (Document Root) را روی همان مسیری
+   بگذارید که به اسکریپت دادید (پیش‌فرض `~/public_html`).
+2. cPanel → **SSL/TLS Status** → **AutoSSL** را فعال/اجرا کنید تا https کار کند.
+3. بعد از https، آدرس بک‌اند هم باید `https://` باشد (وگرنه مرورگر درخواست mixed-content را می‌بندد).
+4. اگر بک‌اند جداگانه است، CORS را تنظیم کنید (مثلاً Django:
+   `CORS_ALLOWED_ORIGINS=https://دامنه-فرانت-شما`).
+
+## به‌روزرسانی‌های بعدی
+
+```bash
+# روی ماشین محلی (تغییر کد):
+cd app && npm run build && cp -r dist/. ..
+git add -A && git commit -m "build: …" && git push
+
+# روی هاست:
+cd food-shop && git pull && bash deploy/deploy_cpanel.sh
+```
+
+## عیب‌یابی
+
+| نشانه | علت احتمالی / راه‌حل |
+| --- | --- |
+| صفحهٔ سفید، خطای ۴۰۴ برای `/assets/…` در کنسول | بیلد با مسیر پایهٔ `/food-shop/` منتشر شده → `--build` بگیرید |
+| رفرش مسیرهای عمیق (`/products`) خطای ۴۰۴ می‌دهد | `.htaccess` ساخته نشده — اسکریپت را دوباره اجرا کنید؛ اگر Apache اجازهٔ Override نمی‌دهد، در cPanel → MultiPHP INI / پشتیبانی هاست `AllowOverride All` را بخواهید |
+| css/js لود می‌شود ولی داده‌ها از سرور نمی‌آیند | `VITE_API_BASE` placeholder است یا `VITE_API_ENABLED=false` → `--build --api-base … --api-enabled` |
+| «Node ≥18 پیدا نشد» هنگام `--build` | در cPanel «Setup Node.js App» برنامه بسازید یا `--node /opt/alt/alt-nodejs18/bin/node` بدهید؛ یا بیلد را محلی بگیرید و commit کنید (پیشنهادی) |
+| تغییرات دیده نمی‌شود | کش مرورگر — `index.html` بدون کش منتشر می‌شود؛ با Ctrl+F5 بگیرید |
+| خطای ۵۰۰ | مالکیت/سطح دسترسی فایل‌ها را در File Manager چک کنید (۶۴۴ برای فایل‌ها) |
+
+## چه چیزی به ریشهٔ وب کپی می‌شود؟
+
+- `index.html` (بیلد)
+- `assets/` (css/js هش‌شده — کاملاً جایگزین می‌شود)
+- `404.html`، `robots.txt`، `sitemap.xml`، `.nojekyll` (محتویات `app/public`)
+- `.htaccess` (ساخته/به‌روزرسانی می‌شود — بلوک `KHANOMGOL-SPA`)
+
+سایر فایل‌های ریشهٔ وب دست نمی‌خورند (مگر با `--clean` که همه — جز `cgi-bin` — را پاک می‌کند).

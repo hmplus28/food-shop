@@ -19,7 +19,7 @@
           <div class="fld w"><label>رمز عبور</label><input v-model="pass" type="password" placeholder="حداقل ۴ کاراکتر"></div>
           <button class="btn btn-gold btn-block" type="submit">ساخت حساب کاربری</button>
         </form>
-        <p class="hint" style="font-size:.74rem;color:var(--ink-3);margin-top:12px;text-align:center">نسخه نمایشی: اطلاعات فقط در مرورگر خودتان ذخیره می‌شود؛ بعداً به بک‌اند واقعی وصل می‌شود.</p>
+        <p class="hint" style="font-size:.74rem;color:var(--ink-3);margin-top:12px;text-align:center">اگر اتصال بک‌اند فعال باشد حساب روی سرور ساخته می‌شود؛ در غیر این صورت اطلاعات فقط در مرورگر خودتان ذخیره می‌شود.</p>
       </div>
     </div>
   </div>
@@ -44,8 +44,8 @@ function done(res) {
   toast('خوش آمدید! 🌰', 'gold');
   router.push(String(route.query.redirect || '/account'));
 }
-const doLogin = () => done(login(phone.value, pass.value));
-const doReg = () => done(register(name.value, phone.value, pass.value));
+const doLogin = async () => done(await login(phone.value, pass.value));
+const doReg = async () => done(await register(name.value, phone.value, pass.value));
 </script>
 
 <style scoped>
