@@ -98,7 +98,7 @@ export const COUPONS = {
 
 /* تم‌های رنگی */
 export const THEMES = [
-  { id: 'default', name: 'پسته‌ای', color: '#398f00' },
+  { id: 'default', name: 'پسته‌ای', color: '#48b500' },
   { id: 'anari', name: 'اناری', color: '#c03045' },
   { id: 'zeitoni', name: 'زیتونی طبیعی', color: '#6d8f2f' },
   { id: 'gahvei', name: 'قهوه‌ای کلاسیک', color: '#6b4a2b' },

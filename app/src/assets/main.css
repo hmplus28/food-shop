@@ -1,10 +1,10 @@
 
 /* ============================================================
    خانم گل — فروشگاه خشکبار | Design Tokens
-   Palette: brand #398f00 | gold #cca000 | bg #ffffff
+   Palette: brand #48b500 | gold #cca000 | bg #ffffff
 ============================================================ */
 :root{
-  --brand:#398f00; --brand-600:#358500; --brand-700:#2e7400; --brand-800:#255e00;
+  --brand:#48b500; --brand-600:#44ab00; --brand-700:#3a9200; --brand-800:#317c00;
   --brand-100:#dceed2; --brand-050:#eef6e9; --brand-soft:#f5faf1;
   --gold:#cca000; --gold-600:#b08e00; --gold-100:#f8eecb; --gold-050:#fdf8e8;
   --red:#d63a2f; --red-600:#b52a22;
@@ -133,14 +133,14 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 
 /* ================= Header ================= */
 .site-header{position:sticky;top:0;z-index:55;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);box-shadow:0 4px 20px rgba(30,43,22,.05)}
+  border-bottom:1px solid var(--line);box-shadow:0 4px 20px rgba(72,181,0,.08)}
 .hd-inner{display:flex;align-items:center;gap:14px;min-height:70px;position:relative}
 .burger{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--brand-050);color:var(--brand-700);transition:var(--tr)}
 .burger:hover{background:var(--brand);color:#fff}
 .burger .icon{width:22px;height:22px}
 .logo{display:flex;align-items:center;gap:10px;flex:none}
 .logo-mark{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand-600));
-  display:grid;place-items:center;color:#fff;box-shadow:0 6px 16px rgba(57,143,0,.3);position:relative}
+  display:grid;place-items:center;color:#fff;box-shadow:0 6px 16px rgba(72,181,0,.28);position:relative}
 .logo-mark::after{content:"";position:absolute;inset:3px;border-radius:11px;border:1.5px dashed rgba(255,255,255,.55)}
 .logo-mark .icon{width:24px;height:24px}
 .logo-text b{font-family:var(--f-display);font-weight:400;font-size:1.5rem;color:var(--brand-700);display:block;line-height:1.2}
@@ -459,7 +459,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 @media(min-width:992px){.gift-grid{grid-template-columns:repeat(4,1fr)}.gift-sec{padding:44px 36px}}
 
 /* ================= خرید اطمینان (بازطراحی — نوار تیره لوکس) ================= */
-.trust-sec{background:linear-gradient(165deg,#2a1a0b,var(--brand-700) 52%,var(--brand));position:relative;overflow:hidden}
+.trust-sec{background:linear-gradient(165deg,var(--brand-800),var(--brand-700) 52%,var(--brand));position:relative;overflow:hidden}
 .trust-sec::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;border:2px dashed rgba(212,175,55,.18);top:-120px;inset-inline-end:-90px;animation:spin 40s linear infinite;pointer-events:none}
 .trust-sec .sec-title{color:#fff}
 .trust-sec .sec-title i{color:var(--gold);font-style:normal}
@@ -471,7 +471,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .t-count b{font-family:var(--f-display);font-weight:400;font-size:1.02rem;color:var(--gold);letter-spacing:1px;min-width:86px;text-align:center}
 .trust-wrap{display:grid;grid-template-columns:1fr;gap:16px;margin-top:18px}
 .trust-card{position:relative;background:rgba(255,255,255,.055);border:1px solid rgba(212,175,55,.35);border-radius:22px;overflow:hidden;
-  display:grid;grid-template-columns:1fr;box-shadow:0 18px 44px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+  display:grid;grid-template-columns:1fr;box-shadow:0 18px 44px rgba(15,35,0,.26);backdrop-filter:blur(6px)}
 .t-media{position:relative;aspect-ratio:16/10;overflow:hidden}
 .t-media img{width:100%;height:100%;object-fit:cover;transition:transform .55s ease}
 .trust-card:hover .t-media img{transform:scale(1.05)}
@@ -582,7 +582,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 @media(min-width:992px){.story-grid{grid-template-columns:1fr 1.15fr}}
 
 /* ================= Footer ================= */
-.footer{background:linear-gradient(180deg,#20340f,#142408);color:#dbe6cf;margin-top:60px}
+.footer{background:linear-gradient(180deg,#2c6700,#1e4c00);color:#dbe6cf;margin-top:60px}
 .f-top{padding:46px 0 30px;display:grid;grid-template-columns:1fr;gap:28px}
 .f-col .f-title{color:#fff;font-size:1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .f-col .f-title::after{content:"";flex:1;height:1px;background:rgba(204,160,0,.35)}

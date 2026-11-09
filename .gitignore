@@ -8,3 +8,8 @@ Thumbs.db
 .env
 skills/
 upload/
+
+# ابزارها و فایل‌های محلی (نباید وارد مخزن شوند)
+scripts/
+tool-results/
+download/
