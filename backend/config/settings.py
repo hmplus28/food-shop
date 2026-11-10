@@ -162,7 +162,9 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
-    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+    # فشرده‌سازی بدون «manifest»: اگر collectstatic فراموش شود، پنل ادمین
+    # به‌جای خطای ۵۰۰ فقط CSS از دست می‌دهد (مقاوم در استقرار دستی)
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -172,6 +174,20 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     SECURE_REFERRER_POLICY = 'same-origin'
+
+# ---------- امنیت TLS (پس از فعال‌شدن https روی هاست روشن کنید) ----------
+# در backend/.env.example مستند شده؛ تا قبل از نصب SSL همه پیش‌فرض خاموش‌اند
+SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False)
+SECURE_HSTS_SECONDS = env_int('SECURE_HSTS_SECONDS', 0)
+if env_bool('SECURE_PROXY_SSL_HEADER', False):
+    # فقط وقتی https واقعی از هدر X-Forwarded-Proto می‌آید (پشت پروکسی/Passenger)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ---------- CSRF ----------
+# برای POST فرم‌های پنل ادمین جنگو از دامنهٔ اصلی؛ API جنگو (JSON) تحت‌تأثیر نیست
+_csrf = [o.strip() for o in env('CSRF_TRUSTED_ORIGINS').split(',') if o.strip()]
+if _csrf:
+    CSRF_TRUSTED_ORIGINS = _csrf
 
 # ---------- فروشگاه و پنل پیامک ----------
 SHOP_NAME = env('SHOP_NAME', 'فروشگاه خانم گل')

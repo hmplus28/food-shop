@@ -140,15 +140,34 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 با nginx، مسیر `/api/` و `/dj-admin/` را به این سرویس پروکسی کنید. برای
 اجر دائمی از `systemd` یا `pm2` (با `--interpreter python3`) استفاده کنید.
 
-### هاست cPanel (Setup Python App)
+### هاست cPanel (Setup Python App) — راه خودکار
+
+اسکریپت استقرار همهٔ کارها را خودکار می‌کند (یافتن پایتون ≥3.10 از مسیرهای
+کلودلینوکس، ساخت/شناسایی venv سی‌پنل، نصب وابستگی‌ها، ساخت ‎.env‎ با
+SECRET_KEY و رمز مدیر تصادفی، مایگریشن، seed، collectstatic، ساخت
+passenger_wsgi.py و قواعد امنیتی .htaccess — idempotent و قابل اجرای مکرر):
+
+```bash
+cd backend
+git pull                        # یا clone
+bash deploy/deploy_cpanel.sh
+# گزینه‌ها: --venv ~/virtualenv/backend/3.11  --python /opt/alt/python311/bin/python3.11
+```
+
+سپس فقط در cPanel → **Setup Python App** اپ را با این مشخصات بسازید/ویرایش کنید:
+Python 3.11+ ، Application root = پوشهٔ backend ، Startup File = `passenger_wsgi.py`.
+
+### هاست cPanel — راه دستی
 
 1. cPanel → **Setup Python App** → نسخهٔ Python ≥ 3.10 → ساخت اپ.
 2. فایل‌های پوشهٔ `backend` را روی هاست بگذارید (git clone یا آپلود).
 3. «Application startup file» را `passenger_wsgi.py` بگذارید.
-4. در ترمینال همان محیط مجازی: `pip install -r requirements.txt` و
-   `python manage.py migrate` و `python manage.py seed_shop`.
-5. متغیرهای محیطی (`.env` یا از خود رابط cPanel) را تنظیم کنید.
-6. دامنهٔ فرانت را در `CORS_ORIGINS` بگذارید.
+4. در ترمینال همان محیط مجازی: `pip install -r deploy/requirements-cpanel.txt` و
+   `python manage.py migrate` و `python manage.py seed_shop` و
+   `python manage.py collectstatic --noinput`.
+5. متغیرهای محیطی (`.env` — از `.env.example` کپی کنید) را تنظیم کنید.
+6. دامنهٔ فرانت را در `CORS_ORIGINS` بگذارید و فایل‌های حساس را با
+   `.htaccess` مسدود کنید (اسکریپت خودکار همین کار را می‌کند).
 
 راهنمای تصویری‌تر و نکات SSL در `deploy/GUIDE-CPANEL-FA.md` هست.
 
@@ -163,10 +182,18 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 
 ## تست
 
-اسکریپت تست انتها-به-انتها (۴۶ بررسی خودکار؛ سرور باید روشن باشد):
+تست انتها-به-انتهای عملکردی (۶۰ بررسی خودکار؛ سرور باید روشن باشد):
 
 ```bash
 python3 scripts/test_backend_api.py
+```
+
+تست امنیتی سنگین (۶۹ بررسی: تزریق SQL/XSS، حملات JWT، IDOR، دستکاری قیمت،
+سقف نرخ و brute-force؛ پیشنهاد: قبل از اجرا سرور را ری‌استارت کنید تا
+شمارنده‌های throttle صفر باشند):
+
+```bash
+python3 scripts/test_backend_security.py
 ```
 
 محاسبهٔ قیمت سمت سرور با منطق فرانت «بیت‌به‌بیت» یکی است (همان `priceOf`،

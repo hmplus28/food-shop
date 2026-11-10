@@ -9,6 +9,12 @@ backend/db.sqlite3
 backend/staticfiles/
 backend/media/
 backend/.venv/
+backend/.venv-host/
+backend/.htaccess
+backend/tmp/
+backend/logs/
+backend/backups/
+backend/*.kg-backup
 *.py[cod]
 
 # فایل‌های سیستم
@@ -21,6 +27,7 @@ upload/
 # ابزارها و فایل‌های محلی (نباید وارد مخزن شوند) — به‌جز تست رسمی بک‌اند
 scripts/*
 !scripts/test_backend_api.py
+!scripts/test_backend_security.py
 tool-results/
 
 # ابزار نصب skill (محلی)

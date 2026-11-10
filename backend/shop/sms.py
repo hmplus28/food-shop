@@ -30,11 +30,12 @@ HTTP_TIMEOUT = 8
 
 
 def normalize_phone(raw):
-    """۰۹۱۲… / +98912… / 0098912… / 912… → 0912…  |  نامعتبر → None"""
+    """۰۹۱۲… / +98912… / 0098912… / 912… / ارقام فارسی و عربی → 0912…  |  نامعتبر → None"""
     if raw is None:
         return None
     s = str(raw).strip()
-    s = s.translate(str.maketrans('۰۱۲۳۴۵۶۷۸٩', '0123456789'))
+    # ارقام فارسی (U+06F0…F9) و عربی (U+0660…69) → ASCII
+    s = s.translate(str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789'))
     digits = re.sub(r'\D', '', s)
     if digits.startswith('98') and len(digits) == 12:
         digits = '0' + digits[2:]
