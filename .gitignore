@@ -24,6 +24,12 @@ Thumbs.db
 skills/
 upload/
 
+# ورک‌اسپیس محلی در ریشه (پروژهٔ قدیمی دانه‌سرا) — هرگز وارد مخزن نشود
+/download/
+/package.json
+/public/
+/src/
+
 # ابزارها و فایل‌های محلی (نباید وارد مخزن شوند) — به‌جز تست رسمی بک‌اند
 scripts/*
 !scripts/test_backend_api.py
