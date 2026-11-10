@@ -18,8 +18,9 @@ Thumbs.db
 skills/
 upload/
 
-# ابزارها و فایل‌های محلی (نباید وارد مخزن شوند)
-scripts/
+# ابزارها و فایل‌های محلی (نباید وارد مخزن شوند) — به‌جز تست رسمی بک‌اند
+scripts/*
+!scripts/test_backend_api.py
 tool-results/
 
 # ابزار نصب skill (محلی)
