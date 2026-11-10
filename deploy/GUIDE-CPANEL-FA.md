@@ -6,13 +6,21 @@
 ## خلاصهٔ سریع
 
 ```bash
-# روی هاست (ترمینال cPanel یا SSH):
+# ── فرانت (روی هاست، ترمینال cPanel یا SSH): ──
 git clone https://github.com/hmplus28/food-shop.git   # یا git pull برای به‌روزرسانی
 cd food-shop
 bash deploy/deploy_cpanel.sh --webroot ~/public_html
+
+# ── بک‌اند (پوشهٔ backend، ترمینال cPanel یا SSH): ──
+cd backend
+bash deploy/deploy_cpanel.sh
 ```
 
-همین! بیلدِ آماده در گیت هست و روی هاست به Node نیازی نیست.
+فرانت: بیلدِ آماده در گیت هست و روی هاست به Node نیازی نیست.
+بک‌اند: اسکریپت خودش پایتون ≥۳.۱۰ را پیدا می‌کند، venv می‌سازد (یا venv سی‌پنل
+را شناسایی می‌کند)، وابستگی‌ها را نصب، مایگریشن و seed را اجرا،
+`passenger_wsgi.py` و `.htaccess` امن می‌سازد و `SECRET_KEY` و
+`ADMIN_PASSWORD` تصادفی تولید می‌کند.
 
 ## روش‌های بردن ریپو روی هاست
 
@@ -88,25 +96,67 @@ bash deploy/deploy_cpanel.sh --build \
 سرور، پنل مدیر و اتصال به پنل پیامکی (کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک).
 جزئیات کامل و جدول همهٔ نقاط پایانی در `backend/README.md` هست.
 
-### راه‌اندازی روی cPanel (Setup Python App)
+### استقرار خودکار با اسکریپت (پیشنهادی)
 
 ```bash
-# در ترمینال cPanel:
-cd ~/repos/food-shop/backend        # یا هر مسیری که ریپو را کلون کردید
-pip install -r requirements.txt
-cp .env.example .env                # ویرایش: ADMIN_PASSWORD، SMS_PROVIDER، کلید پنل پیامک
-python manage.py migrate
-python manage.py seed_shop          # ۲۸ محصول + حساب مدیر
+cd ~/repos/food-shop/backend     # یا هر مسیری که ریپو را کلون کردید
+bash deploy/deploy_cpanel.sh
 ```
 
-سپس در cPanel → **Setup Python App**: نسخهٔ Python ≥ 3.10، مسیر پوشهٔ
-`backend`، و «Application startup file» را `passenger_wsgi.py` بگذارید.
-بعد از Restart، آدرس بک‌اند را در بیلد فرانت بدهید:
+اسکریپت به‌ترتیب این کارها را انجام می‌دهد:
+
+1. **پایتون ≥۳.۱۰** را پیدا می‌کند (`/opt/alt/python3XX` کلودلینوکس هم چک می‌شود)
+2. **venv**: اول venv سی‌پنلِ همین پروژه (`~/virtualenv/…` اگر Setup Python App
+   ساخته باشید) را شناسایی می‌کند؛ نبود، `.venv-host` می‌سازد
+3. **.env**: نبود را با کلیدهای امن می‌سازد — `SECRET_KEY` و `ADMIN_PASSWORD`
+   تصادفی؛ مقادیر موجود هرگز بازنویسی نمی‌شوند و فایل دست‌کاری‌شده پاک‌سازی می‌شود
+4. **مایگریشن + seed_shop** (۲۸ محصول + حساب مدیر، idempotent) + **collectstatic**
+5. **passenger_wsgi.py** را بر اساس نوع venv می‌سازد (سی‌پنل: بدون re-exec؛
+   معمولی: با re-exec — تا خطای ۵۰۳ لودر lswsgi پیش نیاید)
+6. **.htaccess امن**: دانلود `.env`، دیتابیس، سورس‌ها و لاگ‌ها را از وب می‌بندد
+7. **پشتیبان دیتابیس** قبل از هر استقرار در `backups/` و ری‌استارت Passenger
+
+گزینه‌ها:
 
 ```bash
+bash backend/deploy/deploy_cpanel.sh --venv ~/virtualenv/backend/3.11  # venv مشخص
+bash backend/deploy/deploy_cpanel.sh --python /opt/alt/python311/bin/python3.11
+```
+
+### بعد از استقرار بک‌اند — ۵ دقیقه تنظیم
+
+1. cPanel → **Setup Python App** → بررسی: Python ‏۳.۱۱+، Application root =
+   پوشهٔ `backend`، Startup File = `passenger_wsgi.py`
+2. `backend/.env` را ویرایش کنید و سپس `touch backend/tmp/restart.txt`:
+
+```env
+ALLOWED_HOSTS=دامنه-بک‌اند.ir
+CORS_ORIGINS=https://دامنه-فرانت.ir
+SHOP_NOTIFY_PHONE=0912…          # پیامک «سفارش جدید» به مدیر
+SMS_PROVIDER=kavenegar           # یا smsir / ghasedak / melipayamak / console
+KAVENEGAR_API_KEY=…
+KAVENEGAR_OTP_TEMPLATE=khanomgol-otp
+SECURE_SSL_REDIRECT=True         # فقط بعد از فعال‌شدن https
+SECURE_HSTS_SECONDS=31536000
+```
+
+3. تست سلامت: `https://دامنه-بک‌اند/api/v1/health` → باید `{"ok":true,…}` بدهد
+
+### اتصال فرانت به بک‌اند
+
+آدرس بک‌اند در زمان بیلد داخل باندل فرانت می‌رود؛ پس بعد از بالا آمدن بک‌اند
+یک‌بار فرانت را با پارامترهای بک‌اند بیلد و استقرار کنید:
+
+```bash
+# ریشهٔ ریپو (اسکریپت فرانت):
 bash deploy/deploy_cpanel.sh --build \
-  --api-base https://دامنه-یا-پورت-بک‌اند/api/v1 --api-enabled
+  --api-base https://دامنه-بک‌اند/api/v1 --api-enabled
 ```
+
+پیامک‌های خودکار: کد ورود (OTP)، تأیید سفارش به مشتری، اطلاع سفارش جدید به
+مدیر و تغییر وضعیت سفارش به مشتری. تست سریع: پنل مدیریت فرانت → تب
+«پنل پیامک» → «ارسال پیامک تست». تا وقتی پنل پیامک تنظیم نشده
+(`SMS_PROVIDER=console`) همه‌چیز کار می‌کند و پیامک‌ها فقط ثبت می‌شوند.
 
 ### راه‌اندازی روی سرور مجازی (VPS)
 
@@ -115,22 +165,6 @@ cd backend && pip install -r requirements.txt
 python manage.py migrate && python manage.py seed_shop && python manage.py collectstatic --noinput
 gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 ```
-
-### اتصال پنل پیامکی
-
-در `backend/.env`:
-
-```env
-SMS_PROVIDER=kavenegar              # یا smsir / ghasedak / melipayamak / console
-KAVENEGAR_API_KEY=…
-KAVENEGAR_OTP_TEMPLATE=khanomgol-otp
-SHOP_NOTIFY_PHONE=0912…             # پیامک «سفارش جدید» به مدیر
-```
-
-پیامک‌های خودکار: کد ورود (OTP)، تأیید سفارش به مشتری، اطلاع سفارش جدید به
-مدیر و تغییر وضعیت سفارش به مشتری. تست سریع: پنل مدیریت فرانت → تب
-«پنل پیامک» → «ارسال پیامک تست». تا وقتی پنل پیامک تنظیم نشده
-(`SMS_PROVIDER=console`) همه‌چیز کار می‌کند و پیامک‌ها فقط ثبت می‌شوند.
 
 ## SSL و دامنه
 
@@ -162,12 +196,18 @@ cd food-shop && git pull && bash deploy/deploy_cpanel.sh
 | «Node ≥18 پیدا نشد» هنگام `--build` | در cPanel «Setup Node.js App» برنامه بسازید یا `--node /opt/alt/alt-nodejs18/bin/node` بدهید؛ یا بیلد را محلی بگیرید و commit کنید (پیشنهادی) |
 | تغییرات دیده نمی‌شود | کش مرورگر — `index.html` بدون کش منتشر می‌شود؛ با Ctrl+F5 بگیرید |
 | خطای ۵۰۰ | مالکیت/سطح دسترسی فایل‌ها را در File Manager چک کنید (۶۴۴ برای فایل‌ها) |
+| بک‌اند خطای ۵۰۳ می‌دهد (Passenger) | بعد از هر تغییر venv/passenger_wsgi.py باید ری‌استارت شود: `touch backend/tmp/restart.txt`؛ اگر venv سی‌پنل است مطمئن شوید Startup File همان `passenger_wsgi.py` است |
+| «پایتون ≥3.10 پیدا نشد» در اسکریپت بک‌اند | در cPanel → Setup Python App یک برنامه با Python 3.11 بسازید (Application root = پوشهٔ backend) و اسکریپت را دوباره اجرا کنید؛ یا مسیر بدهید: `--python /opt/alt/python311/bin/python3.11` |
+| `api/v1/health` پاسخ نمی‌دهد | `ALLOWED_HOSTS` در `backend/.env` دامنه را ندارد → ویرایش و `touch tmp/restart.txt`؛ لاگ‌ها: `backend/logs/` |
+| فرانت به بک‌اند وصل نمی‌شود (CORS) | `CORS_ORIGINS` در `backend/.env` باید دقیقاً دامنهٔ فرانت باشد (با https و بدون اسلش آخر) |
 
-## امنیت
+## امنیت و تست‌ها
 
 - `.htaccess` ساخته‌شده مسیرهای حساس ریپو (`app/`, `deploy/`, `scripts/`, `download/`, `upload/`, `skills/`, `.git`, `.env`) و فایل‌های پیکربندی را از وب مسدود می‌کند و هدرهای `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` را فعال می‌سازد.
 - **CSP**: بلوک پیشنهادی به‌صورت کامنت در قالب `.htaccess` هست؛ قبل از فعال‌سازی دامنهٔ بک‌اند را در `connect-src` بگذارید.
 - تست‌های امنیتی پروژه (بررسی ایستا + پروب XSS پویا + `npm audit`): با `Vite ≥ 6.4.6` الان **۰ آسیب‌پذیری** دارد؛ بعد از تغییر کد `cd app && npm audit` را تکرار کنید.
+- **تست امنیتی بک‌اند** (۶۹ بررسی: تزریق، JWT، IDOR، throttle OTP، دستکاری مالی): `python scripts/test_backend_security.py` — همه سبز.
+- **تست ریسپانسیو موبایل** (۶ دستگاه از ۳۲۰px تا تبلت × ۷ صفحه): ۰ سرریز افقی، ۰ خطای کنسول؛ اسکریپت: `python scripts/mobile_test.py`.
 - پس از اتصال بک‌اند: رمز و نقش مدیر باید سمت سرور بیاید (در دموی فعلی `admin/admin1234` فقط محلی است) و CORS بک‌اند فقط به دامنهٔ فرانت اجازه بدهد.
 
 ## چه چیزی به ریشهٔ وب کپی می‌شود؟
