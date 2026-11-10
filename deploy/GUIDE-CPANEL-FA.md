@@ -65,15 +65,72 @@ bash deploy/deploy_cpanel.sh --build \
 
 | نقطهٔ پایانی | روش | پاسخ |
 | --- | --- | --- |
-| `{BASE}/products` | GET | آرایهٔ محصولات یا `{results|data:[…]}` |
-| `{BASE}/orders` | POST | `{code, status?}` |
-| `{BASE}/orders/{code}` | GET | `{code, status}` |
+| `{BASE}/health` | GET | `{ok, sms:{provider, configured}}` (تست اتصال) |
+| `{BASE}/products` | GET | آرایهٔ محصولات |
+| `{BASE}/orders` | POST | `{code, status, total}` |
+| `{BASE}/orders/{code}` | GET | `{code, status}` (پیگیری) |
 | `{BASE}/orders/{code}` | PATCH | `{code, status}` (تغییر وضعیت مدیر) |
 | `{BASE}/auth/register` | POST | `{ok, user?, token?}` |
 | `{BASE}/auth/login` | POST | `{ok, user?, token?}` |
+| `{BASE}/auth/otp/request` | POST | ارسال کد ورود پیامکی |
+| `{BASE}/auth/otp/verify` | POST | `{ok, user?, token?}` |
+| `{BASE}/admin/login` | POST | `{ok, token?}` (توکن نقش مدیر) |
+| `{BASE}/admin/stats` | GET | آمار فروشگاه (مدیر) |
+| `{BASE}/admin/sms` | GET | گزارش پیامک‌ها (مدیر) |
 
 تا بک‌اند در دسترس نباشد یا پاسخ ندهد، فروشگاه **بی‌صدا** به دادهٔ محلی برمی‌گردد
 (هیچ‌وقت صفحهٔ خطا نمی‌بینید).
+
+## بک‌اند Django (پوشهٔ `backend`)
+
+بک‌اند کامل فروشگاه با **Django 5 + DRF** در پوشهٔ `backend` قرار دارد:
+احراز هویت با رمز یا کد پیامکی (OTP)، محصولات، سفارش‌ها با محاسبهٔ قیمت سمت
+سرور، پنل مدیر و اتصال به پنل پیامکی (کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک).
+جزئیات کامل و جدول همهٔ نقاط پایانی در `backend/README.md` هست.
+
+### راه‌اندازی روی cPanel (Setup Python App)
+
+```bash
+# در ترمینال cPanel:
+cd ~/repos/food-shop/backend        # یا هر مسیری که ریپو را کلون کردید
+pip install -r requirements.txt
+cp .env.example .env                # ویرایش: ADMIN_PASSWORD، SMS_PROVIDER، کلید پنل پیامک
+python manage.py migrate
+python manage.py seed_shop          # ۲۸ محصول + حساب مدیر
+```
+
+سپس در cPanel → **Setup Python App**: نسخهٔ Python ≥ 3.10، مسیر پوشهٔ
+`backend`، و «Application startup file» را `passenger_wsgi.py` بگذارید.
+بعد از Restart، آدرس بک‌اند را در بیلد فرانت بدهید:
+
+```bash
+bash deploy/deploy_cpanel.sh --build \
+  --api-base https://دامنه-یا-پورت-بک‌اند/api/v1 --api-enabled
+```
+
+### راه‌اندازی روی سرور مجازی (VPS)
+
+```bash
+cd backend && pip install -r requirements.txt
+python manage.py migrate && python manage.py seed_shop && python manage.py collectstatic --noinput
+gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
+```
+
+### اتصال پنل پیامکی
+
+در `backend/.env`:
+
+```env
+SMS_PROVIDER=kavenegar              # یا smsir / ghasedak / melipayamak / console
+KAVENEGAR_API_KEY=…
+KAVENEGAR_OTP_TEMPLATE=khanomgol-otp
+SHOP_NOTIFY_PHONE=0912…             # پیامک «سفارش جدید» به مدیر
+```
+
+پیامک‌های خودکار: کد ورود (OTP)، تأیید سفارش به مشتری، اطلاع سفارش جدید به
+مدیر و تغییر وضعیت سفارش به مشتری. تست سریع: پنل مدیریت فرانت → تب
+«پنل پیامک» → «ارسال پیامک تست». تا وقتی پنل پیامک تنظیم نشده
+(`SMS_PROVIDER=console`) همه‌چیز کار می‌کند و پیامک‌ها فقط ثبت می‌شوند.
 
 ## SSL و دامنه
 

@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { toFa, money, priceOf, faDate, LS } from '../data/site';
 import { prod, visibleProducts } from '../data/catalog';
@@ -122,7 +122,7 @@ import { useSeo } from '../composables/useSeo';
 import { auth, updateProfile, logout } from '../stores/auth';
 import { fav } from '../stores/fav';
 import { addToCart } from '../stores/cart';
-import { orders, spentTotal, tierOf } from '../stores/orders';
+import { orders, spentTotal, tierOf, syncMineOrders } from '../stores/orders';
 import { openModal, toast } from '../stores/ui';
 import OrderCard from '../components/OrderCard.vue';
 
@@ -141,6 +141,8 @@ const pf = reactive({ name: auth.user?.name || '', phone: auth.user?.phone || ''
 
 const wonCodes = () => LS.get('codes', []);
 const myOrders = computed(() => orders.filter(o => !auth.user?.phone || o.addr.phone === auth.user.phone));
+
+onMounted(() => { if (auth.user) syncMineOrders(); });
 const buyer = computed(() => myOrders.value.length > 0);
 const tier = computed(() => tierOf(spentTotal()));
 const pts = computed(() => Math.floor(spentTotal() / 100000));

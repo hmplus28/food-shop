@@ -1,0 +1,30 @@
+"""مسیرهای API فروشگاه — پیشوند /api/v1/"""
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('health', views.HealthView.as_view()),
+
+    # حساب کاربری
+    path('auth/register', views.RegisterView.as_view()),
+    path('auth/login', views.LoginView.as_view()),
+    path('auth/otp/request', views.OtpRequestView.as_view()),
+    path('auth/otp/verify', views.OtpVerifyView.as_view()),
+    path('auth/me', views.MeView.as_view()),
+
+    # محصولات
+    path('products', views.ProductListCreateView.as_view()),
+    path('products/<int:pk>', views.ProductDetailView.as_view()),
+
+    # سفارش‌ها (mine قبل از <code> باشد)
+    path('orders', views.OrderCreateListView.as_view()),
+    path('orders/mine', views.MyOrdersView.as_view()),
+    path('orders/<str:code>', views.OrderTrackPatchView.as_view()),
+
+    # مدیر فروشگاه
+    path('admin/login', views.AdminLoginView.as_view()),
+    path('admin/stats', views.AdminStatsView.as_view()),
+    path('admin/sms', views.AdminSmsLogView.as_view()),
+    path('admin/sms/test', views.AdminSmsTestView.as_view()),
+]

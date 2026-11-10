@@ -6,7 +6,7 @@ import { LS, toEn, money } from '../data/site';
 import { toast } from './ui';
 import { cart, couponVal, cartSub, shipCost, clearCart, markCouponUsed } from './cart';
 import { SHIP_OPTIONS } from '../data/site';
-import { apiState, createOrderApi, fetchOrderStatusApi, patchOrderStatusApi } from '../services/api';
+import { apiState, createOrderApi, fetchOrderStatusApi, patchOrderStatusApi, myOrdersApi } from '../services/api';
 
 export const orders = LS.get('orders', []);
 const save = () => LS.set('orders', orders);
@@ -91,6 +91,35 @@ export async function refreshOrderStatus(code) {
   const o = orders.find(x => x.code === String(code).toUpperCase() || x.remoteCode === String(code).toUpperCase());
   if (o && o.status !== st) { o.status = st; save(); }
   return st;
+}
+
+/* واکشی سفارش‌های کاربر لاگین‌شده از بک‌اند و ادغام با نسخهٔ محلی؛
+   برای پنل کاربری — خطای شبکه بی‌صدا نادیده گرفته می‌شود. */
+export async function syncMineOrders() {
+  if (!apiState.enabled) return 0;
+  const res = await myOrdersApi();
+  if (!res || !Array.isArray(res.results)) return 0;
+  let added = 0;
+  for (const r of res.results) {
+    const local = orders.find(o => o.code === r.code || o.remoteCode === r.code
+      || (r.client_code && (o.code === r.client_code || o.remoteCode === r.client_code)));
+    if (local) {
+      if (Number.isInteger(r.status) && local.status !== r.status) { local.status = r.status; save(); }
+      if (r.code && local.remoteCode !== r.code) { local.remoteCode = r.code; save(); }
+      continue;
+    }
+    orders.unshift({
+      code: r.code, remoteCode: r.code, ts: r.ts || Date.now(),
+      items: (r.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty })),
+      sub: r.sub, off: r.off, coupon: r.coupon,
+      shipCost: r.ship_cost, shipType: r.ship_type, shipLabel: r.ship_label, shipDays: r.ship_days,
+      total: r.total, addr: r.addr || { phone: '' }, status: Number(r.status) || 0,
+      fromServer: true,
+    });
+    added++;
+  }
+  if (added) save();
+  return added;
 }
 
 export const spentTotal = () => orders.reduce((s, o) => s + o.total, 0);

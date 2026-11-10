@@ -179,7 +179,7 @@ export async function authRegisterApi(name, phone, pass) {
     apiState.online = true;
     if (res && res.token) setToken(res.token);
     const user = okUser(res && res.user) ? { name: String(res.user.name), phone: toEn(String(res.user.phone)).replace(/\D/g, '') } : null;
-    return { ok: !!(res && res.ok !== false), user };
+    return { ok: !!(res && res.ok !== false), user, msg: res && res.ok === false ? msgOf(res, 'ثبت‌نام در سرور انجام نشد') : null };
   } catch (e) { note(e); return null; }
 }
 
@@ -191,7 +191,7 @@ export async function authLoginApi(phone, pass) {
     apiState.online = true;
     if (res && res.token) setToken(res.token);
     const user = okUser(res && res.user) ? { name: String(res.user.name), phone: toEn(String(res.user.phone)).replace(/\D/g, '') } : null;
-    return { ok: !!user || !!(res && res.ok === true), user };
+    return { ok: !!user || !!(res && res.ok === true), user, msg: res && res.ok === false ? msgOf(res, 'شماره یا رمز عبور اشتباه است') : null };
   } catch (e) { note(e); return null; }
 }
 
@@ -204,3 +204,169 @@ export async function pingApi() {
 
 /* خروج: پاک‌سازی توکن بک‌اند */
 export function apiLogout() { setToken(null); }
+
+/* ================= بخش ۲: ورود با کد پیامکی، پنل مدیر و همگام‌سازی =================
+ *
+ * قراردادهای اضافهٔ بک‌اند Django (همه با پیشوند {BASE}):
+ *   POST {BASE}/auth/otp/request  {phone}              → {ok, expires_in, cooldown, dev?{code}}
+ *   POST {BASE}/auth/otp/verify   {phone, code}        → {ok, user?, token?, created?}
+ *   POST {BASE}/admin/login       {username, password} → {ok, token?, user?}
+ *   GET  {BASE}/admin/stats                            → {ok, products, orders, revenue, …}
+ *   GET  {BASE}/admin/sms?limit=50                     → {ok, provider, results[…]}
+ *   POST {BASE}/admin/sms/test    {to, text?}          → {ok, sent, detail}
+ *   GET  {BASE}/orders?status&phone&q&limit            → {ok, count, results[…]}   (مدیر)
+ *   GET  {BASE}/orders/mine                            → {ok, count, results[…]}   (کاربر)
+ *   POST {BASE}/products        (مدیر)                 → {ok, product}
+ *   PUT  {BASE}/products/{id}   (مدیر)                 → {ok, product}
+ *   DELETE {BASE}/products/{id} (مدیر)                 → {ok, deleted}
+ *
+ * خطاهای منطقی بک‌اند با کد ۲۰۰ و {ok:false, msg:'فارسی'} می‌آیند و همین‌جا
+ * منتقل می‌شوند؛ خطای شبکه → null تا caller تصمیم بگیرد (فالبک محلی).
+ */
+
+const msgOf = (res, def) => (res && typeof res.msg === 'string' && res.msg) || def;
+
+/* ---- ورود با کد پیامکی ---- */
+export async function authOtpRequestApi(phone) {
+  if (!API_ENABLED) return { ok: false, msg: 'برای ورود با کد پیامکی، اتصال بک‌اند لازم است (VITE_API_ENABLED)' };
+  try {
+    const res = await req('/auth/otp/request', {
+      method: 'POST',
+      body: { phone: toEn(phone).replace(/\D/g, '') },
+      timeout: 15000,                       // ارسال پیامک ممکن است کمی طول بکشد
+    });
+    apiState.online = true;
+    return {
+      ok: !!(res && res.ok !== false),
+      msg: res && res.ok === false ? msgOf(res, 'ارسال کد انجام نشد') : null,
+      expiresIn: res && res.expires_in,
+      cooldown: res && res.cooldown,
+      devCode: res && res.dev ? res.dev.code : null,
+    };
+  } catch (e) { note(e); return null; }
+}
+
+export async function authOtpVerifyApi(phone, code) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/auth/otp/verify', {
+      method: 'POST',
+      body: { phone: toEn(phone).replace(/\D/g, ''), code: toEn(code).replace(/\D/g, '') },
+    });
+    apiState.online = true;
+    if (res && res.ok === false) return { ok: false, msg: msgOf(res, 'کد واردشده اشتباه است') };
+    if (res && res.token) setToken(res.token);
+    const user = okUser(res && res.user)
+      ? { name: String(res.user.name), phone: toEn(String(res.user.phone)).replace(/\D/g, '') }
+      : null;
+    return { ok: !!user, user, created: !!(res && res.created) };
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- ورود مدیر (توکن نقش admin) ---- */
+export async function adminLoginApi(username, password) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/admin/login', { method: 'POST', body: { username, password }, timeout: 8000 });
+    apiState.online = true;
+    if (res && res.ok === false) return { ok: false, msg: msgOf(res, 'نام کاربری یا رمز مدیر اشتباه است') };
+    if (res && res.token) setToken(res.token);
+    return { ok: !!(res && res.ok), user: res && res.user };
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- آمار مدیر ---- */
+export async function adminStatsApi() {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/admin/stats');
+    apiState.online = true;
+    return res && res.ok ? res : null;
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- گزارش پیامک‌ها (پنل مدیر) ---- */
+export async function adminSmsLogApi(limit = 50) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/admin/sms?limit=' + Number(limit));
+    apiState.online = true;
+    return res && res.ok ? res : null;
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- ارسال پیامک آزمایشی از پنل مدیر ---- */
+export async function adminSmsTestApi(to, text) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/admin/sms/test', { method: 'POST', body: { to, text }, timeout: 15000 });
+    apiState.online = true;
+    return res && typeof res === 'object' ? res : { ok: true };
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- فهرست سفارش‌ها از بک‌اند (مدیر) ---- */
+export async function ordersListApi(filters = {}) {
+  if (!API_ENABLED) return null;
+  const q = new URLSearchParams();
+  if (filters.status != null && filters.status !== '') q.set('status', filters.status);
+  if (filters.phone) q.set('phone', filters.phone);
+  if (filters.q) q.set('q', filters.q);
+  if (filters.limit) q.set('limit', filters.limit);
+  try {
+    const res = await req('/orders' + (q.toString() ? '?' + q.toString() : ''));
+    apiState.online = true;
+    return res && res.ok ? res : null;
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- سفارش‌های کاربر لاگین‌شده ---- */
+export async function myOrdersApi() {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/orders/mine');
+    apiState.online = true;
+    return res && res.ok ? res : null;
+  } catch (e) { note(e); return null; }
+}
+
+/* ---- CRUD محصولات سمت بک‌اند (پنل مدیر) ---- */
+
+/* نرمال‌سازی ساختار داخلی فرانت → بدنهٔ بک‌اند */
+function productPayload(p) {
+  return {
+    name: p.name, cat: p.cat, img: p.img || '', price: Number(p.price) || 0,
+    weights: Array.isArray(p.weights) ? p.weights : [500],
+    stock: Number(p.stock) || 0, disc: Number(p.disc) || 0,
+    grade: p.grade || 'درجه یک', rate: Number(p.rate) || 4.5, sold: Number(p.sold) || 0,
+    tags: Array.isArray(p.tags) ? p.tags : [], sec: Array.isArray(p.sec) ? p.sec : [],
+    desc: p.desc || '', hide: !!p.hide,
+  };
+}
+
+export async function productCreateApi(p) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/products', { method: 'POST', body: productPayload(p) });
+    apiState.online = true;
+    return res && res.ok ? res.product : null;
+  } catch (e) { note(e); return null; }
+}
+
+export async function productUpdateApi(id, p) {
+  if (!API_ENABLED) return false;
+  try {
+    await req('/products/' + Number(id), { method: 'PUT', body: productPayload(p) });
+    apiState.online = true;
+    return true;
+  } catch (e) { note(e); return false; }
+}
+
+export async function productDeleteApi(id) {
+  if (!API_ENABLED) return false;
+  try {
+    await req('/products/' + Number(id), { method: 'DELETE' });
+    apiState.online = true;
+    return true;
+  } catch (e) { note(e); return false; }
+}

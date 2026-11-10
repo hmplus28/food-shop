@@ -1,0 +1,446 @@
+"""نمای‌های API فروشگاه خانم گل
+
+قرارداد با فرانت (app/src/services/api.js):
+- خطاهای منطقی → 200 با {ok:false, msg} (فرانت پیام فارسی را مستقیم نشان می‌دهد)
+- خطاهای ساختاری/اعتبارسنجی → 400 با {ok:false, msg}
+- نقاط پایانی محافظت‌شده → هدر Authorization: Bearer <jwt>
+"""
+import random
+
+from django.conf import settings
+from django.db import transaction
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import Order, OtpCode, Product, ShopUser, SmsLog
+from .permissions import IsShopAdmin
+from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, line_unit_price
+from .seed import ensure_seed
+from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
+                          OrderStatusPatchSerializer, OrderTrackSerializer, OtpRequestSerializer,
+                          OtpVerifySerializer, ProductSerializer, ProductWriteSerializer,
+                          RegisterSerializer)
+from .sms import notify_new_order, notify_status_change, normalize_phone, provider_status, send_otp, send_sms
+
+API_VERSION = '1.0.0'
+
+
+def fail(msg, code=status.HTTP_200_OK):
+    return Response({'ok': False, 'msg': msg}, status=code)
+
+
+def ok(data=None, code=status.HTTP_200_OK):
+    body = {'ok': True}
+    body.update(data or {})
+    return Response(body, status=code)
+
+
+def first_msg(errors):
+    """اولین پیام خطای سریالایزر به‌صورت رشتهٔ فارسی"""
+    for v in errors.values():
+        if isinstance(v, list) and v:
+            return str(v[0])
+    return 'اطلاعات ارسالی معتبر نیست'
+
+
+def issue_tokens(user):
+    rt = RefreshToken.for_user(user)
+    return {'token': str(rt.access_token), 'refresh': str(rt)}
+
+
+class AuthThrottle(AnonRateThrottle):
+    scope = 'auth'
+
+
+class OtpThrottle(AnonRateThrottle):
+    scope = 'otp'
+
+
+# ---------------- سلامت سرویس ----------------
+
+class HealthView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        ensure_seed()
+        return ok({'name': 'khanom-gol-api', 'version': API_VERSION, 'api': True,
+                   'time': int(timezone.now().timestamp() * 1000),
+                   'shop': settings.SHOP_NAME, 'sms': provider_status()})
+
+
+# ---------------- حساب کاربری ----------------
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [AuthThrottle]
+
+    def post(self, request):
+        s = RegisterSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        d = s.validated_data
+        if ShopUser.objects.filter(phone=d['phone']).exists():
+            return fail('این شماره قبلاً ثبت‌نام کرده است؛ وارد شوید')   # خطای منطقی → ۲۰۰ با ok:false
+        user = ShopUser.objects.create_user(phone=d['phone'], name=d['name'].strip(), password=d['password'])
+        return ok({'user': user.public, **issue_tokens(user)})
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [AuthThrottle]
+
+    def post(self, request):
+        s = LoginSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        d = s.validated_data
+        phone = normalize_phone(d['phone']) or d['phone']
+        user = ShopUser.objects.filter(phone=phone).first()
+        if not user or not user.check_password(d['password']) or not user.is_active:
+            return fail('شماره یا رمز عبور اشتباه است')
+        return ok({'user': user.public, **issue_tokens(user)})
+
+
+class OtpRequestView(APIView):
+    """درخواست کد ورود پیامکی — با فاصلهٔ ارسال و سقف ساعتی"""
+    permission_classes = [AllowAny]
+    throttle_classes = [OtpThrottle]
+
+    def post(self, request):
+        s = OtpRequestSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        phone = s.validated_data['phone']
+        now = timezone.now()
+
+        # پاک‌سازی سابقهٔ قدیمی (بیش از یک روز)
+        OtpCode.objects.filter(last_sent__lt=now - timezone.timedelta(days=1)).delete()
+
+        latest = OtpCode.objects.filter(phone=phone).first()
+        if latest:
+            wait = settings.OTP_COOLDOWN - int((now - latest.last_sent).total_seconds())
+            if wait > 0:
+                return fail(f'برای ارسال مجدد {wait} ثانیه صبر کنید')
+            sent_last_hour = OtpCode.objects.filter(
+                phone=phone, last_sent__gte=now - timezone.timedelta(hours=1)).count()
+            if sent_last_hour >= settings.OTP_HOURLY:
+                return fail('تعداد درخواست کد بیش از حد مجاز است؛ کمی بعد تلاش کنید')
+
+        code = f'{random.randint(0, 999999):06d}'
+        OtpCode.objects.create(phone=phone, code=code, expires_at=now + timezone.timedelta(seconds=settings.OTP_TTL))
+        sent, detail = send_otp(phone, code)
+        if not sent and settings.SMS_PROVIDER != 'console':
+            return fail('ارسال پیامک انجام نشد؛ چند لحظه بعد دوباره تلاش کنید')
+        body = {'expires_in': settings.OTP_TTL, 'cooldown': settings.OTP_COOLDOWN}
+        if settings.SMS_PROVIDER == 'console':
+            body['dev'] = {'code': code}      # حالت توسعه: کد در پاسخ می‌آید
+        return ok(body)
+
+
+class OtpVerifyView(APIView):
+    """بررسی کد ورود؛ اگر کاربر نبود ساخته می‌شود (ثبت‌نام بدون رمز)"""
+    permission_classes = [AllowAny]
+    throttle_classes = [AuthThrottle]
+
+    def post(self, request):
+        s = OtpVerifySerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        phone = normalize_phone(s.validated_data['phone'])
+        code = ''.join(ch for ch in str(s.validated_data['code']) if ch.isdigit())
+        rec = OtpCode.objects.filter(phone=phone).first()
+        if not rec or rec.used:
+            return fail('کدی برای این شماره ثبت نشده؛ دوباره درخواست کنید')
+        if rec.is_expired:
+            return fail('کد منقضی شده است؛ دوباره درخواست کنید')
+        if rec.attempts >= settings.OTP_MAX_ATTEMPTS:
+            return fail('تلاش‌های ناموفق زیاد است؛ کد جدید بگیرید')
+        if code != rec.code:
+            rec.attempts += 1
+            rec.save(update_fields=['attempts'])
+            remain = settings.OTP_MAX_ATTEMPTS - rec.attempts
+            return fail(f'کد واردشده اشتباه است ({remain} تلاش باقی مانده)')
+        rec.used = True
+        rec.save(update_fields=['used'])
+
+        user = ShopUser.objects.filter(phone=phone).first()
+        created = user is None
+        if created:
+            user = ShopUser.objects.create_user(phone=phone, name='کاربر خانم گل')
+        return ok({'user': user.public, 'created': created, **issue_tokens(user)})
+
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return ok({'user': request.user.public})
+
+
+# ---------------- محصولات ----------------
+
+class ProductListCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsShopAdmin()]
+        return [AllowAny()]
+
+    def get(self, request):
+        ensure_seed()
+        qs = Product.objects.all()
+        is_admin = request.user.is_authenticated and (request.user.role == 'admin' or request.user.is_staff)
+        if not (is_admin and request.query_params.get('all') in ('1', 'true')):
+            qs = qs.filter(hide=False)
+        return Response([ProductSerializer(p).data for p in qs])
+
+    def post(self, request):
+        s = ProductWriteSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        from django.db.models import Max
+        mx = Product.objects.aggregate(m=Max('id'))['m'] or 0
+        p = Product(id=max(100, mx) + 1, **s.validated_data)   # همان قانون شناسهٔ فرانت (nextProductId)
+        p.save()
+        return ok({'product': ProductSerializer(p).data})
+
+
+class ProductDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method != 'GET':
+            return [IsShopAdmin()]
+        return [AllowAny()]
+
+    def _get(self, pk):
+        try:
+            return Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        p = self._get(pk)
+        if not p or (p.hide and not (request.user.is_authenticated and request.user.role == 'admin')):
+            return fail('محصول پیدا نشد', 404)
+        return Response(ProductSerializer(p).data)
+
+    def put(self, request, pk):
+        p = self._get(pk)
+        if not p:
+            return fail('محصول پیدا نشد', 404)
+        s = ProductWriteSerializer(p, data=request.data, partial=True)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        s.save()
+        return ok({'product': ProductSerializer(p).data})
+
+    def delete(self, request, pk):
+        p = self._get(pk)
+        if not p:
+            return fail('محصول پیدا نشد', 404)
+        p.delete()
+        return ok({'deleted': int(pk)})
+
+
+# ---------------- سفارش‌ها ----------------
+
+class OrderCreateListView(APIView):
+    """POST: ثبت سفارش (مهمان هم مجاز) — GET: فهرست سفارش‌ها (فقط مدیر)"""
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsShopAdmin()]
+        return [AllowAny()]
+
+    def post(self, request):
+        s = OrderCreateSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        d = s.validated_data
+        addr = d['addr']
+
+        # اعتبارسنجی اقلام
+        pairs = []
+        for it in d['items']:
+            p = Product.objects.filter(id=it['pid']).first()
+            if not p:
+                return fail(f'محصول شمارهٔ {it["pid"]} یافت نشد')
+            if it['w'] not in (p.weights or []):
+                return fail(f'وزن انتخابی برای «{p.name}» مجاز نیست')
+            if it['qty'] > MAX_QTY_PER_LINE:
+                return fail('تعداد هر ردیف حداکثر ۲۰ است')
+            pairs.append((p, it['w'], it['qty']))
+
+        first_order = not Order.objects.filter(a_phone=addr['phone']).exists()
+        try:
+            money = compute_order(pairs, d.get('coupon'), d.get('shipType') or d.get('ship_type'), first_order)
+        except ValueError as e:
+            return fail(str(e))
+
+        client_code = (d.get('client_code') or request.data.get('code') or '').strip().upper()
+        user = request.user if (request.user.is_authenticated and request.user.phone == addr['phone']) else None
+
+        with transaction.atomic():
+            code = self._unique_code()
+            order = Order.objects.create(
+                code=code, client_code=client_code, user=user, status=0,
+                a_name=addr['name'], a_phone=addr['phone'], a_prov=addr['prov'],
+                a_city=addr['city'], a_addr=addr['addr'], note=d.get('note', ''), **money)
+            for p, w, qty in pairs:
+                unit = line_unit_price(p, w)
+                order.items.create(pid=p.id, name=p.name, img=p.img, w=w, qty=qty,
+                                   unit_price=unit, cost=unit * qty)
+
+        notify_new_order(order)          # پیامک مشتری + مدیر (پس‌زمینه)
+        return ok({'code': order.code, 'status': order.status, 'total': order.total,
+                   'sub': order.sub, 'off': order.off, 'ship_cost': order.ship_cost})
+
+    @staticmethod
+    def _unique_code():
+        for _ in range(50):
+            code = f'KG-{random.randint(10000, 99999)}'
+            if not Order.objects.filter(code=code).exists():
+                return code
+        return f'KG-{int(timezone.now().timestamp()) % 100000}'
+
+    def get(self, request):
+        qs = Order.objects.prefetch_related('items').all()
+        st = request.query_params.get('status')
+        if st not in (None, ''):
+            if st not in ('0', '1', '2', '3'):
+                return fail('وضعیت باید عددی ۰ تا ۳ باشد', 400)
+            qs = qs.filter(status=int(st))
+        phone = normalize_phone(request.query_params.get('phone', ''))
+        if phone:
+            qs = qs.filter(a_phone=phone)
+        q = (request.query_params.get('q') or '').strip()
+        if q:
+            qs = qs.filter(code__icontains=q) | qs.filter(a_name__icontains=q)
+        try:
+            limit = min(500, max(1, int(request.query_params.get('limit', 200))))
+        except ValueError:
+            limit = 200
+        data = OrderOutSerializer(qs[:limit], many=True).data
+        return ok({'count': qs.count(), 'results': data})
+
+
+class MyOrdersView(APIView):
+    """سفارش‌های کاربر لاگین‌شده (بر اساس حساب یا شمارهٔ موبایل)"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = Order.objects.prefetch_related('items').filter(
+            user=request.user) | Order.objects.prefetch_related('items').filter(a_phone=request.user.phone)
+        return ok({'count': qs.count(), 'results': OrderOutSerializer(qs[:200], many=True).data})
+
+
+class OrderTrackPatchView(APIView):
+    """GET: پیگیری عمومی با کد | PATCH: تغییر وضعیت (مدیر) + پیامک به مشتری"""
+    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method == 'PATCH':
+            return [IsShopAdmin()]
+        return [AllowAny()]
+
+    def _find(self, code):
+        c = (code or '').strip().upper()
+        return Order.objects.prefetch_related('items').filter(code=c).first() \
+            or Order.objects.prefetch_related('items').filter(client_code=c).first()
+
+    def get(self, request, code):
+        o = self._find(code)
+        if not o:
+            return fail('سفارشی با این کد پیدا نشد', 404)
+        return Response({'ok': True, **OrderTrackSerializer(o).data})
+
+    def patch(self, request, code):
+        o = self._find(code)
+        if not o:
+            return fail('سفارشی با این کد پیدا نشد', 404)
+        s = OrderStatusPatchSerializer(data=request.data)
+        if not s.is_valid():
+            return fail(first_msg(s.errors), 400)
+        o.status = s.validated_data['status']
+        o.save(update_fields=['status', 'updated_at'])
+        notify_status_change(o, o.status)
+        return ok({'code': o.code, 'status': o.status, 'status_label': STATUS_LABELS[o.status]})
+
+
+# ---------------- مدیر فروشگاه ----------------
+
+class AdminLoginView(APIView):
+    permission_classes = [AllowAny]
+    throttle_classes = [AuthThrottle]
+
+    def post(self, request):
+        username = (request.data.get('username') or '').strip()
+        password = request.data.get('password') or ''
+        if not username or not password:
+            return fail('نام کاربری و رمز مدیر را وارد کنید')
+        user = ShopUser.objects.filter(username=username).first() \
+            or ShopUser.objects.filter(phone=normalize_phone(username) or '-').first()
+        if user and user.check_password(password) and user.is_active and (user.role == 'admin' or user.is_staff):
+            return ok({'user': {'name': user.name, 'username': user.username}, **issue_tokens(user)})
+        # حساب env (بار اول قبل از seed) — خودکار ساخته می‌شود
+        if username == settings.ADMIN_USERNAME and password == settings.ADMIN_PASSWORD:
+            from .seed import ensure_admin
+            user, _ = ensure_admin()
+            return ok({'user': {'name': user.name, 'username': user.username}, **issue_tokens(user)})
+        return fail('نام کاربری یا رمز مدیر اشتباه است')
+
+
+class AdminStatsView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        orders = Order.objects.all()
+        revenue = sum(orders.values_list('total', flat=True) or [0])
+        st = provider_status()
+        last_sms = SmsLog.objects.first()
+        return ok({
+            'products': Product.objects.count(),
+            'orders': orders.count(),
+            'users': ShopUser.objects.filter(role='user').count(),
+            'revenue': revenue,
+            'lowStock': Product.objects.filter(stock__lt=10, hide=False).count(),
+            'statusLabels': STATUS_LABELS,
+            'sms': {**st, 'sent': SmsLog.objects.count(),
+                    'last': int(last_sms.ts.timestamp() * 1000) if last_sms else None},
+        })
+
+
+class AdminSmsLogView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        try:
+            limit = min(100, max(1, int(request.query_params.get('limit', 50))))
+        except ValueError:
+            limit = 50
+        rows = [{
+            'ts': int(r.ts.timestamp() * 1000), 'provider': r.provider, 'to': r.to,
+            'text': r.text, 'tag': r.tag, 'ok': r.ok, 'detail': r.detail[:200],
+        } for r in SmsLog.objects.all()[:limit]]
+        return ok({'provider': provider_status(), 'results': rows})
+
+
+class AdminSmsTestView(APIView):
+    """تست اتصال پنل پیامک — پیامک آزمایشی به شمارهٔ دلخواه"""
+    permission_classes = [IsShopAdmin]
+
+    def post(self, request):
+        to = normalize_phone(request.data.get('to') or settings.SHOP_NOTIFY_PHONE)
+        if not to:
+            return fail('شمارهٔ گیرندهٔ تست را وارد کنید (۰۹…)')
+        text = (request.data.get('text') or '').strip() or f'تست اتصال پنل پیامک {settings.SHOP_NAME}'
+        sent, detail = send_sms(to, text, tag='test')
+        return ok({'sent': sent, 'to': to, 'detail': str(detail)[:300]})

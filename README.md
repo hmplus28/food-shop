@@ -84,7 +84,18 @@ VITE_API_BASE=https://…/api/v1    # ریشهٔ API
 VITE_API_TIMEOUT=6000             # سقف انتظار (میلی‌ثانیه)
 ```
 
-نقاط پایانی مورد انتظار: `GET /products`، `POST /orders`، `GET|PATCH /orders/{code}`، `POST /auth/register`، `POST /auth/login`، `GET /health` — همه JSON. اگر بک‌اند فعال ولی در دسترس نباشد، فروشگاه **بی‌صدا** به دادهٔ محلی (LocalStorage) برمی‌گردد و هیچ‌وقت نمی‌شکند؛ توکن JWT با `Authorization: Bearer` ارسال می‌شود.
+نقاط پایانی مورد انتظار: `GET /products`، `POST /orders`، `GET|PATCH /orders/{code}`، `POST /auth/register`، `POST /auth/login`، `POST /auth/otp/request|verify` (ورود با کد پیامکی)، `POST /admin/login`، `GET /admin/stats|sms`، `GET /health` — همه JSON. اگر بک‌اند فعال ولی در دسترس نباشد، فروشگاه **بی‌صدا** به دادهٔ محلی (LocalStorage) برمی‌گردد و هیچ‌وقت نمی‌شکند؛ توکن JWT با `Authorization: Bearer` ارسال می‌شود.
+
+## ⚙️ بک‌اند Django + پنل پیامک
+
+بک‌اند کامل فروشگاه (Django 5 + DRF) در پوشهٔ **`backend/`** است:
+
+- **حساب کاربری**: ثبت‌نام/ورود با رمز یا **کد یکبار مصرف پیامکی** (OTP با فاصلهٔ ارسال، سقف ساعتی و محدودیت تلاش)
+- **سفارش‌ها**: ثبت با محاسبهٔ قیمت/تخفیف/ارسال سمت سرور (هم‌خوان بیت‌به‌بیت با فرانت)، پیگیری با کد، پنل مدیر با تغییر وضعیت
+- **پنل پیامکی**: کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک + حالت توسعه؛ پیامک‌های خودکار: کد ورود، تأیید سفارش، اطلاع به مدیر، تغییر وضعیت
+- **پنل مدیریت فرانت**: آمار زنده از سرور، فهرست سفارش‌های سرور، همگام‌سازی CRUD محصولات و تب «پنل پیامک» با گزارش و ارسال پیامک تست
+
+راه‌اندازی: `backend/README.md` (محلی، cPanel و VPS) — خلاصه: `pip install -r requirements.txt && python manage.py migrate && python manage.py seed_shop && python manage.py runserver`
 
 ## 🖥 استقرار روی هاست cPanel
 
