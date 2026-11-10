@@ -130,6 +130,9 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .tb-links button:hover{background:rgba(255,255,255,.14);color:#fff}
 .tb-sep{width:1px;height:16px;background:rgba(255,255,255,.25)}
 @media(max-width:640px){.tb-links button span.lbl{display:none}.tb-comm{font-size:.9rem;flex:1;min-width:0;flex-wrap:wrap;gap:2px 8px}.tb-comm .tb-tail{display:none}}
+/* در نمایشگرهای خیلی کوچک (تا ۴۰۰px) برچسب «ارتباط با مشتری:» و متن لینک‌های سریع حذف
+   می‌شود تا نوار بالا همیشه یک خطی بماند (شمارهٔ تلفن nowrap است و نباید با لینک‌ها تصادم کند) */
+@media(max-width:400px){.tb-comm>span:first-of-type{display:none}.tb-links .lbl{display:none}}
 
 /* ================= Header ================= */
 .site-header{position:sticky;top:0;z-index:55;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
@@ -193,6 +196,11 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   .icon-btn{width:38px;height:38px}
   .hd-actions{gap:1px}
   .burger{width:38px;height:38px}
+}
+/* هدف لمسی بزرگ‌تر در موبایل (توصیه: حداقل ۴۴px؛ ۴۲px با فاصلهٔ دکمه‌ها کفایت می‌کند) */
+@media(max-width:767px){
+  .icon-btn{width:42px;height:42px}
+  .burger{width:42px;height:42px}
 }
 @media(min-width:992px){
   .burger{display:none}

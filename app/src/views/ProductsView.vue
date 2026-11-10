@@ -7,7 +7,7 @@
       </nav>
       <div class="sec-head">
         <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-search" /></svg></span>
-          <div><h1 class="sec-title">{{ catName ? catName : 'همهٔ <i>محصولات</i>' }}</h1>
+          <div><h1 class="sec-title"><template v-if="catName">{{ catName }}</template><template v-else>همهٔ <i>محصولات</i></template></h1>
             <span class="sec-sub">{{ toFa(filtered.length) }} محصول {{ q ? `برای «${q}»` : 'آماده ارسال' }}</span></div></span>
       </div>
       <div class="shop-layout">
