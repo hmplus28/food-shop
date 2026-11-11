@@ -33,6 +33,7 @@ import MobileCartBar from './components/MobileCartBar.vue';
 import BrandTuner from './components/BrandTuner.vue';
 import { ui, closeAll, openModal } from './stores/ui';
 import { syncCatalog } from './services/api';
+import { pruneCart } from './stores/cart';
 
 const route = useRoute();
 
@@ -45,7 +46,7 @@ watch(() => route.fullPath, () => closeAll());
 
 /* کارت شانس: هر بار ورود به سایت (هر سشن جدید) + همگام‌سازی بی‌صدای محصولات با بک‌اند */
 onMounted(() => {
-  syncCatalog();   // اگر بک‌اند فعال/در دسترس نباشد، بی‌صدا به دادهٔ محلی برمی‌گردد
+  syncCatalog().then(pruneCart);   // اگر بک‌اند فعال/در دسترس نباشد، بی‌صدا به دادهٔ محلی برمی‌گردد
   setTimeout(() => {
     if (!sessionStorage.getItem('asalat_lucky_seen')) {
       sessionStorage.setItem('asalat_lucky_seen', '1');

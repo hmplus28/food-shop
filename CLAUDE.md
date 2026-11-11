@@ -24,6 +24,7 @@ python manage.py runserver 8787
 # تست (سرور باید روشن باشد)
 python3 scripts/test_backend_api.py        # باید 60/60 سبز باشد
 python3 scripts/test_backend_security.py   # باید 69/69 سبز باشد
+node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 ```
 
 ## قواعد مهم

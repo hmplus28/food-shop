@@ -4,12 +4,27 @@ import { LS, priceOf, money, toFa, FREE_SHIP } from '../data/site';
 import { prod, COUPONS } from '../data/catalog';
 import { toast } from './ui';
 
+/* فقط ردیف‌های سالم: محصول موجود، وزن مجاز و تعداد ۱ تا ۲۰ */
+const sanitize = list => (Array.isArray(list) ? list : []).filter(c =>
+  c && typeof c === 'object' && prod(c.pid) && prod(c.pid).weights.includes(c.w) &&
+  Number.isFinite(c.qty) && c.qty >= 1).map(c => ({ pid: Number(c.pid), w: c.w, qty: Math.min(20, Math.floor(c.qty)) }));
+
 export const cart = reactive({
-  items: LS.get('cart', []),      // [{pid, w, qty}]
+  items: sanitize(LS.get('cart', [])),      // [{pid, w, qty}]
   coupon: null,
 });
 
 const save = () => LS.set('cart', cart.items);
+
+/* بعد از همگام‌سازی کاتالوگ با بک‌اند، کالاهای حذف/مخفی‌شده را از سبد پاک کن */
+export function pruneCart() {
+  const clean = sanitize(cart.items);
+  if (clean.length !== cart.items.length) {
+    cart.items.splice(0, cart.items.length, ...clean);
+    save();
+    toast('برخی کالاهای سبد دیگر موجود نبودند و حذف شدند', 'err');
+  }
+}
 
 export const cartCount = computed(() => cart.items.reduce((s, c) => s + c.qty, 0));
 export const cartSub = computed(() => cart.items.reduce((s, c) => { const p = prod(c.pid); return s + (p ? priceOf(p, c.w) * c.qty : 0); }, 0));
