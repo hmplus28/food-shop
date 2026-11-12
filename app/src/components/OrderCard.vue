@@ -3,7 +3,8 @@
     <div class="oc-head">
       <span class="oc-code">{{ o.code }}</span>
       <span class="oc-date">{{ faDate(o.ts) }}</span>
-      <span class="oc-status tag" :class="step === 3 ? 'green' : 'gold'">{{ STATUS[step] }}</span>
+      <span class="oc-status tag" :class="step === 3 ? 'green' : step === 4 ? 'red' : 'gold'">{{ STATUS[step] }}</span>
+      <span v-if="o.tracking" class="oc-track" dir="ltr">📦 {{ o.tracking }}</span>
     </div>
     <p class="oc-items-line">{{ itemsLine }}</p>
     <div class="mini-tl">

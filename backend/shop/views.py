@@ -1510,8 +1510,8 @@ def _pack_from(data, inst=None):
         if not parsed:
             return None, 'برای پک بدون چرخه، تاریخ و ساعت پایان را مشخص کنید'
         ends = timezone.make_aware(parsed) if timezone.is_naive(parsed) else parsed
-    elif ends is None or 'cycleHours' in data:
-        ends = timezone.now() + timezone.timedelta(hours=hours)
+    elif ends is None or (inst is not None and hours != inst.cycle_hours):
+        ends = timezone.now() + timezone.timedelta(hours=hours)        # فقط وقتی چرخه عوض شد/برای پک جدید؛ ویرایش‌های دیگر شمارش را ریست نمی‌کنند
     return {'name': name, 'sub': str(pick('sub', inst.sub if inst else ''))[:160].strip(), 'image': img, 'old_price': old,
             'now_price': now, 'cycle_hours': hours, 'ends_at': ends, 'sort': sort,
             'active': bool(pick('active', inst.active if inst else True))}, {'stock': stock}

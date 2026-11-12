@@ -14,7 +14,7 @@ const save = () => LS.set('orders', orders);
 /* با تغییر حساب (ورود/خروج) سفارش‌های محلیِ حساب قبلی نباید دیده شوند */
 export function clearOrders() { orders.splice(0); save(); }
 
-export const STATUS = ['در حال ثبت', 'در حال آماده‌سازی', 'در مسیر ارسال', 'تحویل شده'];
+export const STATUS = ['در حال ثبت', 'در حال آماده‌سازی', 'در مسیر ارسال', 'تحویل شده', 'لغو شده'];
 
 /* مقیاس نمایشی: هر مرحله چند دقیقه جلو می‌رود — فقط برای سفارش‌های بدون
    وضعیت واقعی؛ سفارش‌های همگام‌شده از بک‌اند status عددی واقعی دارند. */
@@ -38,7 +38,7 @@ export async function placeOrderServer({ addr, shipType, note = '' }) {
   const order = {
     code: r.code, remoteCode: r.code, ts: Date.now(), items: cart.items.map(c => ({ ...c })),
     sub: r.sub, off: r.off, coupon: cart.coupon, shipCost: r.ship_cost, shipType, shipLabel: opt.label, shipDays: opt.days,
-    total: r.total, addr: body.addr, status: Number(r.status) || 0, fromServer: true,
+    total: r.total, addr: body.addr, status: Number(r.status) || 0, fromServer: true, tracking: '', events: [],
   };
   orders.unshift(order);
   save();
@@ -98,6 +98,7 @@ export async function trackOrder(q) {
       code: r.code, ts: r.ts, status: Number(r.status) || 0, total: r.total, shipLabel: r.ship_label, shipDays: r.ship_days,
       shipType: /پیک/.test(r.ship_label || '') ? 'peyk' : 'post',
       items: (r.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name })), addr: {},
+      tracking: r.tracking || '', events: r.events || [],
     };
   }
   return findOrder(code);
@@ -146,6 +147,7 @@ export async function syncMineOrders() {
       || (r.client_code && (o.code === r.client_code || o.remoteCode === r.client_code)));
     if (local) {
       if (Number.isInteger(r.status) && local.status !== r.status) { local.status = r.status; save(); }
+      local.tracking = r.tracking || ''; local.events = r.events || [];
       if (r.code && local.remoteCode !== r.code) { local.remoteCode = r.code; save(); }
       continue;
     }
@@ -155,7 +157,7 @@ export async function syncMineOrders() {
       sub: r.sub, off: r.off, coupon: r.coupon,
       shipCost: r.ship_cost, shipType: r.ship_type, shipLabel: r.ship_label, shipDays: r.ship_days,
       total: r.total, addr: r.addr || { phone: '' }, status: Number(r.status) || 0,
-      fromServer: true,
+      fromServer: true, tracking: r.tracking || '', events: r.events || [],
     });
     added++;
   }
