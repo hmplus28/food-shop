@@ -32,6 +32,7 @@
 #  گزینه‌ها:
 #      --webroot <مسیر>    ریشهٔ وب مقصد (پیش‌فرض ‎~/public_html‎)
 #                          (مثلاً ‎--webroot ~/public_html/shop‎ یا ‎--webroot ~/shop.example.ir‎)
+#      --dist <پوشه>       استقرار از پوشهٔ آمادهٔ انتشار (بدون Node؛ deploy.sh ریشه از این استفاده می‌کند)
 #      --build             بیلد روی خود هاست (نیاز به Node ≥18). پیش‌فرض خاموش است
 #                          چون بیلد از قبل commit شده است.
 #      --base <مسیر>       (فقط با --build) مسیر پایهٔ Vite؛ پیش‌فرض ‎/‎ (مناسب cPanel).
@@ -61,6 +62,7 @@ NODE_BIN="${KHANOMGOL_NODE:-}"
 API_BASE_CLI="${KHANOMGOL_API_BASE:-}"
 BASE_CLI="${KHANOMGOL_BASE:-/}"
 DO_BUILD=0
+DIST_CLI=""
 API_ENABLED_CLI=0
 CLEAN_WEBROOT=0
 
@@ -97,6 +99,8 @@ while [ $# -gt 0 ]; do
         --build)      DO_BUILD=1; shift ;;
         --api-enabled) API_ENABLED_CLI=1; shift ;;
         --skip-build) DO_BUILD=0; shift ;;   # پشتیبان (no-op): بیلد پیش‌فرض خاموش است
+        --dist)       [ $# -ge 2 ] || die "گزینه --dist نیاز به مسیر دارد"; DIST_CLI="$2"; shift 2 ;;
+        --dist=*)     DIST_CLI="${1#*=}"; shift ;;
         --clean)      CLEAN_WEBROOT=1; shift ;;
         -h|--help) awk 'NR>1 { if ($0 ~ /^#/) { sub(/^# ? ?/, ""); print } else exit }' "$0"; exit 0 ;;
         *) warn "آرگومان ناشناخته: $1 (نادیده گرفته شد)" ; shift ;;
@@ -301,7 +305,13 @@ find_cpanel_nodevenv() {
 # ریپو (خروجی بیلدِ commit‌شده برای GitHub Pages).
 SRC_DIR="$PROJECT_DIR"
 
-if [ "$DO_BUILD" -eq 1 ]; then
+if [ -n "$DIST_CLI" ]; then
+    # ---- پوشهٔ آمادهٔ انتشار (مثلاً host-dist پس از جایگزینی دامنه؛ بدون Node) ----
+    DIST_CLI="$(expand_tilde "$DIST_CLI")"
+    [ -f "$DIST_CLI/index.html" ] || die "‎$DIST_CLI/index.html‎ پیدا نشد."
+    SRC_DIR="$DIST_CLI"
+    say "استقرار از پوشهٔ آمادهٔ انتشار: $SRC_DIR (بدون نیاز به Node)"
+elif [ "$DO_BUILD" -eq 1 ]; then
     # ---- مسیر بیلد روی هاست (با --build) ----
     if [ -f "$ENV_FILE" ]; then
         say "فایل ‎app/.env‎ موجود است."
@@ -439,7 +449,7 @@ fi
 # robots.txt، sitemap.xml، .nojekyll). اگر از app/dist می‌آید، همه از همان‌جاست.
 say "همگام‌سازی فایل‌های انتشار با ریشهٔ وب ..."
 cp -a "$SRC_DIR/index.html" "$WEBROOT/index.html"
-if [ "$SRC_DIR" = "$PROJECT_DIR/app/dist" ]; then
+if [ "$SRC_DIR" != "$PROJECT_DIR" ]; then
     find "$SRC_DIR" -mindepth 1 -maxdepth 1 ! -name assets ! -name index.html -exec cp -a {} "$WEBROOT/" \;
 else
     # بیلد commit‌شدهٔ ریشهٔ ریپو: فقط نام‌های شناخته‌شدهٔ app/public کپی شود
@@ -565,6 +575,10 @@ echo -e "${C_GREEN}════════════════════�
 say "استقرار کامل شد."
 echo -e "${C_GREEN}═══════════════════════════════════════════════════════════════${C_OFF}"
 echo ""
+if [ -n "$DIST_CLI" ]; then
+    echo "فرانت منتشر شد (از host-dist). بررسی نهایی را deploy.sh انجام می‌دهد."
+    exit 0
+fi
 echo "قدم‌های بعدی:"
 echo ""
 echo "  ۱. مسیر پایه: بیلدِ commit‌شدهٔ ریپو برای GitHub Pages با «/food-shop/» بسته شده؛"

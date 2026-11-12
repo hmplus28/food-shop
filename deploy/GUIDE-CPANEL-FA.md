@@ -308,6 +308,20 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 - پس از اتصال بک‌اند: `ADMIN_PASSWORD` را عوض کنید و `CORS_ORIGINS` فقط دامنهٔ فرانت باشد.
 
 
+## استقرار یک‌دستوری (فرانت + بک‌اند) — روش پیشنهادی
+
+روی هاست Node نیست، پس فرانت یک‌بار روی ماشین محلی ساخته و در `host-dist/` commit می‌شود (دامنه به‌صورت جانشین `__SITE_HOST__` است)؛ روی هاست فقط:
+```bash
+cd ~/public_html/food-shop
+git pull
+bash deploy.sh --domain دامنه-شما.ir
+```
+`deploy.sh` دامنه را در فرانت جایگزین می‌کند (canonical، sitemap، آدرس API)، فرانت را در `~/public_html` می‌گذارد، بک‌اند را مستقر می‌کند (pip، migrate، seed، static، Passenger) و در پایان سایت و API را **واقعاً** صدا می‌زند. اگر هر کدام ۵xx بدهد، خودش `diagnose.py` و آخرین خطوط لاگ‌ها را چاپ می‌کند.
+
+- فقط بررسی/عیب‌یابی: `bash deploy.sh --domain دامنه-شما.ir --check`
+- فقط یکی از دو بخش: `--skip-front` یا `--skip-back`
+- ساخت دوبارهٔ `host-dist` بعد از تغییر کد فرانت (ماشین محلی): `bash scripts/build_host.sh` سپس commit/push.
+
 ## خطای ۵۰۰ روی بک‌اند — عیب‌یابی گام‌به‌گام
 
 خطای ۵۰۰ یعنی Django بالا آمده ولی هنگام پردازش درخواست استثنا رخ داده؛ علت واقعی در لاگ است، نه در خود صفحهٔ ۵۰۰.

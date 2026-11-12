@@ -29,6 +29,11 @@ node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز
 python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ روی هاست
 ```
 
+## استقرار روی هاست (cPanel)
+- هاست Node ندارد. فرانت با `bash scripts/build_host.sh` (ماشین محلی) در `host-dist/` ساخته و commit می‌شود (جانشین دامنه: `__SITE_HOST__`؛ فرانت روی `/`، API روی `/food-shop/api/v1`).
+- روی هاست: `git pull && bash deploy.sh --domain دامنه` (فرانت + بک‌اند + بررسی نهایی + عیب‌یابی خودکار). `--check` فقط عیب‌یابی.
+- بعد از هر تغییر در `app/`، هم `host-dist/` و هم (برای GitHub Pages) خروجی ریشه را دوباره بسازید.
+
 ## سئو و ترب
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.
 - داده‌های سئوی محصول فقط در `app/src/data/seoProduct.js` ساخته می‌شود (هم صفحهٔ محصول هم پیش‌رندر). JSON-LD امتیاز/نظر ساختگی نداشته باشد.
