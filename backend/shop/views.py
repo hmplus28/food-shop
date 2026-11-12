@@ -9,7 +9,7 @@ import random
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -18,7 +18,8 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Coupon, Order, OrderItem, Product, ShopUser, SiteSetting, SmsLog
+from .models import (ConsultRequest, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
+                     ShopUser, SiteSetting, SmsLog)
 from .permissions import IsShopAdmin
 from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
 from .seed import ensure_seed
@@ -193,6 +194,18 @@ class LoginView(APIView):
         return ok({'user': user.public, **issue_tokens(user)})
 
 
+class PhoneCheckView(APIView):
+    """POST /auth/phone-check {phone} → {exists} — برای مرحلهٔ «شمارهٔ موبایل» تکمیل خرید (ورود یا ساخت حساب)"""
+    permission_classes = [AllowAny]
+    throttle_classes = [AuthThrottle]
+
+    def post(self, request):
+        phone = normalize_phone(request.data.get('phone') or '')
+        if not phone:
+            return fail('شماره موبایل معتبر وارد کنید (۰۹…)', 400)
+        return ok({'exists': ShopUser.objects.filter(phone=phone, is_active=True).exists(), 'phone': phone})
+
+
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -276,7 +289,7 @@ class OrderCreateListView(APIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [IsShopAdmin()]
-        return [AllowAny()]
+        return [IsAuthenticated()]          # ثبت سفارش فقط با حساب کاربری (ورود/ثبت‌نام با موبایل و رمز)
 
     def post(self, request):
         s = OrderCreateSerializer(data=request.data)
@@ -297,14 +310,14 @@ class OrderCreateListView(APIView):
                 return fail('تعداد هر ردیف حداکثر ۲۰ است')
             pairs.append((p, it['w'], it['qty']))
 
-        first_order = not Order.objects.filter(a_phone=addr['phone']).exists()
+        first_order = not Order.objects.filter(Q(user=request.user) | Q(a_phone=request.user.phone)).exists()
         try:
-            money = compute_order(pairs, d.get('coupon'), d.get('shipType') or d.get('ship_type'), first_order)
+            money = compute_order(pairs, d.get('coupon'), d.get('shipType') or d.get('ship_type'), first_order, request.user)
         except ValueError as e:
             return fail(str(e))
 
         client_code = (d.get('client_code') or request.data.get('code') or '').strip().upper()
-        user = request.user if (request.user.is_authenticated and request.user.phone == addr['phone']) else None
+        user = request.user
 
         with transaction.atomic():
             code = self._unique_code()
@@ -476,7 +489,8 @@ def _dashboard_extras():
     low = [{'id': p.id, 'name': p.name, 'stock': p.stock}
            for p in Product.objects.filter(stock__lt=10, hide=False).order_by('stock')[:8]]
     return {'daily': daily, 'top': top, 'byStatus': by_status, 'lowStockItems': low,
-            'coupons': Coupon.objects.filter(active=True).count()}
+            'coupons': Coupon.objects.filter(active=True).count(),
+            'consults': ConsultRequest.objects.filter(done=False).count()}
 
 
 class AdminStatsView(APIView):
@@ -561,15 +575,15 @@ _COUPON_CODE = __import__('re').compile(r'^[A-Z0-9_-]{3,30}$')
 
 
 class CouponCheckView(APIView):
-    """GET /coupons/check?code=X — عمومی: اگر کد معتبر و قابل استفاده بود قاعدهٔ آن را می‌دهد (برای نمایش در سبد)"""
-    permission_classes = [AllowAny]
+    """GET /coupons/check?code=X — فقط بعد از ورود: اگر کد معتبر و برای همین حساب قابل استفاده بود قاعده‌اش را می‌دهد"""
+    permission_classes = [IsAuthenticated]
     throttle_classes = [CouponThrottle]
 
     def get(self, request):
         code = (request.query_params.get('code') or '').strip().upper()
         c = Coupon.objects.filter(code=code).first() if _COUPON_CODE.match(code) else None
-        if not c or c.problem():
-            return fail((c.problem() if c else None) or 'کد تخفیف نامعتبر است')
+        if not c or c.problem(request.user):
+            return fail((c.problem(request.user) if c else None) or 'کد تخفیف نامعتبر است')
         return ok({'coupon': c.public})
 
 
@@ -688,3 +702,468 @@ class AdminSmsTestView(APIView):
         text = (request.data.get('text') or '').strip() or f'تست اتصال پنل پیامک {settings.SHOP_NAME}'
         sent, detail = send_sms(to, text, tag='test')
         return ok({'sent': sent, 'to': to, 'detail': str(detail)[:300]})
+
+
+# ================= محتوای سایت، ارسال، کارت شانس، مشاوره =================
+import re as _re
+import secrets as _secrets
+
+from .defaults import INFO as DEFAULT_INFO, LUCKY_SETTINGS as DEFAULT_LUCKY, SHIPPING_SETTINGS as DEFAULT_SHIPPING
+
+
+def _setting(key, default):
+    rec = SiteSetting.objects.filter(key=key).first()
+    return {**default, **(rec.value if rec and isinstance(rec.value, dict) else {})}
+
+
+def _int(v, lo, hi, name):
+    try:
+        n = int(v)
+    except (TypeError, ValueError):
+        raise ValueError(f'{name} باید عدد باشد')
+    if not lo <= n <= hi:
+        raise ValueError(f'{name} باید بین {lo} تا {hi} باشد')
+    return n
+
+
+def _page_brief(p):
+    return {'slug': p.slug, 'title': p.title, 'kind': p.kind, 'group': p.group}
+
+
+def _page_full(p):
+    return {**_page_brief(p), 'body': p.body, 'items': p.items if isinstance(p.items, list) else [],
+            'updatedAt': p.updated_at.isoformat()}
+
+
+def _shipping_public():
+    s = _setting('shipping', DEFAULT_SHIPPING)
+    return {'methods': [m.public for m in ShippingMethod.objects.filter(active=True)],
+            'freeFrom': int(s.get('freeFrom') or 0), 'freeEnabled': bool(s.get('freeEnabled', True))}
+
+
+class SiteView(APIView):
+    """GET /site — همهٔ محتوای عمومی در یک درخواست: اطلاعات تماس/متن‌ها، ارسال، فهرست صفحات، کارت شانس"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        lucky = _setting('lucky', DEFAULT_LUCKY)
+        return ok({'info': _setting('info', DEFAULT_INFO), 'shipping': _shipping_public(),
+                   'pages': [_page_brief(p) for p in Page.objects.filter(active=True)],
+                   'lucky': {'enabled': bool(lucky.get('enabled')), 'cooldownHours': lucky.get('cooldownHours')}})
+
+
+class PageDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, slug):
+        p = Page.objects.filter(slug=slug, active=True).first()
+        return ok({'page': _page_full(p)}) if p else fail('صفحه پیدا نشد', 404)
+
+
+# ---------------- مشاوره ----------------
+
+class ConsultThrottle(AnonRateThrottle):
+    scope = 'consult'
+
+
+class ConsultView(APIView):
+    """POST /consult {name, phone, topic} — ثبت درخواست مشاورهٔ تلفنی (عمومی، با سقف نرخ)"""
+    permission_classes = [AllowAny]
+    throttle_classes = [ConsultThrottle]
+
+    def post(self, request):
+        name = str(request.data.get('name') or '').strip()[:120]
+        phone = normalize_phone(request.data.get('phone') or '')
+        topic = str(request.data.get('topic') or '').strip()[:80]
+        if len(name) < 2:
+            return fail('نام را وارد کنید', 400)
+        if not phone:
+            return fail('شماره موبایل معتبر وارد کنید (۰۹…)', 400)
+        ConsultRequest.objects.create(name=name, phone=phone, topic=topic)
+        return ok({})
+
+
+# ---------------- کارت شانس (روی حساب، سمت سرور) ----------------
+
+_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+
+
+def _lucky_state(user):
+    """(فعال?, می‌تواند بچرخاند?, زمان مجاز بعدی ms یا None)"""
+    cfg = _setting('lucky', DEFAULT_LUCKY)
+    if not cfg.get('enabled'):
+        return cfg, False, None
+    last = LuckyWin.objects.filter(user=user).first() if user else None
+    if last:
+        nxt = last.created_at + timezone.timedelta(hours=int(cfg.get('cooldownHours') or 24))
+        if timezone.now() < nxt:
+            return cfg, False, int(nxt.timestamp() * 1000)
+    return cfg, True, None
+
+
+class LuckyStatusView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        user = request.user if request.user.is_authenticated else None
+        cfg, can, nxt = _lucky_state(user)
+        return ok({'enabled': bool(cfg.get('enabled')), 'loggedIn': bool(user),
+                   'canSpin': bool(user and can), 'nextAt': nxt, 'cooldownHours': cfg.get('cooldownHours')})
+
+
+class LuckySpinView(APIView):
+    """POST /lucky/spin — فقط با حساب؛ هر N ساعت یک‌بار. جایزه همین‌جا تعیین و به‌صورت کد شخصی یک‌بارمصرف ساخته می‌شود."""
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [CouponThrottle]
+
+    def post(self, request):
+        with transaction.atomic():
+            user = ShopUser.objects.select_for_update().get(pk=request.user.pk)   # جلوگیری از دو چرخش هم‌زمان
+            cfg, can, nxt = _lucky_state(user)
+            if not cfg.get('enabled'):
+                return fail('کارت شانس فعلاً غیرفعال است')
+            if not can:
+                return Response({'ok': False, 'msg': 'کارت شانس بعدی شما هنوز فعال نشده است', 'nextAt': nxt})
+            prizes = list(LuckyPrize.objects.filter(active=True))
+            if not prizes:
+                return fail('جایزه‌ای تعریف نشده است')
+            total = sum(max(1, p.weight) for p in prizes)
+            r = _secrets.randbelow(total)
+            prize = prizes[-1]
+            for p in prizes:
+                r -= max(1, p.weight)
+                if r < 0:
+                    prize = p
+                    break
+            for _ in range(20):
+                code = 'LK-' + ''.join(_secrets.choice(_CODE_ALPHABET) for _ in range(8))
+                if not Coupon.objects.filter(code=code).exists():
+                    break
+            days = int(cfg.get('validDays') or 30)
+            c = Coupon.objects.create(code=code, kind=prize.kind, value=prize.value, min_total=prize.min_total,
+                                      label=prize.title, owner=user, max_uses=1,
+                                      expires_at=timezone.now() + timezone.timedelta(days=days))
+            LuckyWin.objects.create(user=user, prize_title=prize.title, coupon=c)
+        return ok({'prize': {'title': prize.title, 'desc': prize.desc, 'icon': prize.icon},
+                   'code': c.code, 'expiresAt': c.expires_at.isoformat(),
+                   'nextAt': int((timezone.now() + timezone.timedelta(hours=int(cfg.get('cooldownHours') or 24))).timestamp() * 1000)})
+
+
+class LuckyMineView(APIView):
+    """GET /lucky/mine — کدهای جایزهٔ حساب من"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        rows = []
+        for w in LuckyWin.objects.filter(user=request.user).select_related('coupon')[:50]:
+            c = w.coupon
+            rows.append({'title': w.prize_title, 'code': c.code if c else '', 'at': int(w.created_at.timestamp() * 1000),
+                         'used': bool(c and c.used >= 1), 'expiresAt': c.expires_at.isoformat() if c and c.expires_at else None,
+                         'status': (c.problem(request.user) if c else None) or 'قابل استفاده'})
+        return ok({'wins': rows})
+
+
+# ---------------- مدیر: اطلاعات و محتوا ----------------
+
+_INFO_KEYS = {'shopName': 80, 'phone': 40, 'phoneTel': 20, 'whatsapp': 20, 'email': 120, 'address': 300, 'hours': 120,
+              'instagram': 200, 'telegram': 200, 'topbarMsg': 160, 'footerAbout': 600, 'heroTag': 80, 'heroTitle': 120,
+              'heroTitleEm': 60, 'heroText': 300, 'consultText': 400, 'returnsNote': 160}
+
+
+class AdminInfoView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        return ok({'info': _setting('info', DEFAULT_INFO)})
+
+    def put(self, request):
+        cur = _setting('info', DEFAULT_INFO)
+        for k, mx in _INFO_KEYS.items():
+            if k in request.data:
+                v = str(request.data[k] if request.data[k] is not None else '').strip()
+                if len(v) > mx:
+                    return fail(f'«{k}» حداکثر {mx} کاراکتر است', 400)
+                if k in ('instagram', 'telegram') and v and not v.startswith('https://'):
+                    return fail('نشانی شبکهٔ اجتماعی باید با https:// شروع شود', 400)
+                if k in ('phoneTel', 'whatsapp') and v and not _re.fullmatch(r'\+?\d{5,18}', v):
+                    return fail(f'«{k}» فقط عدد انگلیسی باشد (مثلاً 02191092000 / 989120000000)', 400)
+                cur[k] = v
+        SiteSetting.objects.update_or_create(key='info', defaults={'value': cur})
+        return ok({'info': cur})
+
+
+_SLUG = _re.compile(r'^[a-z0-9][a-z0-9-]{1,59}$')
+
+
+def _page_from(data, inst=None):
+    def pick(k, d):
+        return data[k] if k in data else d
+    slug = str(pick('slug', inst.slug if inst else '')).strip().lower()
+    title = str(pick('title', inst.title if inst else '')).strip()
+    kind = pick('kind', inst.kind if inst else 'text')
+    group = pick('group', inst.group if inst else 'guide')
+    body = str(pick('body', inst.body if inst else ''))
+    if not _SLUG.match(slug):
+        return None, 'نشانی صفحه باید ۲ تا ۶۰ حرف انگلیسی کوچک، عدد یا - باشد'
+    if not 1 <= len(title) <= 120:
+        return None, 'عنوان صفحه را وارد کنید (حداکثر ۱۲۰ کاراکتر)'
+    if kind not in ('text', 'faq', 'shipping', 'contact') or group not in ('guide', 'about', 'legal'):
+        return None, 'نوع یا گروه صفحه نامعتبر است'
+    if len(body) > 20000:
+        return None, 'متن صفحه حداکثر ۲۰٬۰۰۰ کاراکتر است'
+    items = pick('items', inst.items if inst else [])
+    if not isinstance(items, list) or len(items) > 60:
+        return None, 'فهرست سوال و جواب نامعتبر است'
+    clean = []
+    for it in items:
+        q, a = str((it or {}).get('q', '')).strip(), str((it or {}).get('a', '')).strip()
+        if not q and not a:
+            continue
+        if not q or not a or len(q) > 250 or len(a) > 3000:
+            return None, 'هر سوال و جواب باید پر باشد (سوال ≤۲۵۰، جواب ≤۳۰۰۰ کاراکتر)'
+        clean.append({'q': q, 'a': a})
+    try:
+        sort = _int(pick('sort', inst.sort if inst else 0), 0, 999, 'ترتیب')
+    except ValueError as e:
+        return None, str(e)
+    return {'slug': slug, 'title': title, 'kind': kind, 'group': group, 'body': body, 'items': clean,
+            'sort': sort, 'active': bool(pick('active', inst.active if inst else True))}, None
+
+
+class AdminPagesView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        return ok({'pages': [{**_page_full(p), 'active': p.active, 'sort': p.sort, 'id': p.id} for p in Page.objects.all()]})
+
+    def post(self, request):
+        fields, err = _page_from(request.data)
+        if err:
+            return fail(err, 400)
+        if Page.objects.filter(slug=fields['slug']).exists():
+            return fail('این نشانی قبلاً استفاده شده است', 400)
+        p = Page.objects.create(**fields)
+        return ok({'page': {**_page_full(p), 'active': p.active, 'sort': p.sort, 'id': p.id}})
+
+
+class AdminPageDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request, pk):
+        p = Page.objects.filter(pk=pk).first()
+        if not p:
+            return fail('صفحه پیدا نشد', 404)
+        fields, err = _page_from(request.data, p)
+        if err:
+            return fail(err, 400)
+        if Page.objects.filter(slug=fields['slug']).exclude(pk=p.pk).exists():
+            return fail('این نشانی قبلاً استفاده شده است', 400)
+        for k, v in fields.items():
+            setattr(p, k, v)
+        p.save()
+        return ok({'page': {**_page_full(p), 'active': p.active, 'sort': p.sort, 'id': p.id}})
+
+    def delete(self, request, pk):
+        n, _ = Page.objects.filter(pk=pk).delete()
+        return ok({'deleted': True}) if n else fail('صفحه پیدا نشد', 404)
+
+
+# ---------------- مدیر: هزینه‌های ارسال ----------------
+
+_SHIP_KEY = _re.compile(r'^[a-z0-9][a-z0-9_-]{1,19}$')
+
+
+def _ship_row(m):
+    return {**m.public, 'id': m.id, 'active': m.active, 'sort': m.sort}
+
+
+def _ship_from(data, inst=None):
+    def pick(k, d):
+        return data[k] if k in data else d
+    key = str(pick('type', pick('key', inst.key if inst else ''))).strip().lower()
+    label = str(pick('label', inst.label if inst else '')).strip()
+    if not _SHIP_KEY.match(key):
+        return None, 'شناسه باید ۲ تا ۲۰ حرف انگلیسی کوچک/عدد/-/_ باشد'
+    if not 2 <= len(label) <= 120:
+        return None, 'عنوان روش ارسال را وارد کنید'
+    try:
+        cost = _int(pick('cost', inst.cost if inst else 0), 0, 50_000_000, 'هزینه')
+        sort = _int(pick('sort', inst.sort if inst else 0), 0, 999, 'ترتیب')
+    except ValueError as e:
+        return None, str(e)
+    return {'key': key, 'label': label, 'cost': cost, 'sort': sort,
+            'days': str(pick('days', inst.days if inst else ''))[:60].strip(),
+            'hint': str(pick('hint', inst.hint if inst else ''))[:120].strip(),
+            'active': bool(pick('active', inst.active if inst else True))}, None
+
+
+class AdminShippingView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        s = _setting('shipping', DEFAULT_SHIPPING)
+        return ok({'methods': [_ship_row(m) for m in ShippingMethod.objects.all()],
+                   'freeFrom': int(s.get('freeFrom') or 0), 'freeEnabled': bool(s.get('freeEnabled', True))})
+
+    def post(self, request):
+        fields, err = _ship_from(request.data)
+        if err:
+            return fail(err, 400)
+        if ShippingMethod.objects.filter(key=fields['key']).exists():
+            return fail('این شناسه قبلاً ساخته شده است', 400)
+        return ok({'method': _ship_row(ShippingMethod.objects.create(**fields))})
+
+
+class AdminShippingDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    @staticmethod
+    def _last_active(m):
+        return m.active and not ShippingMethod.objects.filter(active=True).exclude(pk=m.pk).exists()
+
+    def put(self, request, pk):
+        m = ShippingMethod.objects.filter(pk=pk).first()
+        if not m:
+            return fail('روش ارسال پیدا نشد', 404)
+        fields, err = _ship_from(request.data, m)
+        if err:
+            return fail(err, 400)
+        if ShippingMethod.objects.filter(key=fields['key']).exclude(pk=m.pk).exists():
+            return fail('این شناسه قبلاً ساخته شده است', 400)
+        if self._last_active(m) and not fields['active']:
+            return fail('حداقل یک روش ارسال باید فعال بماند', 400)
+        for k, v in fields.items():
+            setattr(m, k, v)
+        m.save()
+        return ok({'method': _ship_row(m)})
+
+    def delete(self, request, pk):
+        m = ShippingMethod.objects.filter(pk=pk).first()
+        if not m:
+            return fail('روش ارسال پیدا نشد', 404)
+        if self._last_active(m):
+            return fail('حداقل یک روش ارسال باید فعال بماند', 400)
+        m.delete()
+        return ok({'deleted': True})
+
+
+class AdminShippingSettingsView(APIView):
+    """PUT /admin/shipping/settings {freeFrom, freeEnabled} — سقف ارسال رایگان"""
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request):
+        try:
+            free_from = _int(request.data.get('freeFrom', 0), 0, 1_000_000_000, 'سقف ارسال رایگان')
+        except ValueError as e:
+            return fail(str(e), 400)
+        SiteSetting.objects.update_or_create(key='shipping', defaults={
+            'value': {'freeFrom': free_from, 'freeEnabled': bool(request.data.get('freeEnabled', True))}})
+        return ok({'freeFrom': free_from, 'freeEnabled': bool(request.data.get('freeEnabled', True))})
+
+
+# ---------------- مدیر: کارت شانس ----------------
+
+def _prize_row(p):
+    return {'id': p.id, 'title': p.title, 'desc': p.desc, 'type': p.kind, 'val': p.value, 'min': p.min_total,
+            'weight': p.weight, 'icon': p.icon, 'active': p.active}
+
+
+def _prize_from(data, inst=None):
+    def pick(k, d):
+        return data[k] if k in data else d
+    title = str(pick('title', inst.title if inst else '')).strip()
+    kind = pick('type', pick('kind', inst.kind if inst else 'pct'))
+    if not 2 <= len(title) <= 80:
+        return None, 'عنوان جایزه را وارد کنید'
+    if kind not in ('pct', 'cash', 'ship', 'day'):
+        return None, 'نوع جایزه نامعتبر است'
+    try:
+        value = _int(pick('val', inst.value if inst else 0), 0, 1_000_000_000, 'مقدار')
+        mn = _int(pick('min', inst.min_total if inst else 0), 0, 1_000_000_000, 'حداقل خرید')
+        weight = _int(pick('weight', inst.weight if inst else 10), 1, 100, 'وزن')
+    except ValueError as e:
+        return None, str(e)
+    if kind == 'pct' and not 1 <= value <= 100:
+        return None, 'درصد باید بین ۱ تا ۱۰۰ باشد'
+    if kind == 'cash' and value < 1:
+        return None, 'مبلغ باید بیشتر از صفر باشد'
+    icon = str(pick('icon', inst.icon if inst else 'i-gift')).strip()
+    if not _re.fullmatch(r'i-[a-z0-9-]{1,20}', icon):
+        icon = 'i-gift'
+    return {'title': title, 'desc': str(pick('desc', inst.desc if inst else ''))[:200].strip(), 'kind': kind,
+            'value': value if kind in ('pct', 'cash') else 0, 'min_total': mn, 'weight': weight, 'icon': icon,
+            'active': bool(pick('active', inst.active if inst else True))}, None
+
+
+class AdminLuckyView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        wins = [{'user': w.user.name, 'phone': w.user.phone, 'prize': w.prize_title, 'code': w.coupon.code if w.coupon else '',
+                 'used': bool(w.coupon and w.coupon.used >= 1), 'at': int(w.created_at.timestamp() * 1000)}
+                for w in LuckyWin.objects.select_related('user', 'coupon')[:60]]
+        return ok({'settings': _setting('lucky', DEFAULT_LUCKY), 'prizes': [_prize_row(p) for p in LuckyPrize.objects.all()],
+                   'wins': wins, 'totalWins': LuckyWin.objects.count()})
+
+    def put(self, request):
+        try:
+            cfg = {'enabled': bool(request.data.get('enabled', True)),
+                   'cooldownHours': _int(request.data.get('cooldownHours', 24), 1, 24 * 90, 'فاصلهٔ چرخش (ساعت)'),
+                   'validDays': _int(request.data.get('validDays', 30), 1, 365, 'اعتبار جایزه (روز)')}
+        except ValueError as e:
+            return fail(str(e), 400)
+        SiteSetting.objects.update_or_create(key='lucky', defaults={'value': cfg})
+        return ok({'settings': cfg})
+
+    def post(self, request):
+        fields, err = _prize_from(request.data)
+        if err:
+            return fail(err, 400)
+        return ok({'prize': _prize_row(LuckyPrize.objects.create(**fields))})
+
+
+class AdminLuckyPrizeView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request, pk):
+        p = LuckyPrize.objects.filter(pk=pk).first()
+        if not p:
+            return fail('جایزه پیدا نشد', 404)
+        fields, err = _prize_from(request.data, p)
+        if err:
+            return fail(err, 400)
+        for k, v in fields.items():
+            setattr(p, k, v)
+        p.save()
+        return ok({'prize': _prize_row(p)})
+
+    def delete(self, request, pk):
+        n, _ = LuckyPrize.objects.filter(pk=pk).delete()
+        return ok({'deleted': True}) if n else fail('جایزه پیدا نشد', 404)
+
+
+# ---------------- مدیر: درخواست‌های مشاوره ----------------
+
+class AdminConsultsView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        rows = [{'id': c.id, 'name': c.name, 'phone': c.phone, 'topic': c.topic, 'done': c.done,
+                 'at': int(c.created_at.timestamp() * 1000)} for c in ConsultRequest.objects.all()[:200]]
+        return ok({'consults': rows, 'pending': ConsultRequest.objects.filter(done=False).count()})
+
+
+class AdminConsultDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def patch(self, request, pk):
+        c = ConsultRequest.objects.filter(pk=pk).first()
+        if not c:
+            return fail('درخواست پیدا نشد', 404)
+        c.done = bool(request.data.get('done', True))
+        c.save(update_fields=['done'])
+        return ok({})
+
+    def delete(self, request, pk):
+        n, _ = ConsultRequest.objects.filter(pk=pk).delete()
+        return ok({'deleted': True}) if n else fail('درخواست پیدا نشد', 404)

@@ -42,7 +42,28 @@ def line_unit_price(product, w):
     return base
 
 
-def coupon_effect(code, sub, first_order):
+def shipping_options():
+    """روش‌های ارسال فعال از دیتابیس (ترتیب نمایش حفظ می‌شود). در نبود رکورد، مقادیر پیش‌فرض کد."""
+    from .models import ShippingMethod
+    rows = list(ShippingMethod.objects.filter(active=True))
+    if rows:
+        return {m.key: {'cost': m.cost, 'label': m.label, 'days': m.days} for m in rows}
+    return SHIP_OPTIONS
+
+
+def shipping_settings():
+    """(سقف ارسال رایگان، فعال بودن) — قابل تنظیم از پنل مدیر"""
+    from .models import SiteSetting
+    rec = SiteSetting.objects.filter(key='shipping').first()
+    v = rec.value if rec and isinstance(rec.value, dict) else {}
+    try:
+        free_from = int(v.get('freeFrom', FREE_SHIP))
+    except (TypeError, ValueError):
+        free_from = FREE_SHIP
+    return free_from, bool(v.get('freeEnabled', True))
+
+
+def coupon_effect(code, sub, first_order, user=None):
     """اعتبارسنجی و اثر کد تخفیف (از جدول Coupon) → (off, ship_free, error_msg)
     خطا → (0, False, پیام فارسی)"""
     from .models import Coupon
@@ -50,8 +71,8 @@ def coupon_effect(code, sub, first_order):
     if not code:
         return 0, False, None
     rule = Coupon.objects.filter(code=code).first()
-    if not rule or rule.problem():
-        return 0, False, (rule.problem() if rule else None) or 'کد تخفیف نامعتبر است'
+    if not rule or rule.problem(user):
+        return 0, False, (rule.problem(user) if rule else None) or 'کد تخفیف نامعتبر است'
     if rule.first_only and not first_order:
         return 0, False, f'کد {code} فقط برای اولین خرید است'
     if sub < rule.min_total:
@@ -65,26 +86,28 @@ def coupon_effect(code, sub, first_order):
     return 0, False, None     # نوع day (اولویت ارسال) اثر مالی ندارد
 
 
-def compute_order(items, coupon, ship_type, first_order):
+def compute_order(items, coupon, ship_type, first_order, user=None):
     """محاسبهٔ نهایی سفارش از اقلام معتبر.
 
     items: list of (product, w, qty) — اعتبارسنجی وزن/تعداد در ویو انجام شده است.
     خروجی dict با همهٔ فیلدهای مالی؛ خطای کد تخفیف/ارسال با ValueError فارسی برمی‌گردد.
     """
-    ship_type = (ship_type or DEFAULT_SHIP).strip()
-    if ship_type not in SHIP_OPTIONS:
+    options = shipping_options()
+    ship_type = (ship_type or next(iter(options))).strip()
+    if ship_type not in options:
         raise ValueError('روش ارسال نامعتبر است')
 
     sub = 0
     for product, w, qty in items:
         sub += line_unit_price(product, w) * qty
 
-    off, ship_free, err = coupon_effect(coupon, sub, first_order)
+    off, ship_free, err = coupon_effect(coupon, sub, first_order, user)
     if err:
         raise ValueError(err)
 
-    opt = SHIP_OPTIONS[ship_type]
-    ship_cost = 0 if (sub >= FREE_SHIP or ship_free) else opt['cost']
+    opt = options[ship_type]
+    free_from, free_enabled = shipping_settings()
+    ship_cost = 0 if ((free_enabled and sub >= free_from) or ship_free) else opt['cost']
     total = max(0, sub - off + ship_cost)
 
     return {

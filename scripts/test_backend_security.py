@@ -59,7 +59,12 @@ def req_abs(method, url, raw=True):
         return 0, {}, f'{type(e).__name__}: {e}'
 
 
+ORDER_TOK = None     # ثبت سفارش فقط با حساب
+
+
 def req(method, path, body=None, token=None, headers=None, raw=False, ctype='application/json'):
+    if token is None and method == 'POST' and path == '/orders':
+        token = ORDER_TOK
     r = urllib.request.Request(BASE + path, method=method)
     r.add_header('Accept', 'application/json')
     if body is not None:
@@ -100,9 +105,13 @@ PH = '0912' + sfx[:7]          # کاربر اصلی تست
 PH2 = '0913' + sfx[:7]         # کاربر دوم (IDOR)
 PHX = '0935' + sfx[:7]         # OTP
 PW = 'sec-' + sfx[-4:] + 'Aa'
+PHO = '0938' + sfx[:7]
+
 
 print(f'تست امنیتی سنگین بک‌اند خانم گل روی {BASE}')
 print('=' * 70)
+_st, _h, _r = req('POST', '/auth/register', {'name': 'سفارش‌دهندهٔ امنیتی', 'phone': PHO, 'password': PW})
+ORDER_TOK = _r.get('token')
 
 # ───────────────────────── A) هدرها و DEBUG ─────────────────────────
 print('\nA) هدرهای امنیتی و وضعیت DEBUG')
@@ -316,26 +325,31 @@ check('E1: تزریق فیلدهای مالی در سفارش → نادیده �
 CODE = r.get('code')
 # WELCOME10 باید با «شمارهٔ تازهٔ بدون سفارش» و مبلغ ≥ ۵۰۰هزار تومان تست شود
 PHW = '0937' + sfx[:7]
+_st, _h, _r = req('POST', '/auth/register', {'name': 'خرید اول کامل', 'phone': PHW, 'password': PW})
+WTOK = _r.get('token')   # WELCOME10 به «حساب» بسته است نه شمارهٔ گیرنده
 cheap = pmap.get(17) or min(pmap.values(), key=lambda p: p['price'])
 w_wel = 2000 if 2000 in cheap['weights'] else max(cheap['weights'])
 sub_wel = unit_price(cheap, w_wel) * 2   # دو ردیف‌برابر تا حتی با تخفیف محصول از حداقل ۵۰۰هزار عبور کند
 st, _, r = req('POST', '/orders', {
     'items': [{'pid': cheap['id'], 'w': w_wel, 'qty': 2}], 'coupon': 'WELCOME10', 'shipType': 'post',
-    'addr': {'name': 'خرید اول', 'phone': PHW, 'city': 'تهران', 'addr': 'خیابان تخفیف اول کامل ۱۲۳'}})
+    'addr': {'name': 'خرید اول', 'phone': PHW, 'city': 'تهران', 'addr': 'خیابان تخفیف اول کامل ۱۲۳'}}, token=WTOK)
 check('E2: WELCOME10 خرید اول (مبلغ کافی) → تخفیف ۱۰٪ درست',
       r.get('ok') is not False and r.get('off') == js_round(sub_wel * 10 / 100), f'{st} {r}')
 st, _, r = req('POST', '/orders', {
     'items': [{'pid': cheap['id'], 'w': w_wel, 'qty': 2}], 'coupon': 'WELCOME10', 'shipType': 'post',
-    'addr': {'name': 'خرید دوم', 'phone': PHW, 'city': 'تهران', 'addr': 'خیابان تخفیف اول کامل ۱۲۳'}})
+    'addr': {'name': 'خرید دوم', 'phone': PHW, 'city': 'تهران', 'addr': 'خیابان تخفیف اول کامل ۱۲۳'}}, token=WTOK)
 check('E3: WELCOME10 در خرید دوم همان شماره → رد', r.get('ok') is False
       and 'اولین' in (r.get('msg') or ''), r)
+SC_CASH, SC_SHIP = 'SC' + sfx[:5], 'SS' + sfx[:5]
+req('POST', '/admin/coupons', {'code': SC_CASH, 'type': 'cash', 'val': 50000, 'min': 300000}, token=ADMIN)
+req('POST', '/admin/coupons', {'code': SC_SHIP, 'type': 'ship'}, token=ADMIN)
 st, _, r = req('POST', '/orders', {
-    'items': [{'pid': cheap['id'], 'w': 250, 'qty': 1}], 'coupon': 'CASH50', 'shipType': 'post',
+    'items': [{'pid': cheap['id'], 'w': 250, 'qty': 1}], 'coupon': SC_CASH, 'shipType': 'post',
     'addr': {'name': 'تست حداقل مبلغ', 'phone': PH, 'city': 'تهران', 'addr': 'خیابان حداقل مبلغ کامل ۱۲۳'}})
-check('E4: CASH50 زیر حداقل مبلغ (۳۰۰هزار) → رد با پیام', r.get('ok') is False
+check('E4: کد نقدی زیر حداقل مبلغ (۳۰۰هزار) → رد با پیام', r.get('ok') is False
       and 'کافی نیست' in (r.get('msg') or ''), r)
-st, _, r = req('POST', '/orders', {**order, 'coupon': 'SHIP0'})
-check('E5: SHIP0 → ارسال رایگان', r.get('ok') is not False and r.get('ship_cost') == 0, r)
+st, _, r = req('POST', '/orders', {**order, 'coupon': SC_SHIP})
+check('E5: کد ارسال رایگان → ارسال رایگان', r.get('ok') is not False and r.get('ship_cost') == 0, r)
 st, _, r = req('GET', f'/orders/{CODE}')
 leaky = any(k in r for k in ('addr', 'a_name', 'a_phone', 'note', 'client_code'))
 check('F6: پیگیری عمومی فقط فیلدهای حداقلی را می‌دهد (بدون آدرس/نام/موبایل)',
