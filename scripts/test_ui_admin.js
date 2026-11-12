@@ -32,7 +32,10 @@ const suffix = String(Date.now()).slice(-7);
   t('فوتر: توسعه توسط تیم دایناکد + لینک daynacode.ir', (await link.getAttribute('href')) === 'https://daynacode.ir' && (await link.innerText()).includes('دایناکد'));
   t('فوتر: لوگوی دایناکد اول از مسیر محلی /img/ خواسته می‌شود (و در نبود فایل به منبع اصلی برمی‌گردد)', reqs.some(u => u.endsWith('/img/dayna-logo.png')));
   t('هیچ درخواستی به Google Fonts نرفت (فونت روی خود سایت)', !reqs.some(u => /fonts\.(googleapis|gstatic)\.com/.test(u)), reqs.filter(u => /fonts\./.test(u)).join(','));
-  t('فونت Vazirmatn بارگذاری شد', await p.evaluate(async () => { await document.fonts.ready; return document.fonts.check('16px "Vazirmatn Variable"') || document.fonts.check('16px Vazirmatn'); }));
+  const faces = await p.evaluate(async () => { await document.fonts.ready; return [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family.replace(/["']/g, '')); });
+  t('فونت متن (Vazirmatn Variable) واقعاً بارگذاری و استفاده شد', faces.includes('Vazirmatn Variable'), faces.join(','));
+  t('فونت تیترها (Lalezar) واقعاً بارگذاری و استفاده شد', faces.includes('Lalezar'), faces.join(','));
+  t('فونت body همان فونت بارگذاری‌شده است', (await p.evaluate(() => getComputedStyle(document.body).fontFamily)).startsWith('"Vazirmatn Variable"'));
 
   // ---------- صفحهٔ ورود ----------
   await p.goto(U + 'auth', { waitUntil: 'networkidle' });
@@ -115,7 +118,7 @@ const suffix = String(Date.now()).slice(-7);
   await m.locator('[aria-label="باز کردن منو"], .menu-btn, [aria-label*="منو"]').first().click().catch(() => {});
   await m.waitForTimeout(400);
   const chevClosed = await m.locator('.acc > button .chev').first().evaluate(e => getComputedStyle(e).transform);
-  await m.locator('.acc > button').first().click(); await m.waitForTimeout(400);
+  await m.locator('.acc > button').first().click(); await m.waitForTimeout(900);   // پایان انیمیشن چرخش
   const chevOpen = await m.locator('.acc.open > button .chev').first().evaluate(e => getComputedStyle(e).transform);
   const ang = tr => { const mm = tr.match(/matrix\(([^)]+)\)/); if (!mm) return null; const [a1, b1] = mm[1].split(',').map(Number); return Math.round(Math.atan2(b1, a1) * 180 / Math.PI); };
   t('منوی موبایل: فلش بسته رو به چپ است (۱۸۰°)', Math.abs(ang(chevClosed)) === 180, chevClosed);
