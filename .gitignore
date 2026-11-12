@@ -40,6 +40,7 @@ scripts/*
 !scripts/test_ascii_locale.py
 !scripts/build_host.sh
 !scripts/fetch_assets.py
+!scripts/run_all_tests.sh
 tool-results/
 
 # ابزار نصب skill (محلی)

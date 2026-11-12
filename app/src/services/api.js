@@ -307,19 +307,31 @@ export async function adminSettingsApi(body) {
 }
 
 /* فراخوانی عمومی پنل مدیر: همیشه {ok, msg?, ...} برمی‌گرداند (پیام فارسی سرور حفظ می‌شود) */
-export async function adminCall(path, { method = 'GET', body } = {}) {
+export async function apiCall(path, { method = 'GET', body } = {}) {
   if (!API_ENABLED) return { ok: false, msg: 'اتصال به سرور برقرار نیست' };
   try {
     const res = await req(path, { method, body, timeout: 12000 });
     apiState.online = true;
     return res && typeof res === 'object' ? { ok: res.ok !== false, ...res } : { ok: true };
   } catch (e) {
-    if (e.status === 401 || e.status === 403) return { ok: false, status: e.status, msg: 'دسترسی مدیر لازم است؛ دوباره وارد شوید' };
+    if (e.status === 401 || e.status === 403) return { ok: false, status: e.status, msg: 'ابتدا وارد حساب کاربری شوید (یا دسترسی کافی ندارید)' };
     return { ok: false, status: e.status, msg: (e.data && e.data.msg) || e.message };
   }
 }
 
-/* ---- کد تخفیف (عمومی): قاعدهٔ کد از سرور ---- */
+export const adminCall = apiCall;   // سازگاری با نام قبلی
+
+/* ---- محتوا، مشاوره، کارت شانس، ورود حین خرید (همه {ok, msg?, …}) ---- */
+export const siteApi = () => apiCall('/site');
+export const pageApi = slug => apiCall('/pages/' + encodeURIComponent(slug));
+export const consultApi = body => apiCall('/consult', { method: 'POST', body });
+export const luckyStatusApi = () => apiCall('/lucky/status');
+export const luckySpinApi = () => apiCall('/lucky/spin', { method: 'POST' });
+export const luckyMineApi = () => apiCall('/lucky/mine');
+export const phoneCheckApi = phone => apiCall('/auth/phone-check', { method: 'POST', body: { phone: toEn(phone).replace(/\D/g, '') } });
+export const createOrderStrict = body => apiCall('/orders', { method: 'POST', body });
+
+/* ---- کد تخفیف (فقط بعد از ورود): قاعدهٔ کد از سرور ---- */
 export async function couponCheckApi(code) {
   if (!API_ENABLED) return null;
   try {

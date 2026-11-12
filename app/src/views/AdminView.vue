@@ -34,6 +34,10 @@
           <button :class="{ on: tab === 'products' }" @click="tab = 'products'">محصولات</button>
           <button :class="{ on: tab === 'orders' }" @click="tab = 'orders'">سفارش‌ها</button>
           <button :class="{ on: tab === 'coupons' }" @click="tab = 'coupons'">کدهای تخفیف</button>
+          <button :class="{ on: tab === 'lucky' }" @click="tab = 'lucky'">کارت شانس</button>
+          <button :class="{ on: tab === 'shipping' }" @click="tab = 'shipping'">هزینه ارسال</button>
+          <button :class="{ on: tab === 'content' }" @click="tab = 'content'">محتوای سایت</button>
+          <button :class="{ on: tab === 'consults' }" @click="tab = 'consults'">مشاوره‌ها<span v-if="stats.consults" class="badge-hide" style="background:var(--red);color:#fff;border-color:var(--red)">{{ toFa(stats.consults) }}</span></button>
           <button :class="{ on: tab === 'users' }" @click="tab = 'users'">کاربران</button>
           <button :class="{ on: tab === 'sms' }" @click="tab = 'sms'">پنل پیامک</button>
           <button :class="{ on: tab === 'look' }" @click="tab = 'look'">ظاهر سایت</button>
@@ -76,6 +80,11 @@
             </div>
           </div>
         </div>
+
+        <AdminLucky v-else-if="tab === 'lucky'" />
+        <AdminShipping v-else-if="tab === 'shipping'" />
+        <AdminContent v-else-if="tab === 'content'" />
+        <AdminConsults v-else-if="tab === 'consults'" />
 
         <!-- کدهای تخفیف -->
         <div v-else-if="tab === 'coupons'" class="admin-card">
@@ -257,7 +266,7 @@
           <div v-if="cedit.type === 'pct' || cedit.type === 'cash'" class="fld w"><label>{{ cedit.type === 'pct' ? 'درصد تخفیف' : 'مبلغ تخفیف (تومان)' }}</label><input v-model.number="cedit.val" type="number" min="1"></div>
           <div class="fld w"><label>حداقل مبلغ سفارش (تومان)</label><input v-model.number="cedit.min" type="number" min="0" step="10000"></div>
           <div class="fld w"><label>سقف دفعات استفاده (۰ = نامحدود)</label><input v-model.number="cedit.maxUses" type="number" min="0"></div>
-          <div class="fld w"><label>تاریخ انقضا (میلادی، اختیاری)</label><input v-model="cedit.expiresAt" type="date" dir="ltr"></div>
+          <div class="fld w"><label>تاریخ انقضا (شمسی، اختیاری)</label><input v-model="cedit.expiresAt" type="text" dir="ltr" inputmode="numeric" placeholder="۱۴۰۵/۱۲/۲۹" maxlength="10"></div>
           <div class="fld w" style="grid-column:1/-1"><label>توضیح نمایشی</label><input v-model="cedit.label" type="text" maxlength="120" placeholder="مثلاً ۱۰٪ تخفیف یلدا"></div>
           <label class="chk"><input v-model="cedit.first" type="checkbox"> فقط اولین خرید</label>
           <label class="chk"><input v-model="cedit.active" type="checkbox"> فعال</label>
@@ -344,6 +353,12 @@ import { toFa, money, weightLabel, faDate, faTime, toEn } from '../data/site';
 import { CATS, catOf, IMG } from '../data/catalog';
 import { useSeo } from '../composables/useSeo';
 import SiteStudio from '../components/SiteStudio.vue';
+import AdminLucky from './admin/AdminLucky.vue';
+import AdminShipping from './admin/AdminShipping.vue';
+import AdminContent from './admin/AdminContent.vue';
+import AdminConsults from './admin/AdminConsults.vue';
+import { jalaliInputToIso, isoToJalaliInput } from '../data/jalali';
+import '../assets/admin.css';
 import { auth, adminLogin, adminLogout } from '../stores/auth';
 import { STATUS } from '../stores/orders';
 import { toast } from '../stores/ui';
@@ -494,10 +509,12 @@ async function loadCoupons() {
   if (r.ok) clist.value = r.coupons || []; else toast(r.msg || 'دریافت کدها انجام نشد', 'err');
 }
 function newCoupon() { cedit.value = { id: 0, code: '', type: 'pct', val: 10, min: 0, maxUses: 0, expiresAt: '', label: '', first: false, active: true }; }
-function editCoupon(c) { cedit.value = { id: c.id, code: c.code, type: c.type, val: c.val, min: c.min, maxUses: c.maxUses, expiresAt: c.expiresAt ? c.expiresAt.slice(0, 10) : '', label: c.label === c.code ? '' : c.label, first: c.first, active: c.active }; }
+function editCoupon(c) { cedit.value = { id: c.id, code: c.code, type: c.type, val: c.val, min: c.min, maxUses: c.maxUses, expiresAt: c.expiresAt ? isoToJalaliInput(c.expiresAt) : '', label: c.label === c.code ? '' : c.label, first: c.first, active: c.active }; }
 async function saveCoupon() {
   const c = cedit.value;
-  const body = { code: c.code, type: c.type, val: c.val, min: c.min || 0, maxUses: c.maxUses || 0, expiresAt: c.expiresAt || '', label: c.label, first: c.first, active: c.active };
+  const iso = jalaliInputToIso(c.expiresAt);
+  if (iso === null) return toast('تاریخ انقضا را شمسی و به شکل ۱۴۰۵/۱۲/۲۹ وارد کنید', 'err');
+  const body = { code: c.code, type: c.type, val: c.val, min: c.min || 0, maxUses: c.maxUses || 0, expiresAt: iso, label: c.label, first: c.first, active: c.active };
   const r = await adminCall(c.id ? '/admin/coupons/' + c.id : '/admin/coupons', { method: c.id ? 'PUT' : 'POST', body });
   if (!r.ok) return toast(r.msg || 'ذخیره نشد', 'err');
   cedit.value = null; toast('کد تخفیف ذخیره شد ✅', 'ok'); loadCoupons(); loadStats();

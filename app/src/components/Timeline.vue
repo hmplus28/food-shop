@@ -11,7 +11,7 @@
       </span>
       <div><b>{{ s.t }}</b><span>{{ s.s }}</span></div>
     </div>
-    <div class="sms-note"><svg class="icon"><use href="#i-sms" /></svg><span>📱 پیامک وضعیت این سفارش به شماره {{ toFa(order.addr?.phone || ' شما ') }} ارسال شد.</span></div>
+    <div v-if="order.addr?.phone" class="sms-note"><svg class="icon"><use href="#i-sms" /></svg><span>📱 پیامک وضعیت این سفارش به شماره {{ toFa(order.addr.phone) }} ارسال می‌شود.</span></div>
     <button v-if="step === 3" class="btn btn-gold btn-sm btn-block" @click="reorder">سفارش مجدد همین اقلام</button>
   </div>
 </template>
@@ -29,7 +29,7 @@ const steps = computed(() => [
   { t: 'ثبت سفارش', s: faDate(props.order.ts) + ' — ' + faTime(props.order.ts) },
   { t: 'آماده‌سازی و بسته‌بندی', s: 'وزن‌شدن روز، بسته‌بندی وکیوم بهداشتی' },
   { t: props.order.shipType === 'peyk' ? 'تحویل به پیک' : 'تحویل به پست', s: props.order.shipType === 'peyk' ? 'پیک فوری خانم گل در راه است 🛵' : 'کد رهگیری پستی پیامک می‌شود' },
-  { t: 'تحویل شد ✅', s: 'امیدواریم لذت برده باشید! مرجوعی رایگان تا ۷ روز' },
+  { t: 'تحویل شد ✅', s: 'امیدواریم لذت برده باشید! از مرجوعی رایگان‌مان در صورت نیاز استفاده کنید' },
 ]);
 function reorder() {
   props.order.items.forEach(c => addToCart(c.pid, c.w, c.qty, true));

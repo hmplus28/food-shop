@@ -5,6 +5,7 @@
    کار کند. نقش مدیر (سوپریوزر) فقط از سرور می‌آید (role=admin)، نه از مقدار قابل‌دستکاریِ مرورگر. */
 import { reactive } from 'vue';
 import { LS, toEn } from '../data/site';
+import { clearOrders } from './orders';
 import { apiState, authRegisterApi, authLoginApi, apiLogout, adminLoginApi, meApi } from '../services/api';
 
 export const auth = reactive({
@@ -26,6 +27,7 @@ export async function register(name, phone, pass) {
     if (r) {
       if (!r.ok) return { ok: false, msg: r.msg || 'ثبت‌نام در سرور انجام نشد' };
       const user = r.user || { name: name.trim(), phone: p };
+      if (auth.user && auth.user.phone !== user.phone) clearOrders();
       auth.user = user;
       LS.set('user', auth.user);
       return { ok: true };
@@ -49,6 +51,7 @@ export async function login(phone, pass) {
     if (r) {
       if (!r.ok) return { ok: false, msg: r.msg || 'شماره یا رمز عبور اشتباه است' };
       const user = r.user || (() => { const u = users().find(x => x.phone === p); return u ? { name: u.name, phone: p } : { name: 'کاربر', phone: p }; })();
+      if (auth.user && auth.user.phone !== user.phone) clearOrders();
       auth.user = user;
       auth.isAdmin = user.role === 'admin';
       LS.set('user', auth.user);
@@ -64,6 +67,7 @@ export async function login(phone, pass) {
 }
 
 export function logout() {
+  if (apiState.enabled) clearOrders();
   auth.user = null;
   auth.isAdmin = false;
   LS.set('user', null);
@@ -96,6 +100,7 @@ async function _adminLoginInner(u, p) {
 }
 
 export function adminLogout() {
+  clearOrders();
   auth.isAdmin = false;
   apiLogout();
   auth.user = null;

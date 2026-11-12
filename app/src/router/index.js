@@ -6,6 +6,7 @@ const routes = [
   { path: '/', name: 'home', component: () => import('../views/HomeView.vue'), meta: { title: null } },
   { path: '/products', name: 'products', component: () => import('../views/ProductsView.vue'), meta: { title: 'فروشگاه' } },
   { path: '/product/:id', name: 'product', component: () => import('../views/ProductView.vue'), meta: { title: 'محصول' } },
+  { path: '/page/:slug', name: 'page', component: () => import('../views/PageView.vue'), meta: { title: null } },
   { path: '/cart', name: 'cart', component: () => import('../views/CartView.vue'), meta: { title: 'سبد خرید' } },
   { path: '/checkout', name: 'checkout', component: () => import('../views/CheckoutView.vue'), meta: { title: 'تکمیل خرید' } },
   { path: '/track', name: 'track', component: () => import('../views/TrackView.vue'), meta: { title: 'پیگیری سفارش' } },

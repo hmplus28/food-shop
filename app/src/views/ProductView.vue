@@ -44,8 +44,8 @@
             </button>
           </div>
           <ul class="pd-perks">
-            <li><svg class="icon"><use href="#i-truck" /></svg> ارسال سریع سراسری؛ رایگان بالای ۱٬۵۰۰٬۰۰۰ تومان</li>
-            <li><svg class="icon"><use href="#i-shield" /></svg> مرجوعی رایگان تا ۷ روز بدون قید و شرط</li>
+            <li><svg class="icon"><use href="#i-truck" /></svg> ارسال سریع سراسری<template v-if="freeShipOn">؛ رایگان بالای {{ money(freeFrom) }} تومان</template></li>
+            <li><svg class="icon"><use href="#i-shield" /></svg> {{ shop.info.returnsNote }}</li>
             <li><svg class="icon"><use href="#i-box" /></svg> بسته‌بندی وکیوم بهداشتی با درج تاریخ</li>
           </ul>
         </div>
@@ -72,6 +72,7 @@ import { prod, catOf, visibleProducts } from '../data/catalog';
 import { toFa, money, weightLabel, priceOf } from '../data/site';
 import { useSeo, SITE_URL } from '../composables/useSeo';
 import { productSeo } from '../data/seoProduct';
+import { shop, freeFrom, freeShipOn } from '../stores/shop';
 import { isFav, toggleFav } from '../stores/fav';
 import { addToCart } from '../stores/cart';
 import ProductCard from '../components/ProductCard.vue';

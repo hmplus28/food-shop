@@ -5,6 +5,8 @@ export const toEn = s => String(s).replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵
 export const money = n => toFa(Math.round(n).toLocaleString('en-US')).replace(/,/g, '٬');
 
 /* ذخیره‌سازی محلی با نام‌فضای اختصاصی فروشگاه */
+import { jDate, jTime, jDateTime } from './jalali';
+
 export const LS = {
   get(k, def) { try { const v = localStorage.getItem('asalat_' + k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
   set(k, v) { try { localStorage.setItem('asalat_' + k, JSON.stringify(v)); } catch (e) {} },
@@ -41,5 +43,7 @@ export const fmtHMS = ms => {
 export const DAY_NAMES = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
 export const WEEK_ORDER = [6, 0, 1, 2, 3, 4, 5]; // ترتیب هفته فارسی: شنبه تا جمعه
 
-export const faDate = ts => new Date(ts).toLocaleDateString('fa-IR');
-export const faTime = ts => new Date(ts).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+/* همهٔ تاریخ‌ها شمسی (jalali.js) */
+export const faDate = ts => jDate(ts);
+export const faTime = ts => jTime(ts);
+export const faDateTime = ts => jDateTime(ts);

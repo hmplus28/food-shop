@@ -7,9 +7,9 @@
           <div class="slide">
             <div class="s-media"><img :src="IMG + '62b15d793f24.png'" alt="کاسه آجیل و خشکبار متنوع" fetchpriority="high"></div>
             <div class="s-content">
-              <span class="s-tag"><svg class="icon"><use href="#i-leaf" /></svg> تازه، سالم و باکیفیت</span>
-              <h1 class="s-title">طعم اصالت، کیفیت در <em>هر دانه</em></h1>
-              <p class="s-text">انتخابی تازه و باکیفیت از بهترین آجیل‌ها، خشکبار و محصولات طبیعی؛ از دل طبیعت تا سفره شما.</p>
+              <span class="s-tag"><svg class="icon"><use href="#i-leaf" /></svg> {{ shop.info.heroTag }}</span>
+              <h1 class="s-title">{{ shop.info.heroTitle }} <em>{{ shop.info.heroTitleEm }}</em></h1>
+              <p class="s-text">{{ shop.info.heroText }}</p>
               <div class="s-ctas">
                 <RouterLink class="btn btn-gold btn-lg" to="/products"><svg class="icon"><use href="#i-cart" /></svg> مشاهده محصولات</RouterLink>
                 <RouterLink class="btn btn-ghost btn-lg" to="/#amazing" style="border-color:#fff;color:#fff">مشاهده پیشنهادهای ویژه</RouterLink>
@@ -157,12 +157,12 @@
           <div class="cons-card hl">
             <div class="cons-top">
               <span class="ci"><svg class="icon"><use href="#i-phone" /></svg></span>
-              <div><b>تماس فوری با کارشناس</b><span>شنبه تا پنجشنبه ۹ تا ۲۱ | جمعه‌ها ۱۰ تا ۱۸</span></div>
+              <div><b>تماس فوری با کارشناس</b><span>{{ shop.info.hours }}</span></div>
             </div>
-            <p class="cons-text">نمی‌دانید برای مهمانی، هدیه یا رژیم غذایی‌تان چه محصولی مناسب است؟ همین حالا تماس بگیرید تا رایگان راهنمایی‌تان کنیم.</p>
+            <p class="cons-text">{{ shop.info.consultText }}</p>
             <div class="cons-actions">
-              <a class="btn btn-brand btn-sm" href="tel:02191092000"><svg class="icon"><use href="#i-phone" /></svg> ۰۲۱-۹۱۰۹۲۰۰۰</a>
-              <a class="btn btn-light btn-sm" href="https://wa.me/989120000000" target="_blank" rel="noopener"><svg class="icon"><use href="#i-whatsapp" /></svg> واتساپ</a>
+              <a class="btn btn-brand btn-sm" :href="telLink"><svg class="icon"><use href="#i-phone" /></svg> {{ shop.info.phone }}</a>
+              <a v-if="waLink" class="btn btn-light btn-sm" :href="waLink" target="_blank" rel="noopener"><svg class="icon"><use href="#i-whatsapp" /></svg> واتساپ</a>
             </div>
           </div>
           <div class="cons-card">
@@ -182,17 +182,17 @@
                   <option>خرید عمده و همکاری</option>
                 </select>
               </div>
-              <button class="btn btn-gold btn-sm" type="submit"><svg class="icon"><use href="#i-sms" /></svg> ثبت درخواست مشاوره</button>
+              <button class="btn btn-gold btn-sm" type="submit" :disabled="consBusy"><svg class="icon"><use href="#i-sms" /></svg> {{ consBusy ? 'در حال ثبت…' : 'ثبت درخواست مشاوره' }}</button>
             </form>
           </div>
           <div class="cons-card track">
             <div class="cons-top">
               <span class="ci"><svg class="icon"><use href="#i-truck" /></svg></span>
-              <div><b>پیگیری سفارش</b><span>با کد سفارش یا شماره موبایل</span></div>
+              <div><b>پیگیری سفارش</b><span>با کد سفارشی که پیامک شده</span></div>
             </div>
             <p class="cons-text">بعد از ثبت خرید، کد پیگیری برایتان پیامک می‌شود؛ همین‌جا وضعیت لحظه‌ای سفارش را ببینید.</p>
             <form class="track-row" @submit.prevent="trackInline">
-              <input v-model="trackQ" class="fld" type="text" placeholder="کد سفارش مثل AS-1024 یا شماره موبایل" aria-label="کد سفارش">
+              <input v-model="trackQ" class="fld" type="text" placeholder="کد سفارش مثل KG-12345" aria-label="کد سفارش">
               <button class="btn btn-brand btn-sm" type="submit">پیگیری</button>
             </form>
             <Timeline v-if="inlineOrder" :order="inlineOrder" />
@@ -227,7 +227,9 @@ import { IMG, PACKS, TRUST, TRUST_WHY, TRUST_VPIDS, CATS, prod, visibleProducts 
 import { toFa, money, fmtHMS, DAY_NAMES, WEEK_ORDER, LS } from '../data/site';
 import { addToCart } from '../stores/cart';
 import { toast } from '../stores/ui';
-import { findOrder, findByPhone } from '../stores/orders';
+import { trackOrder } from '../stores/orders';
+import { consultApi } from '../services/api';
+import { shop, telLink, waLink } from '../stores/shop';
 import ProductCard from '../components/ProductCard.vue';
 import Timeline from '../components/Timeline.vue';
 
@@ -315,23 +317,24 @@ function trustAdd() {
 
 /* ---------- فرم مشاوره + پیگیری داخل صفحه ---------- */
 const cons = reactive({ name: '', phone: '', topic: '' });
-function consult() {
+const consBusy = ref(false);
+async function consult() {
   const ph = cons.phone.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/\D/g, '');
   if (!/^09\d{9}$/.test(ph)) return toast('شماره موبایل معتبر وارد کنید', 'err');
-  toast('درخواست مشاوره ثبت شد؛ کارشناس خانم گل تا ۳۰ دقیقه دیگر با شما تماس می‌گیرد 📞', 'ok', 5200);
+  consBusy.value = true;
+  const r = await consultApi({ name: cons.name, phone: ph, topic: cons.topic });
+  consBusy.value = false;
+  if (!r.ok) return toast(r.msg || 'ثبت درخواست انجام نشد؛ دوباره تلاش کنید', 'err');
+  toast('درخواست مشاوره ثبت شد؛ کارشناس خانم گل با شما تماس می‌گیرد 📞', 'ok', 5200);
   cons.name = ''; cons.phone = ''; cons.topic = '';
 }
 const trackQ = ref('');
 const inlineOrder = ref(null);
 const inlineMsg = ref('');
-function trackInline() {
-  const q = trackQ.value;
+async function trackInline() {
   inlineOrder.value = null; inlineMsg.value = '';
-  const byPhone = findByPhone(q);
-  if (byPhone.length) { inlineOrder.value = byPhone[0]; return; }
-  const o = findOrder(q);
-  if (o) { inlineOrder.value = o; return; }
-  if (q.trim()) inlineMsg.value = 'سفارشی یافت نشد؛ از صفحه «پیگیری سفارش» با کد صحیح امتحان کنید.';
-  else toast('کد سفارش یا شماره موبایل را وارد کنید', 'err');
+  if (!trackQ.value.trim()) return toast('کد سفارش را وارد کنید', 'err');
+  const o = await trackOrder(trackQ.value);
+  if (o) inlineOrder.value = o; else inlineMsg.value = 'سفارشی با این کد پیدا نشد؛ از صفحه «پیگیری سفارش» دوباره امتحان کنید.';
 }
 </script>
