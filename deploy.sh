@@ -17,6 +17,7 @@
 #    --webroot <مسیر>   ریشهٔ وب (پیش‌فرض ~/public_html)
 #    --skip-front       فقط بک‌اند
 #    --skip-back        فقط فرانت
+#    --fetch-assets     تصاویر محصولات و لوگوی دایناکد را مستقیم داخل <ریشهٔ وب>/img دانلود می‌کند (بدون Node؛ نیازمند دسترسی هاست به CDN)
 #    --check            فقط بررسی و عیب‌یابی (بدون استقرار)
 #    --insecure         بررسی با http به‌جای https (قبل از نصب SSL)
 #
@@ -25,7 +26,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOMAIN="${KHANOMGOL_DOMAIN:-}"; API_BASE="${KHANOMGOL_API_BASE:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; SCHEME=https
+DOMAIN="${KHANOMGOL_DOMAIN:-}"; API_BASE="${KHANOMGOL_API_BASE:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; FETCH=0; SCHEME=https
 
 if [ -t 1 ]; then G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; B='\033[0;34m'; O='\033[0m'; else G=; Y=; R=; B=; O=; fi
 say(){ echo -e "${G}✔${O} $*"; }; info(){ echo -e "${B}ℹ${O} $*"; }; warn(){ echo -e "${Y}⚠${O} $*" >&2; }
@@ -42,6 +43,7 @@ while [ $# -gt 0 ]; do
     --skip-front) DO_FRONT=0; shift ;;
     --skip-back) DO_BACK=0; shift ;;
     --check) CHECK_ONLY=1; shift ;;
+    --fetch-assets) FETCH=1; shift ;;
     --insecure) SCHEME=http; shift ;;
     -h|--help) awk 'NR>1 { if ($0 ~ /^#/) { sub(/^# ? ?/, ""); print } else exit }' "$0"; exit 0 ;;
     *) warn "آرگومان ناشناخته: $1" ; shift ;;
@@ -99,6 +101,15 @@ env_set() {  # env_set KEY VALUE — مقدار موجود را جایگزین �
   else cp "$ENVF" "$tmp"; printf '\n%s=%s\n' "$k" "$v" >> "$tmp"; fi
   cat "$tmp" > "$ENVF"; rm -f "$tmp"
 }
+
+# ── تصاویر محلی (اختیاری): دانلود مستقیم روی هاست ──
+if [ "$FETCH" -eq 1 ]; then
+  info "دانلود تصاویر محصولات و لوگو در $WEBROOT/img ..."
+  mkdir -p "$WEBROOT/img"
+  python3 "$ROOT/scripts/fetch_assets.py" --out "$WEBROOT/img" ${KHANOMGOL_ASSETS_ARGS:-} \
+    && say "تصاویر دانلود شد." \
+    || warn "دانلود تصاویر کامل نشد (هاست به CDN دسترسی ندارد؟). روی سیستم دیگری با اینترنت آزاد: python3 scripts/fetch_assets.py && bash scripts/build_host.sh و commit/push."
+fi
 
 # ── ۱) فرانت ──
 if [ "$DO_FRONT" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then

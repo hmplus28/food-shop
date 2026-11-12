@@ -8,7 +8,8 @@
 سپس:
     bash scripts/build_host.sh && git add app/public/img host-dist && git commit -m "تصاویر محلی" && git push
 
-گزینه‌ها:  --force (دوباره دانلود)   --cdn <آدرس> (برای تست)
+گزینه‌ها:  --force (دوباره دانلود)   --cdn <آدرس> (برای تست)   --out <پوشه> (پیش‌فرض app/public/img)
+روی خود هاست (بدون Node): bash deploy.sh --domain دامنه --fetch-assets  (مستقیم داخل public_html/img)
 نکته: تا وقتی فایلی دانلود نشده، سایت خودکار به منبع اصلی برمی‌گردد (خراب نمی‌شود).
 """
 import os
@@ -19,6 +20,8 @@ import urllib.request
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 OUT = os.path.join(ROOT, 'app', 'public', 'img')
+if '--out' in sys.argv:
+    OUT = os.path.abspath(os.path.expanduser(sys.argv[sys.argv.index('--out') + 1]))
 CDN = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/'
 EXTRA = {'dayna-logo.png': 'https://daynacode.ir/assets/dayna-logo.png'}
 UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'

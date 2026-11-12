@@ -399,7 +399,7 @@ VITE_BASE=/ VITE_SITE_URL=https://shop.example.ir npm run build   # از پوش�
 
 فونت‌ها (وزیرمتن، لاله‌زار، امیری) داخل خود بیلد هستند و Google Fonts استفاده نمی‌شود. تصاویر محصولات و لوگوی دایناکد باید یک‌بار دانلود و داخل مخزن commit شوند (از محیط توسعه به CDN دسترسی نبود):
 ```bash
-python3 scripts/fetch_assets.py          # روی سیستمی که به z-cdn.chatglm.cn و daynacode.ir دسترسی دارد (در صورت نیاز VPN)
+python3 scripts/fetch_assets.py          # روی سیستم توسعه؛ یا مستقیم روی هاست (بدون Node): bash deploy.sh --domain دامنه --fetch-assets
 bash scripts/build_host.sh && git add app/public/img host-dist && git commit -m "تصاویر محلی" && git push
 ```
 بعد روی هاست `git pull && bash deploy.sh --domain ...`؛ اسکریپت با دیدن تصاویر روی هاست، `LOCAL_IMAGES=true` را برای فید ترب ست می‌کند. تا آن موقع اگر تصویر محلی نبود، سایت خودکار به منبع اصلی برمی‌گردد (تصویر خراب نمی‌شود).
