@@ -188,7 +188,17 @@ st, r = req('POST', '/admin/login', {'username': 'admin', 'password': 'admin1234
 check('admin/login درست: توکن', st == 200 and r.get('ok') and r.get('token'), f'{st} {r}')
 ADMIN_TOKEN = r.get('token')
 
-# ---------------- ۷-الف) ظاهر سایت (تم/رنگ) سراسری ----------------
+# ---------------- ۷-الف) مشتریان (پنل مدیر) ----------------
+st, r = req('GET', '/admin/users')
+check('admin/users بدون توکن: ممنوع', st in (401, 403), st)
+st, r = req('GET', '/admin/users', token=ADMIN_TOKEN)
+check('admin/users: فهرست مشتریان با شمارندهٔ سفارش', st == 200 and r.get('ok') and isinstance(r.get('users'), list) and r['users']
+      and all(k in r['users'][0] for k in ('name', 'phone', 'role', 'orders', 'spent')), f'{st} {str(r)[:200]}')
+check('admin/users: رمز یا هش رمز در پاسخ نیست', 'password' not in str(r).lower())
+st, r = req('GET', '/admin/users?q=' + PH_USER, token=ADMIN_TOKEN)
+check('admin/users: جست‌وجو با موبایل', st == 200 and any(u['phone'] == PH_USER for u in r.get('users', [])), r)
+
+# ---------------- ۷-ب) ظاهر سایت (تم/رنگ) سراسری ----------------
 st, r = req('GET', '/settings')
 check('settings: عمومی و دارای theme', st == 200 and r.get('ok') and r.get('theme') in ('default','anari','zeitoni','gahvei','tousi','banafsh','abi'), r)
 st, r = req('PUT', '/admin/settings', {'theme': 'anari', 'tune': None})

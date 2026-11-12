@@ -173,17 +173,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .icon-btn .lb{font-size:.7rem;font-weight:600;display:none}
 .cart-btn{background:var(--brand-050);color:var(--brand-700)}
 .cart-btn:hover{background:var(--brand);color:#fff}
-.theme-btn{color:var(--gold-600)}
-.theme-pop{position:absolute;top:calc(100% + 10px);left:10px;background:#fff;border-radius:var(--r-md);box-shadow:var(--sh-lg);
-  border:1px solid var(--line);padding:14px;width:238px;display:none;z-index:90}
-.theme-pop.open{display:block;animation:fadeUp .22s ease}
-.theme-pop h4{font-size:.85rem;margin-bottom:10px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
-.theme-dots{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.t-dot{display:grid;place-items:center;height:40px;border-radius:11px;border:2px solid var(--line);transition:var(--tr);position:relative}
-.t-dot i{width:22px;height:22px;border-radius:50%;display:block;box-shadow:inset 0 0 0 2.5px rgba(255,255,255,.65)}
-.t-dot:hover{transform:translateY(-2px);border-color:var(--gold)}
-.t-dot.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-100)}
-.t-dot.on::after{content:"✓";position:absolute;color:#fff;font-size:.7rem;font-weight:900}
 /* header desktop row 2 = nav */
 @media(max-width:991px){
   .hd-inner{min-height:62px;gap:8px}
@@ -609,6 +598,9 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .f-badge .icon{width:26px;height:26px;color:var(--brand)}
 .f-bottom{border-top:1px solid rgba(255,255,255,.09);padding:16px 0 22px;font-size:.76rem;color:#93a483;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .f-bottom b{color:var(--gold)}
+.f-dayna{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+.f-dayna img{height:28px;width:auto;max-width:120px;object-fit:contain;background:#fff;border-radius:8px;padding:3px 7px}
+.f-dayna:hover span{color:#fff}
 @media(min-width:768px){.f-top{grid-template-columns:1fr 1fr}}
 @media(min-width:1100px){.f-top{grid-template-columns:2.2fr 1fr 1fr 1.4fr}}
 
@@ -666,6 +658,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .modal-head .icon{color:var(--brand)}
 .modal-x{margin-inline-start:auto;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--bg-warm);color:var(--ink-2);transition:var(--tr)}
 .modal-x:hover{background:#fdeceb;color:var(--red)}
+.lucky-modal{position:relative}
+.lucky-x{position:absolute;top:10px;inset-inline-start:10px;margin:0;z-index:5;background:rgba(255,255,255,.92)}
 .modal-body{padding:20px}
 
 /* ================= تسویه حساب ================= */

@@ -1,6 +1,7 @@
 <template>
   <div class="overlay" :class="{ open: ui.modal === 'lucky' }" role="dialog" aria-modal="true" aria-label="کارت شانس" @click.self="closeModal()">
     <div class="modal lucky-modal" :class="{ flipped }">
+      <button type="button" class="lucky-x modal-x" aria-label="بستن کارت شانس" @click="closeModal()"><svg class="icon"><use href="#i-x" /></svg></button>
       <div class="lucky-head">
         <div class="gift-ic"><svg class="icon"><use href="#i-gift" /></svg></div>
         <h3>کارت شانس خانم گل</h3>

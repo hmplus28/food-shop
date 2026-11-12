@@ -13,7 +13,7 @@
   <Toasts />
   <FabWrap />
   <MobileCartBar />
-  <BrandTuner />
+  <SiteStudio />
 </template>
 
 <script setup>
@@ -30,8 +30,9 @@ import FavModal from './components/FavModal.vue';
 import Toasts from './components/Toasts.vue';
 import FabWrap from './components/FabWrap.vue';
 import MobileCartBar from './components/MobileCartBar.vue';
-import BrandTuner from './components/BrandTuner.vue';
-import { ui, closeAll, openModal } from './stores/ui';
+import SiteStudio from './components/SiteStudio.vue';
+import { ui, closeAll, openModal, loadLook } from './stores/ui';
+import { refreshSession } from './stores/auth';
 import { syncCatalog } from './services/api';
 import { pruneCart } from './stores/cart';
 
@@ -46,6 +47,8 @@ watch(() => route.fullPath, () => closeAll());
 
 /* کارت شانس: هر بار ورود به سایت (هر سشن جدید) + همگام‌سازی بی‌صدای محصولات با بک‌اند */
 onMounted(() => {
+  loadLook();          // تم/رنگ سراسری سایت از سرور
+  refreshSession();    // نقش واقعی کاربر (سوپریوزر) از سرور
   syncCatalog().then(pruneCart);   // اگر بک‌اند فعال/در دسترس نباشد، بی‌صدا به دادهٔ محلی برمی‌گردد
   setTimeout(() => {
     if (!sessionStorage.getItem('asalat_lucky_seen')) {

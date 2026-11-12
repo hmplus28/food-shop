@@ -280,6 +280,8 @@ if _csrf:
 SHOP_NAME = env('SHOP_NAME', 'فروشگاه خانم گل')
 SHOP_URL = env('SHOP_URL', 'https://hmplus28.github.io/food-shop/')
 SHOP_NOTIFY_PHONE = env('SHOP_NOTIFY_PHONE')
+# تصاویر محصولات روی خود هاست در {SHOP_URL}img/ هستند؟ (deploy.sh بعد از دانلود تصاویر true می‌کند)
+LOCAL_IMAGES = env_bool('LOCAL_IMAGES', False)
 SMS_ORDER_TO_CUSTOMER = env_bool('SMS_ORDER_TO_CUSTOMER', True)
 SMS_STATUS_TO_CUSTOMER = env_bool('SMS_STATUS_TO_CUSTOMER', True)
 

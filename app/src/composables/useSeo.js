@@ -5,7 +5,9 @@
    پیش‌فرض: GitHub Pages */
 const raw = v => (typeof v === 'string' ? v.trim() : '');
 const SITE = (raw(import.meta.env.VITE_SITE_URL) || 'https://hmplus28.github.io/food-shop').replace(/\/+$/, '');
-const DEFAULT_IMG = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/66fd0cba7ee8.jpg';
+const ORIGIN = SITE.replace(/^(https?:\/\/[^/]+).*$/, '$1');
+const absUrl = u => (u && u.startsWith('/')) ? ORIGIN + u : u;     // تصویر محلی → آدرس مطلق برای OG/JSON-LD
+const DEFAULT_IMG = SITE + '/img/66fd0cba7ee8.jpg';
 const DEFAULT_TITLE = 'خانم گل | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی';
 
 /* صفحاتی که نباید در نتایج گوگل بیایند */
@@ -48,11 +50,11 @@ export function useSeo({ title, description, path, ogType = 'website', image, js
   setMeta('property', 'og:locale', 'fa_IR');
   const url = canonicalUrl(path || '/');
   setMeta('property', 'og:url', url);
-  setMeta('property', 'og:image', image || DEFAULT_IMG);
+  setMeta('property', 'og:image', absUrl(image) || DEFAULT_IMG);
   setMeta('name', 'twitter:card', 'summary_large_image');
   setMeta('name', 'twitter:title', full);
   if (description) setMeta('name', 'twitter:description', description);
-  setMeta('name', 'twitter:image', image || DEFAULT_IMG);
+  setMeta('name', 'twitter:image', absUrl(image) || DEFAULT_IMG);
 
   const isPrivate = PRIVATE.some(p => (path || '').startsWith(p));
   setMeta('name', 'robots', isPrivate ? 'noindex, nofollow' : 'index, follow, max-image-preview:large');

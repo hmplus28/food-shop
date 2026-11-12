@@ -30,6 +30,7 @@ urlpatterns = [
     # مدیر فروشگاه
     path('admin/login', views.AdminLoginView.as_view()),
     path('admin/stats', views.AdminStatsView.as_view()),
+    path('admin/users', views.AdminUsersView.as_view()),
     path('admin/sms', views.AdminSmsLogView.as_view()),
     path('admin/sms/test', views.AdminSmsTestView.as_view()),
 ]

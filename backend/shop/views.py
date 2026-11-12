@@ -83,6 +83,20 @@ def _weight_text(w):
     return 'عدد' if w == 1 else (f'{w // 1000} کیلوگرم' if w % 1000 == 0 else f'{w} گرم')
 
 
+IMG_CDN = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/'
+
+
+def public_img(u):
+    """آدرس مطلق تصویر برای فید/شبکه‌های بیرونی: اگر تصاویر روی هاست باشند (LOCAL_IMAGES) از همان‌جا"""
+    u = u or ''
+    name = u[len(IMG_CDN):] if u.startswith(IMG_CDN) else (u[4:] if u.startswith('img/') else None)
+    if name is None:
+        return u
+    if settings.LOCAL_IMAGES:
+        return settings.SHOP_URL.rstrip('/') + '/img/' + name
+    return IMG_CDN + name
+
+
 def torob_item(p):
     """یک محصول در قالب API ترب — قیمت و وزنِ پیش‌فرض همان است که صفحهٔ محصول نشان می‌دهد
     (وزن دوم فهرست)، تا قیمت فید و صفحه همیشه یکی باشد. قیمت‌ها به تومان."""
@@ -91,7 +105,7 @@ def torob_item(p):
     price = line_unit_price(p, w)
     old = js_round(p.price * w / 1000) if p.disc else 0
     base = settings.SHOP_URL.rstrip('/')
-    img = p.img or ''
+    img = public_img(p.img)
     return {
         'title': f'{p.name} - {_weight_text(w)}',
         'subtitle': p.grade or '',
@@ -454,6 +468,30 @@ class AdminStatsView(APIView):
             'sms': {**st, 'sent': SmsLog.objects.count(),
                     'last': int(last_sms.ts.timestamp() * 1000) if last_sms else None},
         })
+
+
+class AdminUsersView(APIView):
+    """GET /admin/users?q=&limit= — فهرست مشتریان با تعداد و مجموع سفارش (فقط مدیر)"""
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        from django.db.models import Count, Sum
+        qs = ShopUser.objects.all().order_by('-date_joined')
+        q = (request.query_params.get('q') or '').strip()
+        if q:
+            from django.db.models import Q
+            qs = qs.filter(Q(phone__contains=normalize_phone(q) or q) | Q(name__icontains=q))
+        try:
+            limit = max(1, min(500, int(request.query_params.get('limit') or 200)))
+        except ValueError:
+            limit = 200
+        stats = {r['a_phone']: r for r in Order.objects.values('a_phone').annotate(n=Count('id'), total=Sum('total'))}
+        rows = []
+        for u in qs[:limit]:
+            st = stats.get(u.phone, {})
+            rows.append({'id': u.id, 'name': u.name, 'phone': u.phone, 'role': u.role, 'active': u.is_active,
+                         'joined': u.date_joined.isoformat(), 'orders': st.get('n', 0), 'spent': st.get('total') or 0})
+        return ok({'users': rows, 'total': ShopUser.objects.count()})
 
 
 class AdminSmsLogView(APIView):

@@ -1,6 +1,6 @@
 # بک‌اند فروشگاه خانم گل (Django + DRF)
 
-REST API کامل فروشگاه: احراز هویت با رمز یا **کد یکبار مصرف پیامکی**، محصولات،
+REST API کامل فروشگاه: احراز هویت با موبایل و رمز، محصولات،
 سفارش‌ها (با محاسبهٔ قیمت سمت سرور)، پنل مدیر و **اتصال به پنل پیامکی**
 (کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک).
 
@@ -46,8 +46,9 @@ cp -r dist/. ..       # انتشار در ریشهٔ ریپو (GitHub Pages) ی�
 | `/health` | GET | عمومی | سلامت سرویس + وضعیت پنل پیامک |
 | `/auth/register` | POST | عمومی | `{name, phone, password}` → `{ok, user, token}` |
 | `/auth/login` | POST | عمومی | `{phone, password}` → `{ok, user, token}` |
-| `/auth/otp/request` | POST | عمومی | `{phone}` → ارسال کد پیامکی (فاصلهٔ ارسال + سقف ساعتی دارد) |
-| `/auth/otp/verify` | POST | عمومی | `{phone, code}` → ورود/ثبت‌نام خودکار + توکن |
+| `/settings` | GET | عمومی | تم و رنگ برند سراسری سایت `{theme, tune}` |
+| `/admin/settings` | PUT | مدیر | `{theme, tune}` → ذخیرهٔ ظاهر سایت برای همه |
+| `/admin/users` | GET | مدیر | فهرست مشتریان `?q=` با تعداد و مجموع سفارش |
 | `/auth/me` | GET | توکن | پروفایل کاربر جاری |
 | `/products` | GET | عمومی | فهرست محصولات (`?all=1` فقط مدیر: با پنهان‌ها) |
 | `/products` | POST | مدیر | افزودن محصول (شناسه طبق قانون فرانت: max(100)+1) |
@@ -72,7 +73,6 @@ cp -r dist/. ..       # انتشار در ریشهٔ ریپو (GitHub Pages) ی�
 
 | رویداد | گیرنده | پیش‌فرض |
 | --- | --- | --- |
-| کد ورود (OTP) | مشتری | همیشه |
 | ثبت سفارش | مشتری + شمارهٔ مدیر | `SMS_ORDER_TO_CUSTOMER=true` + `SHOP_NOTIFY_PHONE` |
 | تغییر وضعیت سفارش | مشتری | `SMS_STATUS_TO_CUSTOMER=true` |
 
@@ -81,7 +81,6 @@ cp -r dist/. ..       # انتشار در ریشهٔ ریپو (GitHub Pages) ی�
 ```env
 SMS_PROVIDER=kavenegar
 KAVENEGAR_API_KEY=کلید-از-پنل
-KAVENEGAR_OTP_TEMPLATE=khanomgol-otp   # نام قالب Verify در پنل (پارامتر {token})
 SMS_SENDER=10008663                    # خط خدماتی (اختیاری)
 ```
 
@@ -94,7 +93,6 @@ SMS_SENDER=10008663                    # خط خدماتی (اختیاری)
 ```env
 SMS_PROVIDER=smsir
 SMSIR_API_KEY=کلید-از-پنل
-SMSIR_OTP_TEMPLATE_ID=100000           # شناسهٔ عددی قالب (پارامتر قالب باید CODE باشد)
 SMSIR_LINE=3000…                       # شماره خط
 ```
 
@@ -103,7 +101,6 @@ SMSIR_LINE=3000…                       # شماره خط
 ```env
 SMS_PROVIDER=ghasedak
 GHASEDAK_API_KEY=کلید-از-پنل
-GHASEDAK_OTP_TEMPLATE=khanomgol-otp
 GHASEDAK_LINE=5000…
 ```
 
@@ -118,8 +115,7 @@ MELIPAYAMAK_FROM=5000…                 # شمارهٔ خط پنل
 
 ### حالت توسعه (بدون پنل)
 
-`SMS_PROVIDER=console` (پیش‌فرض): پیامک واقعی نمی‌رود؛ کد OTP در پاسخ API
-(`dev.code`) و در لاگ سرور می‌آید و همهٔ پیامک‌ها در «پنل پیامک» پنل مدیر
+`SMS_PROVIDER=console` (پیش‌فرض): پیامک واقعی نمی‌رود؛ همهٔ پیامک‌ها در «پنل پیامک» پنل مدیر
 ثبت می‌شوند — برای تست کامل جریان بدون پنل پیامک.
 
 > **تست اتصال:** بعد از تنظیم پنل، در پنل مدیریت فرانت (تب «پنل پیامک»)
@@ -177,7 +173,6 @@ Python 3.11+ ، Application root = پوشهٔ backend ، Startup File = `passeng
 - [ ] `DEBUG=false` (پیش‌فرض) و `ALLOWED_HOSTS` محدود به دامنهٔ خودتان.
 - [ ] `CORS_ORIGINS` فقط دامنهٔ فرانت (به‌جای `*`).
 - [ ] `SECRET_KEY` را در `.env` ثابت کنید (در نبودش خودکار ساخته و ذخیره می‌شود).
-- [ ] سقف‌های OTP (`OTP_TTL/OTP_COOLDOWN/OTP_HOURLY/OTP_MAX_ATTEMPTS`) را با متن کسب‌وکار تنظیم کنید.
 - [ ] پشتیبان‌گیری دوره‌ای دیتابیس MySQL با `mysqldump` (cron پیشنهادی در `deploy/GUIDE-CPANEL-FA.md`).
 
 ## تست

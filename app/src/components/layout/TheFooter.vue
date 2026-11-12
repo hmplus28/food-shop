@@ -43,14 +43,19 @@
       </div>
       <div class="f-bottom">
         <span>© ۱۴۰۴ فروشگاه خشکبار <b>خانم گل</b> — تمامی حقوق محفوظ است.</span>
-        <span>طراحی‌شده با <b>♥</b> برای طعم‌های اصیل ایران</span>
+        <a class="f-dayna" href="https://daynacode.ir" target="_blank" rel="noopener" aria-label="توسعه توسط تیم دایناکد — daynacode.ir">
+          <span>توسعه توسط تیم <b>دایناکد</b></span>
+          <img :src="DAYNA_LOGO" alt="دایناکد" width="84" height="28" loading="lazy">
+        </a>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
-import { CATS } from '../../data/catalog';
+import { CATS, IMG } from '../../data/catalog';
+
+const DAYNA_LOGO = IMG + 'dayna-logo.png';   // کپی محلی؛ در نبودش main.js به daynacode.ir برمی‌گردد
 import { toast } from '../../stores/ui';
 
 const footerCats = ['ajil', 'pistachio', 'date', 'saffron', 'tea', 'giftbox'].map(id => CATS.find(c => c.id === id));

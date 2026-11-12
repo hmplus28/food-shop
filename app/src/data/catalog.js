@@ -2,7 +2,8 @@
 import { reactive } from 'vue';
 import { LS } from './site';
 
-export const IMG = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/';
+/* تصاویر روی خود هاست در /img/ (دانلود با scripts/fetch_assets.py)؛ در نبود فایل، fallback خودکار به منبع اصلی (main.js) */
+export const IMG = (import.meta.env.BASE_URL || '/') + 'img/';
 
 /* دسته‌بندی‌ها (۱۳ دسته) */
 export const CATS = [
@@ -122,6 +123,7 @@ export const products = reactive(buildBase());
 /* اعمال ویرایش‌های آزمایشی پنل مدیر (LocalStorage) روی فهرست فعلی —
    بعد از همگام‌سازی بک‌اند هم دوباره صدا زده می‌شود تا ویرایش‌ها حفظ شوند. */
 export function applyAdminOverrides() {
+  if (String(import.meta.env.VITE_API_ENABLED).toLowerCase() === 'true') return;   // با سرور فعال، سرور مرجع است
   const saved = LS.get('adminProducts', null);
   if (Array.isArray(saved) && saved.length) products.splice(0, products.length, ...saved);
 }

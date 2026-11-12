@@ -380,3 +380,26 @@ VITE_BASE=/ VITE_SITE_URL=https://shop.example.ir npm run build   # از پوش�
 1. **API (پیشنهادی):** `https://دامنه-بک‌اند/api/v1/torob/products?page=1` — خروجی `{count, max_pages, products:[…]}` با فیلدهای `title, page_unique, current_price (تومان), old_price, availability (instock/outofstock), category_name, image_link, page_url, short_desc, spec, date_updated`. هم GET و هم POST با `{"page": n}` پاسخ می‌دهد. `SHOP_URL` در `backend/.env` باید دامنهٔ **فرانت** باشد (برای ساخت `page_url`).
 2. **خزش صفحات:** هر صفحهٔ محصول بدون نیاز به JS قیمت (`product:price:amount`، تومان)، موجودی، عنوان و تصویر را در متاتگ‌ها و JSON-LD دارد.
 قیمت فید و صفحه همیشه یکی است (هر دو قیمت وزن پیش‌فرض را نشان می‌دهند). قالب دقیق فیلدها را در پنل ترب با نمونهٔ خروجی تأیید کنید.
+
+
+## ساخت سوپریوزر (مدیر فروشگاه)
+
+مدیر همان کاربری است که نقش `admin` دارد؛ با **موبایل یا نام کاربری + رمز** در `https://دامنه/admin` وارد می‌شود (ورود با کد پیامکی حذف شده است). فقط مدیر دکمهٔ «🎨 قالب و رنگ سایت» را می‌بیند و تغییرش برای همهٔ بازدیدکنندگان اعمال می‌شود.
+
+- **خودکار:** `ADMIN_USERNAME`، `ADMIN_PHONE` و `ADMIN_PASSWORD` در `backend/.env` را بگذارید؛ اولین اجرای `deploy.sh` (مرحلهٔ `seed_shop`) مدیر را می‌سازد.
+- **دستی (هر تعداد مدیر):**
+  ```bash
+  cd ~/public_html/food-shop/backend
+  ~/virtualenv/public_html/food-shop/backend/3.11/bin/python manage.py createsuperuser
+  ```
+  موبایل (۰۹…)، نام و رمز را بدهید؛ نقش `admin` خودکار ست می‌شود و هم پنل مدیریت سایت و هم `/dj-admin/` کار می‌کند.
+- **تغییر رمز یک مدیر:** `manage.py changepassword 09120000000` (تغییر `ADMIN_PASSWORD` در `.env` بعد از ساخته‌شدن مدیر رمز را عوض نمی‌کند).
+
+## سایت آفلاین‌پذیر (اینترنت ملی)
+
+فونت‌ها (وزیرمتن، لاله‌زار، امیری) داخل خود بیلد هستند و Google Fonts استفاده نمی‌شود. تصاویر محصولات و لوگوی دایناکد باید یک‌بار دانلود و داخل مخزن commit شوند (از محیط توسعه به CDN دسترسی نبود):
+```bash
+python3 scripts/fetch_assets.py          # روی سیستمی که به z-cdn.chatglm.cn و daynacode.ir دسترسی دارد (در صورت نیاز VPN)
+bash scripts/build_host.sh && git add app/public/img host-dist && git commit -m "تصاویر محلی" && git push
+```
+بعد روی هاست `git pull && bash deploy.sh --domain ...`؛ اسکریپت با دیدن تصاویر روی هاست، `LOCAL_IMAGES=true` را برای فید ترب ست می‌کند. تا آن موقع اگر تصویر محلی نبود، سایت خودکار به منبع اصلی برمی‌گردد (تصویر خراب نمی‌شود).

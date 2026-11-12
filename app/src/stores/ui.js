@@ -1,14 +1,13 @@
 /* ---------- وضعیت سراسری رابط (تم، کشوها، مودال‌ها، اعلان‌ها) ---------- */
 import { reactive } from 'vue';
 import { LS } from '../data/site';
-import { THEMES } from '../data/catalog';
+import { siteSettingsApi, adminSettingsApi } from '../services/api';
 
 export const ui = reactive({
   cartOpen: false,
   navOpen: false,
   modal: null,            // 'lucky' | 'fav' | null
   toasts: [],
-  theme: LS.get('theme', 'default'),
 });
 
 let tid = 0;
@@ -30,20 +29,41 @@ export const openModal = m => { ui.modal = m; };
 export const closeModal = () => { ui.modal = null; };
 export const closeAll = () => { ui.cartOpen = false; ui.navOpen = false; ui.modal = null; };
 
-/* مهاجرت یک‌بارهٔ هویت رنگی برند: تم قدیمی مرورگر یک بار پاک می‌شود */
-if (LS.get('brandVer', 0) < 2) {
-  LS.set('theme', 'default');
-  LS.set('brandVer', 2);
-  ui.theme = 'default';
+/* ---------- ظاهر سراسری سایت (تم + رنگ برند) ----------
+   مقدار اصلی روی سرور است و برای همهٔ بازدیدکنندگان یکسان؛ فقط مدیر (سوپریوزر) می‌تواند عوضش کند.
+   نسخهٔ آخرین مقدار در LocalStorage فقط برای جلوگیری از پرش رنگ در بارگذاری بعدی نگه داشته می‌شود. */
+const BRAND_VARS = ['--brand', '--brand-600', '--brand-700', '--brand-800'];
+LS.del('theme'); LS.del('brandVer'); try { localStorage.removeItem('asalat_brandtune'); } catch (e) {}   // انتخاب‌های قدیمی هر بازدیدکننده
+
+export const look = reactive({ theme: 'default', tune: null, ...LS.get('look', {}) });
+
+export function applyLook(l = look) {
+  const root = document.documentElement;
+  if (l.theme && l.theme !== 'default') root.dataset.theme = l.theme; else delete root.dataset.theme;
+  BRAND_VARS.forEach((k, i) => {
+    if (Array.isArray(l.tune) && /^#[0-9a-f]{6}$/i.test(l.tune[i] || '')) root.style.setProperty(k, l.tune[i]);
+    else root.style.removeProperty(k);
+  });
 }
 
-export function applyTheme() {
-  document.documentElement.dataset.theme = ui.theme === 'default' ? '' : ui.theme;
+/* دریافت ظاهر فعلی از سرور و اعمال برای همه؛ ناموفق → همان نسخهٔ کش‌شده */
+export async function loadLook() {
+  const r = await siteSettingsApi();
+  if (!r) return false;
+  look.theme = r.theme; look.tune = r.tune;
+  LS.set('look', { theme: r.theme, tune: r.tune });
+  applyLook();
+  return true;
 }
-export function setTheme(id) {
-  ui.theme = id;
-  LS.set('theme', id);
-  applyTheme();
-  toast('تم رنگی به «' + THEMES.find(t => t.id === id).name + '» تغییر کرد 🎨', 'gold');
+
+/* ذخیرهٔ ظاهر برای کل سایت (فقط مدیر؛ سرور هم دسترسی را چک می‌کند) */
+export async function saveLook(theme, tune) {
+  const r = await adminSettingsApi({ theme, tune });
+  if (!r.ok) { toast(r.msg || 'ذخیره نشد', 'err'); return false; }
+  look.theme = r.theme; look.tune = r.tune;
+  LS.set('look', { theme: r.theme, tune: r.tune });
+  applyLook();
+  toast('ظاهر سایت برای همهٔ بازدیدکنندگان ذخیره شد ✅', 'gold');
+  return true;
 }
-applyTheme();
+applyLook();
