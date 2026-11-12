@@ -9,6 +9,7 @@ import random
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -17,7 +18,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Order, Product, ShopUser, SiteSetting, SmsLog
+from .models import Coupon, Order, OrderItem, Product, ShopUser, SiteSetting, SmsLog
 from .permissions import IsShopAdmin
 from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
 from .seed import ensure_seed
@@ -54,6 +55,10 @@ def issue_tokens(user):
 
 class AuthThrottle(AnonRateThrottle):
     scope = 'auth'
+
+
+class CouponThrottle(AnonRateThrottle):
+    scope = 'coupon'
 
 
 # ---------------- سلامت سرویس ----------------
@@ -307,6 +312,8 @@ class OrderCreateListView(APIView):
                 code=code, client_code=client_code, user=user, status=0,
                 a_name=addr['name'], a_phone=addr['phone'], a_prov=addr['prov'],
                 a_city=addr['city'], a_addr=addr['addr'], note=d.get('note', ''), **money)
+            if money['coupon']:
+                Coupon.objects.filter(code=money['coupon']).update(used=F('used') + 1)   # شمارندهٔ استفاده
             for p, w, qty in pairs:
                 unit = line_unit_price(p, w)
                 order.items.create(pid=p.id, name=p.name, img=p.img, w=w, qty=qty,
@@ -450,6 +457,28 @@ class AdminLoginView(APIView):
         return fail('نام کاربری یا رمز مدیر اشتباه است')
 
 
+def _dashboard_extras():
+    """داده‌های نمودار/لیست داشبورد: فروش ۷ روز اخیر، پرفروش‌ها، وضعیت سفارش‌ها، کم‌موجودی‌ها"""
+    from django.db.models import Count, Sum
+    from django.db.models.functions import TruncDate
+    today = timezone.localdate()
+    since = today - timezone.timedelta(days=6)
+    rows = {r['d']: r for r in Order.objects.filter(created_at__date__gte=since)
+            .annotate(d=TruncDate('created_at')).values('d').annotate(n=Count('id'), s=Sum('total'))}
+    daily = []
+    for i in range(7):
+        d = since + timezone.timedelta(days=i)
+        r = rows.get(d, {})
+        daily.append({'date': d.isoformat(), 'orders': r.get('n', 0), 'revenue': r.get('s') or 0})
+    top = [{'pid': r['pid'], 'name': r['name'], 'qty': r['q'], 'revenue': r['r'] or 0}
+           for r in OrderItem.objects.values('pid', 'name').annotate(q=Sum('qty'), r=Sum('cost')).order_by('-q')[:5]]
+    by_status = {str(r['status']): r['n'] for r in Order.objects.values('status').annotate(n=Count('id'))}
+    low = [{'id': p.id, 'name': p.name, 'stock': p.stock}
+           for p in Product.objects.filter(stock__lt=10, hide=False).order_by('stock')[:8]]
+    return {'daily': daily, 'top': top, 'byStatus': by_status, 'lowStockItems': low,
+            'coupons': Coupon.objects.filter(active=True).count()}
+
+
 class AdminStatsView(APIView):
     permission_classes = [IsShopAdmin]
 
@@ -465,6 +494,7 @@ class AdminStatsView(APIView):
             'revenue': revenue,
             'lowStock': Product.objects.filter(stock__lt=10, hide=False).count(),
             'statusLabels': STATUS_LABELS,
+            **_dashboard_extras(),
             'sms': {**st, 'sent': SmsLog.objects.count(),
                     'last': int(last_sms.ts.timestamp() * 1000) if last_sms else None},
         })
@@ -486,12 +516,150 @@ class AdminUsersView(APIView):
         except ValueError:
             limit = 200
         stats = {r['a_phone']: r for r in Order.objects.values('a_phone').annotate(n=Count('id'), total=Sum('total'))}
-        rows = []
-        for u in qs[:limit]:
-            st = stats.get(u.phone, {})
-            rows.append({'id': u.id, 'name': u.name, 'phone': u.phone, 'role': u.role, 'active': u.is_active,
-                         'joined': u.date_joined.isoformat(), 'orders': st.get('n', 0), 'spent': st.get('total') or 0})
+        rows = [_user_row(u, stats.get(u.phone, {})) for u in qs[:limit]]
         return ok({'users': rows, 'total': ShopUser.objects.count()})
+
+
+def _user_row(u, st=None):
+    st = st or {}
+    return {'id': u.id, 'name': u.name, 'phone': u.phone, 'role': u.role, 'active': u.is_active,
+            'joined': u.date_joined.isoformat(), 'orders': st.get('n', 0), 'spent': st.get('total') or 0}
+
+
+class AdminUserDetailView(APIView):
+    """PATCH /admin/users/<id> {active?, role?, password?} — مدیریت مشتری/مدیر (فقط مدیر)"""
+    permission_classes = [IsShopAdmin]
+
+    def patch(self, request, pk):
+        u = ShopUser.objects.filter(pk=pk).first()
+        if not u:
+            return fail('کاربر پیدا نشد', 404)
+        if u.pk == request.user.pk and ('active' in request.data or 'role' in request.data):
+            return fail('نقش یا وضعیت حساب خودتان را نمی‌توانید تغییر دهید', 400)
+        d = request.data
+        if 'active' in d:
+            u.is_active = bool(d['active'])
+        if 'role' in d:
+            if d['role'] not in ('user', 'admin'):
+                return fail('نقش نامعتبر است', 400)
+            u.role = d['role']
+            u.is_staff = d['role'] == 'admin'
+            if d['role'] != 'admin':
+                u.is_superuser = False
+        if d.get('password') is not None:
+            pw = str(d['password'])
+            if len(pw) < 4:
+                return fail('رمز عبور حداقل ۴ کاراکتر باشد', 400)
+            u.set_password(pw)
+        u.save()
+        return ok({'user': _user_row(u)})
+
+
+# ---------------- کدهای تخفیف ----------------
+
+_COUPON_CODE = __import__('re').compile(r'^[A-Z0-9_-]{3,30}$')
+
+
+class CouponCheckView(APIView):
+    """GET /coupons/check?code=X — عمومی: اگر کد معتبر و قابل استفاده بود قاعدهٔ آن را می‌دهد (برای نمایش در سبد)"""
+    permission_classes = [AllowAny]
+    throttle_classes = [CouponThrottle]
+
+    def get(self, request):
+        code = (request.query_params.get('code') or '').strip().upper()
+        c = Coupon.objects.filter(code=code).first() if _COUPON_CODE.match(code) else None
+        if not c or c.problem():
+            return fail((c.problem() if c else None) or 'کد تخفیف نامعتبر است')
+        return ok({'coupon': c.public})
+
+
+def _coupon_row(c):
+    return {**c.public, 'id': c.id, 'active': c.active, 'maxUses': c.max_uses, 'used': c.used,
+            'expiresAt': c.expires_at.isoformat() if c.expires_at else None,
+            'status': c.problem() or 'قابل استفاده'}
+
+
+def _coupon_from(data, inst=None):
+    """اعتبارسنجی ورودی مدیر → (dict فیلدها, پیام خطا)"""
+    from django.utils.dateparse import parse_date, parse_datetime
+
+    def pick(k, default):
+        return data[k] if k in data else default
+
+    code = str(pick('code', inst.code if inst else '')).strip().upper()
+    if not _COUPON_CODE.match(code):
+        return None, 'کد باید ۳ تا ۳۰ حرف انگلیسی/عدد (و - _) باشد'
+    kind = pick('type', pick('kind', inst.kind if inst else 'pct'))
+    if kind not in ('pct', 'cash', 'ship', 'day'):
+        return None, 'نوع کد تخفیف نامعتبر است'
+    try:
+        value = int(pick('val', pick('value', inst.value if inst else 0)) or 0)
+        min_total = int(pick('min', pick('min_total', inst.min_total if inst else 0)) or 0)
+        max_uses = int(pick('maxUses', inst.max_uses if inst else 0) or 0)
+    except (TypeError, ValueError):
+        return None, 'مقادیر عددی نامعتبر است'
+    if kind == 'pct' and not 1 <= value <= 100:
+        return None, 'درصد تخفیف باید بین ۱ تا ۱۰۰ باشد'
+    if kind == 'cash' and value < 1:
+        return None, 'مبلغ تخفیف باید بیشتر از صفر باشد'
+    if min(value, min_total, max_uses) < 0:
+        return None, 'مقدار منفی مجاز نیست'
+    exp = pick('expiresAt', inst.expires_at if inst else None)
+    if isinstance(exp, str):
+        exp = exp.strip()
+        if not exp:
+            exp = None
+        else:
+            d = parse_date(exp) if len(exp) == 10 else None
+            parsed = timezone.datetime(d.year, d.month, d.day, 23, 59, 59) if d else parse_datetime(exp)   # فقط تاریخ → پایان همان روز
+            if not parsed:
+                return None, 'تاریخ انقضا نامعتبر است'
+            exp = timezone.make_aware(parsed) if timezone.is_naive(parsed) else parsed
+    elif exp is not None and not hasattr(exp, 'year'):
+        return None, 'تاریخ انقضا نامعتبر است'
+    return {'code': code, 'kind': kind, 'value': value if kind in ('pct', 'cash') else 0, 'min_total': min_total,
+            'first_only': bool(pick('first', pick('first_only', inst.first_only if inst else False))),
+            'label': str(pick('label', inst.label if inst else ''))[:120],
+            'active': bool(pick('active', inst.active if inst else True)), 'max_uses': max_uses,
+            'expires_at': exp}, None
+
+
+class AdminCouponsView(APIView):
+    """GET فهرست / POST ساخت — فقط مدیر"""
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        return ok({'coupons': [_coupon_row(c) for c in Coupon.objects.all()]})
+
+    def post(self, request):
+        fields, err = _coupon_from(request.data)
+        if err:
+            return fail(err, 400)
+        if Coupon.objects.filter(code=fields['code']).exists():
+            return fail('این کد قبلاً ساخته شده است', 400)
+        return ok({'coupon': _coupon_row(Coupon.objects.create(**fields))})
+
+
+class AdminCouponDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request, pk):
+        c = Coupon.objects.filter(pk=pk).first()
+        if not c:
+            return fail('کد تخفیف پیدا نشد', 404)
+        fields, err = _coupon_from(request.data, c)
+        if err:
+            return fail(err, 400)
+        if Coupon.objects.filter(code=fields['code']).exclude(pk=c.pk).exists():
+            return fail('این کد قبلاً ساخته شده است', 400)
+        for k, v in fields.items():
+            setattr(c, k, v)
+        c.save()
+        return ok({'coupon': _coupon_row(c)})
+
+    def delete(self, request, pk):
+        n, _ = Coupon.objects.filter(pk=pk).delete()
+        return ok({'deleted': bool(n)}) if n else fail('کد تخفیف پیدا نشد', 404)
 
 
 class AdminSmsLogView(APIView):

@@ -29,8 +29,8 @@
             <svg class="icon"><use href="#i-heart" /></svg>
             <span class="dot-pulse fav-count" :class="{ hidden: favCount === 0 }">{{ toFa(favCount) }}</span>
           </button>
-          <RouterLink class="login-btn" :to="auth.user ? '/account' : '/auth'">
-            <svg class="icon"><use href="#i-user" /></svg> {{ auth.user ? 'پنل کاربری' : 'ورود | ثبت‌نام' }}
+          <RouterLink class="login-btn" :to="auth.isAdmin ? '/admin' : (auth.user ? '/account' : '/auth')">
+            <svg class="icon"><use href="#i-user" /></svg> {{ auth.isAdmin ? 'پنل مدیریت' : (auth.user ? 'پنل کاربری' : 'ورود | ثبت‌نام') }}
           </RouterLink>
           <button class="icon-btn cart-btn" aria-label="سبد خرید" @click="openCart()">
             <svg class="icon"><use href="#i-cart" /></svg>

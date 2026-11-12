@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Order, OrderItem, Product, ShopUser, SiteSetting, SmsLog
+from .models import Order, Coupon, OrderItem, Product, ShopUser, SiteSetting, SmsLog
 
 
 @admin.register(ShopUser)
@@ -37,6 +37,13 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('code', 'client_code', 'a_phone', 'a_name')
     inlines = [OrderItemInline]
     readonly_fields = ('code', 'client_code')
+
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'kind', 'value', 'min_total', 'active', 'used', 'max_uses', 'expires_at')
+    list_filter = ('kind', 'active')
+    search_fields = ('code', 'label')
 
 
 @admin.register(SiteSetting)

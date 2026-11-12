@@ -73,7 +73,12 @@ async function req(path, { method = 'GET', body, timeout = API_TIMEOUT } = {}) {
     throw new Error(e.name === 'AbortError' ? 'پاسخ بک‌اند بیش از حد طول کشید' : 'اتصال به بک‌اند برقرار نشد');
   }
   clearTimeout(timer);
-  if (!res.ok) throw new Error('پاسخ ' + res.status + ' از بک‌اند');
+  if (!res.ok) {
+    const err = new Error('پاسخ ' + res.status + ' از بک‌اند');
+    err.status = res.status;
+    try { err.data = JSON.parse(await res.text()); } catch { err.data = null; }   // پیام فارسی خطای ۴۰۰ سرور
+    throw err;
+  }
   const text = await res.text();
   try { return text ? JSON.parse(text) : null; }
   catch { throw new Error('پاسخ JSON نبود'); }
@@ -299,6 +304,33 @@ export async function adminSettingsApi(body) {
     const res = await req('/admin/settings', { method: 'PUT', body, timeout: 8000 });
     return res && res.ok ? { ok: true, theme: res.theme, tune: res.tune } : { ok: false, msg: msgOf(res, 'ذخیره نشد') };
   } catch (e) { return { ok: false, msg: /40[13]/.test(e.message) ? 'دسترسی مدیر لازم است؛ دوباره وارد شوید' : e.message }; }
+}
+
+/* فراخوانی عمومی پنل مدیر: همیشه {ok, msg?, ...} برمی‌گرداند (پیام فارسی سرور حفظ می‌شود) */
+export async function adminCall(path, { method = 'GET', body } = {}) {
+  if (!API_ENABLED) return { ok: false, msg: 'اتصال به سرور برقرار نیست' };
+  try {
+    const res = await req(path, { method, body, timeout: 12000 });
+    apiState.online = true;
+    return res && typeof res === 'object' ? { ok: res.ok !== false, ...res } : { ok: true };
+  } catch (e) {
+    if (e.status === 401 || e.status === 403) return { ok: false, status: e.status, msg: 'دسترسی مدیر لازم است؛ دوباره وارد شوید' };
+    return { ok: false, status: e.status, msg: (e.data && e.data.msg) || e.message };
+  }
+}
+
+/* ---- کد تخفیف (عمومی): قاعدهٔ کد از سرور ---- */
+export async function couponCheckApi(code) {
+  if (!API_ENABLED) return null;
+  try {
+    const res = await req('/coupons/check?code=' + encodeURIComponent(code), { timeout: 6000 });
+    apiState.online = true;
+    return res && res.ok ? { ok: true, coupon: res.coupon } : { ok: false, msg: msgOf(res, 'کد تخفیف نامعتبر است') };
+  } catch (e) {
+    if (e.data && e.data.msg) return { ok: false, msg: e.data.msg };
+    if (e.status === 429) return { ok: false, msg: 'تعداد تلاش بیش از حد مجاز است؛ کمی بعد دوباره امتحان کنید' };
+    note(e); return null;
+  }
 }
 
 /* ---- مشتریان (پنل مدیر) ---- */

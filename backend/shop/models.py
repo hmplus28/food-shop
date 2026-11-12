@@ -148,6 +148,47 @@ class SiteSetting(models.Model):
         return self.key
 
 
+class Coupon(models.Model):
+    """کد تخفیف — از پنل مدیر ساخته/ویرایش می‌شود و تنها مرجع محاسبهٔ سفارش در سرور است"""
+    KIND = [('pct', 'درصدی'), ('cash', 'مبلغ ثابت (تومان)'), ('ship', 'ارسال رایگان'), ('day', 'اولویت ارسال همان روز')]
+
+    code = models.CharField('کد', max_length=30, unique=True)
+    kind = models.CharField('نوع', max_length=6, choices=KIND, default='pct')
+    value = models.PositiveIntegerField('مقدار (درصد یا تومان)', default=0)
+    min_total = models.BigIntegerField('حداقل مبلغ سفارش (تومان)', default=0)
+    first_only = models.BooleanField('فقط اولین خرید', default=False)
+    label = models.CharField('توضیح', max_length=120, blank=True, default='')
+    active = models.BooleanField('فعال', default=True)
+    max_uses = models.PositiveIntegerField('سقف استفاده (۰ = نامحدود)', default=0)
+    used = models.PositiveIntegerField('دفعات استفاده', default=0)
+    expires_at = models.DateTimeField('انقضا', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'کد تخفیف'
+        verbose_name_plural = 'کدهای تخفیف'
+        ordering = ['-created_at', 'code']
+
+    def __str__(self):
+        return self.code
+
+    @property
+    def public(self):
+        """قالب مورد انتظار فرانت (همان COUPONS قدیمی): type/val/min/first/label"""
+        return {'code': self.code, 'type': self.kind, 'val': self.value, 'min': self.min_total,
+                'first': self.first_only, 'label': self.label or self.code}
+
+    def problem(self):
+        """پیام فارسی اگر الان قابل استفاده نیست، وگرنه None"""
+        if not self.active:
+            return 'کد تخفیف نامعتبر است'
+        if self.expires_at and timezone.now() >= self.expires_at:
+            return 'مهلت استفاده از این کد تخفیف تمام شده است'
+        if self.max_uses and self.used >= self.max_uses:
+            return 'ظرفیت استفاده از این کد تخفیف تمام شده است'
+        return None
+
+
 class SmsLog(models.Model):
     """گزارش پیامک‌های ارسالی/آزمایشی — در پنل مدیر قابل مشاهده است"""
     ts = models.DateTimeField('زمان', auto_now_add=True, db_index=True)

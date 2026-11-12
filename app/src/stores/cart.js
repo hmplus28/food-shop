@@ -3,6 +3,7 @@ import { reactive, computed } from 'vue';
 import { LS, priceOf, money, toFa, FREE_SHIP } from '../data/site';
 import { prod, COUPONS } from '../data/catalog';
 import { toast } from './ui';
+import { apiState, couponCheckApi } from '../services/api';
 
 /* فقط ردیف‌های سالم: محصول موجود، وزن مجاز و تعداد ۱ تا ۲۰ */
 const sanitize = list => (Array.isArray(list) ? list : []).filter(c =>
@@ -12,6 +13,7 @@ const sanitize = list => (Array.isArray(list) ? list : []).filter(c =>
 export const cart = reactive({
   items: sanitize(LS.get('cart', [])),      // [{pid, w, qty}]
   coupon: null,
+  couponInfo: null,                // قاعدهٔ کد از سرور (با سرور فعال، مرجع همین است)
 });
 
 const save = () => LS.set('cart', cart.items);
@@ -36,7 +38,13 @@ export const wonCodes = () => LS.get('codes', []);
 export const couponDef = computed(() => {
   const code = cart.coupon;
   if (!code) return null;
-  let def = COUPONS[code];
+  if (apiState.enabled) {          // با سرور فعال: کدها را مدیر در پنل می‌سازد
+    const d = cart.couponInfo;
+    if (!d || d.code !== code) return null;
+    if (d.first && !isFirstOrder.value) return null;
+    return d;
+  }
+  let def = COUPONS[code];         // حالت دمو (بدون سرور)
   if (def && def.first && !isFirstOrder.value) def = null;
   if (!def) {
     const lucky = wonCodes().find(x => x.code === code);
@@ -79,18 +87,27 @@ export function lineQty(i, delta) {
   save();
 }
 
-export function clearCart() { cart.items.splice(0); cart.coupon = null; save(); }
+export function clearCart() { cart.items.splice(0); cart.coupon = null; cart.couponInfo = null; save(); }
 
-export function applyCoupon(raw) {
+export async function applyCoupon(raw) {
   const code = (raw || '').trim().toUpperCase();
   if (!code) return toast('کد تخفیف را وارد کنید', 'err');
-  const def = COUPONS[code];
-  const lucky = wonCodes().find(c => c.code === code);
-  if (!def && !lucky) return toast('کد تخفیف نامعتبر است ❌', 'err');
-  if (def && def.first && !isFirstOrder.value) return toast('کد WELCOME10 فقط برای اولین خرید است', 'err');
-  const rule = def || COUPONS[lucky.code];
+  let rule = null;
+  if (apiState.enabled) {
+    const r = await couponCheckApi(code);
+    if (!r) return toast('اتصال به سرور برقرار نشد؛ دوباره تلاش کنید', 'err');
+    if (!r.ok) return toast(`${r.msg} ❌`, 'err');
+    rule = r.coupon;
+  } else {
+    const def = COUPONS[code];
+    const lucky = wonCodes().find(c => c.code === code);
+    if (!def && !lucky) return toast('کد تخفیف نامعتبر است ❌', 'err');
+    rule = { code, ...(def || COUPONS[lucky.code]) };
+  }
+  if (rule.first && !isFirstOrder.value) return toast(`کد ${code} فقط برای اولین خرید است`, 'err');
   if (cartSub.value < (rule.min || 0)) return toast(`این کد برای سفارش بالای ${money(rule.min)} تومان است`, 'err');
   cart.coupon = code;
+  cart.couponInfo = rule;
   toast(`کد ${code} اعمال شد ✅ (${rule.label})`, 'gold');
 }
 

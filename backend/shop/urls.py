@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('health', views.HealthView.as_view()),
 
+    # کد تخفیف (عمومی)
+    path('coupons/check', views.CouponCheckView.as_view()),
+
     # ظاهر سایت (تم/رنگ)
     path('settings', views.SiteSettingsView.as_view()),
     path('admin/settings', views.AdminSiteSettingsView.as_view()),
@@ -31,6 +34,9 @@ urlpatterns = [
     path('admin/login', views.AdminLoginView.as_view()),
     path('admin/stats', views.AdminStatsView.as_view()),
     path('admin/users', views.AdminUsersView.as_view()),
+    path('admin/users/<int:pk>', views.AdminUserDetailView.as_view()),
+    path('admin/coupons', views.AdminCouponsView.as_view()),
+    path('admin/coupons/<int:pk>', views.AdminCouponDetailView.as_view()),
     path('admin/sms', views.AdminSmsLogView.as_view()),
     path('admin/sms/test', views.AdminSmsTestView.as_view()),
 ]

@@ -30,17 +30,88 @@
         </div>
 
         <div class="admin-tabs">
+          <button :class="{ on: tab === 'dash' }" @click="tab = 'dash'">داشبورد</button>
           <button :class="{ on: tab === 'products' }" @click="tab = 'products'">محصولات</button>
           <button :class="{ on: tab === 'orders' }" @click="tab = 'orders'">سفارش‌ها</button>
-          <button :class="{ on: tab === 'users' }" @click="tab = 'users'">مشتریان</button>
+          <button :class="{ on: tab === 'coupons' }" @click="tab = 'coupons'">کدهای تخفیف</button>
+          <button :class="{ on: tab === 'users' }" @click="tab = 'users'">کاربران</button>
           <button :class="{ on: tab === 'sms' }" @click="tab = 'sms'">پنل پیامک</button>
           <button :class="{ on: tab === 'look' }" @click="tab = 'look'">ظاهر سایت</button>
         </div>
 
+        <!-- داشبورد -->
+        <div v-if="tab === 'dash'" class="dash">
+          <div class="admin-card">
+            <h3 class="dh">فروش ۷ روز اخیر</h3>
+            <div class="bars" role="img" aria-label="نمودار فروش ۷ روز اخیر">
+              <div v-for="d in (stats.daily || [])" :key="d.date" class="bar-col" :title="`${faDate(Date.parse(d.date))}: ${d.orders} سفارش، ${money(d.revenue)} تومان`">
+                <small>{{ d.revenue ? shortMoney(d.revenue) : '' }}</small>
+                <div class="bar"><i :style="{ height: barH(d.revenue) + '%' }"></i></div>
+                <span>{{ weekday(d.date) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dash-grid">
+            <div class="admin-card">
+              <h3 class="dh">وضعیت سفارش‌ها</h3>
+              <div v-for="(label, i) in STATUS" :key="i" class="dl"><span>{{ label }}</span><b>{{ toFa((stats.byStatus || {})[String(i)] || 0) }}</b></div>
+            </div>
+            <div class="admin-card">
+              <h3 class="dh">پرفروش‌ترین‌ها</h3>
+              <div v-if="!(stats.top || []).length" class="dl"><span>هنوز فروشی ثبت نشده است.</span></div>
+              <div v-for="t in (stats.top || [])" :key="t.pid" class="dl"><span>{{ t.name }}</span><b>{{ toFa(t.qty) }} عدد</b></div>
+            </div>
+            <div class="admin-card">
+              <h3 class="dh">موجودی کم</h3>
+              <div v-if="!(stats.lowStockItems || []).length" class="dl"><span>همهٔ محصولات موجودی کافی دارند ✅</span></div>
+              <div v-for="p in (stats.lowStockItems || [])" :key="p.id" class="dl"><a href="#" @click.prevent="editById(p.id)">{{ p.name }}</a><b class="red">{{ toFa(p.stock) }}</b></div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <h3 class="dh">آخرین سفارش‌ها</h3>
+            <div v-if="!olist.length" class="dl"><span>سفارشی ثبت نشده است.</span></div>
+            <div v-for="o in olist.slice(0, 5)" :key="o.code" class="dl">
+              <a href="#" @click.prevent="detail = o"><b>{{ o.code }}</b> — {{ o.addr.name }}</a>
+              <span>{{ money(o.total) }} تومان · {{ STATUS[o.status] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- کدهای تخفیف -->
+        <div v-else-if="tab === 'coupons'" class="admin-card">
+          <div class="admin-toolbar">
+            <button class="btn btn-gold btn-sm" @click="newCoupon"><svg class="icon"><use href="#i-plus" /></svg> کد تخفیف جدید</button>
+            <button class="btn btn-light btn-sm" @click="bulk = { cat: '', pct: 10 }">تخفیف گروهی روی محصولات</button>
+            <button class="btn btn-light btn-sm" @click="loadCoupons">به‌روزرسانی ⟳</button>
+          </div>
+          <div v-if="!clist.length" class="up-empty"><svg class="icon"><use href="#i-percent" /></svg><p>کد تخفیفی وجود ندارد.</p></div>
+          <div v-else class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>کد</th><th>نوع</th><th>حداقل خرید</th><th>استفاده</th><th>انقضا</th><th>وضعیت</th><th></th></tr></thead>
+              <tbody>
+                <tr v-for="c in clist" :key="c.id">
+                  <td><b dir="ltr">{{ c.code }}</b><small style="display:block;color:var(--ink-3)">{{ c.label }}</small></td>
+                  <td>{{ couponKind(c) }}<span v-if="c.first" class="badge-hide">اولین خرید</span></td>
+                  <td>{{ c.min ? money(c.min) : '—' }}</td>
+                  <td>{{ toFa(c.used) }} / {{ c.maxUses ? toFa(c.maxUses) : '∞' }}</td>
+                  <td>{{ c.expiresAt ? faDate(Date.parse(c.expiresAt)) : '—' }}</td>
+                  <td><span class="tag" :class="c.status === 'قابل استفاده' ? 'green' : 'red'">{{ c.status }}</span></td>
+                  <td class="td-acts">
+                    <button class="btn btn-light btn-sm" @click="editCoupon(c)">ویرایش</button>
+                    <button class="btn btn-light btn-sm" @click="toggleCoupon(c)">{{ c.active ? 'غیرفعال' : 'فعال' }}</button>
+                    <button class="btn btn-light btn-sm del" @click="delCoupon(c)">حذف</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- محصولات -->
-        <div v-if="tab === 'products'" class="admin-card">
+        <div v-else-if="tab === 'products'" class="admin-card">
           <div class="admin-toolbar">
             <button class="btn btn-gold btn-sm" @click="startNew"><svg class="icon"><use href="#i-plus" /></svg> افزودن محصول</button>
+            <button class="btn btn-light btn-sm" @click="bulk = { cat: '', pct: 10 }">تخفیف گروهی</button>
             <input v-model="pq" class="fld" type="search" placeholder="جستجوی محصول…" style="max-width:220px">
             <button class="btn btn-light btn-sm" @click="loadProducts">به‌روزرسانی ⟳</button>
           </div>
@@ -75,6 +146,7 @@
             </select>
             <input v-model="oq" class="fld" type="search" placeholder="کد سفارش یا موبایل…" style="max-width:220px" @keydown.enter="loadOrders">
             <button class="btn btn-light btn-sm" @click="loadOrders">جست‌وجو / به‌روزرسانی ⟳</button>
+            <button class="btn btn-light btn-sm" :disabled="!olist.length" @click="exportOrders">خروجی CSV</button>
           </div>
           <div v-if="!olist.length" class="up-empty"><svg class="icon"><use href="#i-doc" /></svg><p>سفارشی پیدا نشد.</p></div>
           <div v-else class="tbl-wrap">
@@ -109,15 +181,24 @@
           <div v-if="!ulist.length" class="up-empty"><svg class="icon"><use href="#i-user" /></svg><p>کاربری پیدا نشد.</p></div>
           <div v-else class="tbl-wrap">
             <table class="tbl">
-              <thead><tr><th>نام</th><th>موبایل</th><th>نقش</th><th>عضویت</th><th>سفارش‌ها</th><th>مجموع خرید</th></tr></thead>
+              <thead><tr><th>نام</th><th>موبایل</th><th>نقش</th><th>وضعیت</th><th>عضویت</th><th>سفارش‌ها</th><th>مجموع خرید</th><th></th></tr></thead>
               <tbody>
                 <tr v-for="u in ulist" :key="u.id">
                   <td>{{ u.name }}</td>
                   <td dir="ltr" style="text-align:end">{{ toFa(u.phone) }}</td>
                   <td><span class="tag" :class="u.role === 'admin' ? 'red' : 'green'">{{ u.role === 'admin' ? 'مدیر' : 'مشتری' }}</span></td>
+                  <td><span class="tag" :class="u.active ? 'green' : 'red'">{{ u.active ? 'فعال' : 'غیرفعال' }}</span></td>
                   <td>{{ faDate(Date.parse(u.joined)) }}</td>
                   <td>{{ toFa(u.orders) }}</td>
                   <td>{{ money(u.spent) }} تومان</td>
+                  <td class="td-acts">
+                    <template v-if="!isMe(u)">
+                      <button class="btn btn-light btn-sm" @click="patchUser(u, { active: !u.active })">{{ u.active ? 'غیرفعال' : 'فعال' }}</button>
+                      <button class="btn btn-light btn-sm" @click="patchUser(u, { role: u.role === 'admin' ? 'user' : 'admin' })">{{ u.role === 'admin' ? 'گرفتن مدیریت' : 'ارتقا به مدیر' }}</button>
+                      <button class="btn btn-light btn-sm" @click="resetPass(u)">رمز جدید</button>
+                    </template>
+                    <span v-else class="badge-hide">شما</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -160,6 +241,44 @@
           </div>
         </div>
       </template>
+    </div>
+  </div>
+
+  <!-- ویرایش/ساخت کد تخفیف -->
+  <div class="overlay" :class="{ open: !!cedit }" @click.self="cedit = null">
+    <div class="modal" style="width:min(560px,100%)">
+      <div class="modal-head"><b><svg class="icon"><use href="#i-percent" /></svg> {{ cedit && cedit.id ? 'ویرایش کد تخفیف' : 'کد تخفیف جدید' }}</b><button class="modal-x" aria-label="بستن" @click="cedit = null"><svg class="icon"><use href="#i-x" /></svg></button></div>
+      <div class="modal-body" v-if="cedit">
+        <div class="f-grid c2">
+          <div class="fld w"><label>کد (انگلیسی/عدد) *</label><input v-model="cedit.code" type="text" dir="ltr" maxlength="30" style="text-transform:uppercase"></div>
+          <div class="fld w"><label>نوع</label>
+            <select v-model="cedit.type"><option value="pct">درصدی</option><option value="cash">مبلغ ثابت (تومان)</option><option value="ship">ارسال رایگان</option><option value="day">ارسال همان روز</option></select>
+          </div>
+          <div v-if="cedit.type === 'pct' || cedit.type === 'cash'" class="fld w"><label>{{ cedit.type === 'pct' ? 'درصد تخفیف' : 'مبلغ تخفیف (تومان)' }}</label><input v-model.number="cedit.val" type="number" min="1"></div>
+          <div class="fld w"><label>حداقل مبلغ سفارش (تومان)</label><input v-model.number="cedit.min" type="number" min="0" step="10000"></div>
+          <div class="fld w"><label>سقف دفعات استفاده (۰ = نامحدود)</label><input v-model.number="cedit.maxUses" type="number" min="0"></div>
+          <div class="fld w"><label>تاریخ انقضا (میلادی، اختیاری)</label><input v-model="cedit.expiresAt" type="date" dir="ltr"></div>
+          <div class="fld w" style="grid-column:1/-1"><label>توضیح نمایشی</label><input v-model="cedit.label" type="text" maxlength="120" placeholder="مثلاً ۱۰٪ تخفیف یلدا"></div>
+          <label class="chk"><input v-model="cedit.first" type="checkbox"> فقط اولین خرید</label>
+          <label class="chk"><input v-model="cedit.active" type="checkbox"> فعال</label>
+        </div>
+        <button class="btn btn-brand btn-block" style="margin-top:12px" @click="saveCoupon"><svg class="icon"><use href="#i-check" /></svg> ذخیره کد تخفیف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- تخفیف گروهی روی محصولات -->
+  <div class="overlay" :class="{ open: !!bulk }" @click.self="bulk = null">
+    <div class="modal" style="width:min(460px,100%)">
+      <div class="modal-head"><b><svg class="icon"><use href="#i-percent" /></svg> تخفیف گروهی محصولات</b><button class="modal-x" aria-label="بستن" @click="bulk = null"><svg class="icon"><use href="#i-x" /></svg></button></div>
+      <div class="modal-body" v-if="bulk">
+        <div class="fld w"><label>دسته‌بندی</label>
+          <select v-model="bulk.cat"><option value="">همهٔ محصولات</option><option v-for="c in CATS" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+        </div>
+        <div class="fld w" style="margin-top:10px"><label>درصد تخفیف (۰ = حذف تخفیف، حداکثر ۹۰)</label><input v-model.number="bulk.pct" type="number" min="0" max="90"></div>
+        <p style="font-size:.78rem;color:var(--ink-3);margin:10px 0">روی {{ toFa(bulkTargets.length) }} محصول اعمال می‌شود و تخفیف قبلی آن‌ها جایگزین می‌شود.</p>
+        <button class="btn btn-brand btn-block" :disabled="bulkBusy || !bulkTargets.length" @click="applyBulk">{{ bulkBusy ? 'در حال اعمال…' : 'اعمال تخفیف' }}</button>
+      </div>
     </div>
   </div>
 
@@ -228,13 +347,13 @@ import SiteStudio from '../components/SiteStudio.vue';
 import { auth, adminLogin, adminLogout } from '../stores/auth';
 import { STATUS } from '../stores/orders';
 import { toast } from '../stores/ui';
-import { adminStatsApi, ordersListApi, patchOrderStatusApi, adminSmsLogApi, adminSmsTestApi, adminUsersApi,
+import { adminCall, adminStatsApi, ordersListApi, patchOrderStatusApi, adminSmsLogApi, adminSmsTestApi, adminUsersApi,
   adminProductsApi, productCreateApi, productUpdateApi, productDeleteApi, syncCatalog } from '../services/api';
 import { pruneCart } from '../stores/cart';
 
 useSeo({ title: 'پنل مدیریت', description: 'پنل مدیریت فروشگاه خانم گل', path: '/admin' });
 
-const tab = ref('products');
+const tab = ref('dash');
 const au = ref(''), ap = ref('');
 const loggingIn = ref(false);
 const editing = ref(null);
@@ -358,7 +477,84 @@ async function sendTestSms() {
   loadSms();
 }
 
-function loadAll() { loadStats(); loadProducts(); loadOrders(); loadUsers(); loadSms(); }
+/* ---------- داشبورد ---------- */
+const shortMoney = n => (n >= 1e6 ? toFa((n / 1e6).toFixed(1).replace(/\.0$/, '')) + 'م' : toFa(Math.round(n / 1e3)) + 'ه');
+const barMax = computed(() => Math.max(1, ...(stats.value.daily || []).map(d => d.revenue)));
+const barH = v => (v ? Math.max(6, Math.round(v / barMax.value * 100)) : 0);
+const WD = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+const weekday = d => WD[new Date(d + 'T12:00:00').getDay()];
+function editById(id) { const p = plist.value.find(x => x.id === id); if (p) { tab.value = 'products'; startEdit(p); } }
+
+/* ---------- کدهای تخفیف ---------- */
+const clist = ref([]);
+const cedit = ref(null);
+const couponKind = c => ({ pct: `${toFa(c.val)}٪ تخفیف`, cash: `${money(c.val)} تومان`, ship: 'ارسال رایگان', day: 'ارسال همان روز' }[c.type] || c.type);
+async function loadCoupons() {
+  const r = await adminCall('/admin/coupons');
+  if (r.ok) clist.value = r.coupons || []; else toast(r.msg || 'دریافت کدها انجام نشد', 'err');
+}
+function newCoupon() { cedit.value = { id: 0, code: '', type: 'pct', val: 10, min: 0, maxUses: 0, expiresAt: '', label: '', first: false, active: true }; }
+function editCoupon(c) { cedit.value = { id: c.id, code: c.code, type: c.type, val: c.val, min: c.min, maxUses: c.maxUses, expiresAt: c.expiresAt ? c.expiresAt.slice(0, 10) : '', label: c.label === c.code ? '' : c.label, first: c.first, active: c.active }; }
+async function saveCoupon() {
+  const c = cedit.value;
+  const body = { code: c.code, type: c.type, val: c.val, min: c.min || 0, maxUses: c.maxUses || 0, expiresAt: c.expiresAt || '', label: c.label, first: c.first, active: c.active };
+  const r = await adminCall(c.id ? '/admin/coupons/' + c.id : '/admin/coupons', { method: c.id ? 'PUT' : 'POST', body });
+  if (!r.ok) return toast(r.msg || 'ذخیره نشد', 'err');
+  cedit.value = null; toast('کد تخفیف ذخیره شد ✅', 'ok'); loadCoupons(); loadStats();
+}
+async function toggleCoupon(c) {
+  const r = await adminCall('/admin/coupons/' + c.id, { method: 'PUT', body: { active: !c.active } });
+  if (!r.ok) return toast(r.msg, 'err');
+  toast(c.active ? 'کد غیرفعال شد' : 'کد فعال شد', 'ok'); loadCoupons();
+}
+async function delCoupon(c) {
+  if (!window.confirm(`کد «${c.code}» حذف شود؟`)) return;
+  const r = await adminCall('/admin/coupons/' + c.id, { method: 'DELETE' });
+  if (!r.ok) return toast(r.msg, 'err');
+  toast('کد حذف شد', 'ok'); loadCoupons();
+}
+
+/* ---------- تخفیف گروهی محصولات ---------- */
+const bulk = ref(null);
+const bulkBusy = ref(false);
+const bulkTargets = computed(() => (bulk.value ? plist.value.filter(p => !bulk.value.cat || p.cat === bulk.value.cat) : []));
+async function applyBulk() {
+  const pct = Number(bulk.value.pct);
+  if (!Number.isFinite(pct) || pct < 0 || pct > 90) return toast('درصد باید بین ۰ تا ۹۰ باشد', 'err');
+  bulkBusy.value = true;
+  let fail = 0;
+  for (const p of bulkTargets.value) { if (!(await productUpdateApi(p.id, { ...p, disc: pct }))) fail++; }
+  bulkBusy.value = false; bulk.value = null;
+  toast(fail ? `${toFa(fail)} محصول به‌روز نشد` : 'تخفیف گروهی اعمال شد ✅', fail ? 'err' : 'ok');
+  afterChange();
+}
+
+/* ---------- مدیریت کاربران ---------- */
+const isMe = u => u.phone === auth.user?.phone;
+async function patchUser(u, body) {
+  const r = await adminCall('/admin/users/' + u.id, { method: 'PATCH', body });
+  if (!r.ok) return toast(r.msg || 'انجام نشد', 'err');
+  toast('تغییر ذخیره شد ✅', 'ok'); loadUsers(); loadStats();
+}
+function resetPass(u) {
+  const pw = window.prompt(`رمز جدید برای ${u.name} (حداقل ۴ کاراکتر):`);
+  if (pw) patchUser(u, { password: pw });
+}
+
+/* ---------- خروجی CSV سفارش‌ها ---------- */
+function exportOrders() {
+  const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const head = ['کد', 'تاریخ', 'نام', 'موبایل', 'استان', 'شهر', 'آدرس', 'اقلام', 'جمع کالاها', 'تخفیف', 'ارسال', 'قابل پرداخت', 'کد تخفیف', 'وضعیت'];
+  const rows = olist.value.map(o => [o.code, faDate(o.ts), o.addr.name, o.addr.phone, o.addr.prov, o.addr.city, o.addr.addr,
+    o.items.map(c => `${c.pname} (${c.w}×${c.qty})`).join(' + '), o.sub, o.off, o.shipCost, o.total, o.coupon, STATUS[o.status]]);
+  const csv = '\ufeff' + [head, ...rows].map(r => r.map(q).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'orders-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+function loadAll() { loadStats(); loadProducts(); loadOrders(); loadUsers(); loadSms(); loadCoupons(); }
 onMounted(() => { if (auth.isAdmin) loadAll(); });
 watch(() => auth.isAdmin, v => { if (v) loadAll(); });
 </script>
@@ -385,6 +581,19 @@ watch(() => auth.isAdmin, v => { if (v) loadAll(); });
 .td-acts .del{color:var(--red);border-color:#f7cdc9}
 .td-items{max-width:280px;font-size:.74rem;color:var(--ink-2)}
 .sms-head{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap}
+.dash{display:grid;gap:14px}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dh{font-size:.92rem;margin-bottom:10px;color:var(--ink)}
+.dl{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px dashed var(--line);font-size:.82rem;color:var(--ink-2)}
+.dl:first-of-type{border-top:0}
+.dl b.red{color:var(--red)}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:190px}
+.bar-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.bar-col small{font-size:.66rem;color:var(--ink-3);min-height:14px}
+.bar{width:100%;max-width:46px;height:120px;display:flex;align-items:flex-end;background:var(--bg-warm);border-radius:9px;overflow:hidden}
+.bar i{display:block;width:100%;background:linear-gradient(180deg,var(--brand),var(--brand-700));border-radius:9px 9px 0 0;transition:height .4s ease}
+.bar-col span{font-size:.7rem;color:var(--ink-2)}
+@media(max-width:767px){.dash-grid{grid-template-columns:1fr}.bars{gap:4px}}
 .chk{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ink-2)}
 .od-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:.84rem;margin-bottom:12px}
 .od-grid b{color:var(--ink-3);font-weight:600;margin-inline-end:4px}
