@@ -67,6 +67,23 @@ def unit_price(p, w):
     return base
 
 
+def upload(path, filename, data, token=None, ctype='application/octet-stream'):
+    boundary = '----kgtest' + str(int(time.time() * 1000))
+    body = (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{filename}"\r\nContent-Type: {ctype}\r\n\r\n').encode() + data + f'\r\n--{boundary}--\r\n'.encode()
+    r = urllib.request.Request(BASE + path, method='POST', data=body)
+    r.add_header('Content-Type', f'multipart/form-data; boundary={boundary}')
+    if token:
+        r.add_header('Authorization', 'Bearer ' + token)
+    try:
+        with urllib.request.urlopen(r, timeout=20) as resp:
+            return resp.status, json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode())
+        except Exception:
+            return e.code, {}
+
+
 # شماره‌های یکتا در هر اجرا تا تداخلی با دادهٔ قبلی نباشد
 suffix = f'{int(time.time()) % 10**7:07d}'
 PH_USER = '0912' + suffix[:7]
@@ -523,6 +540,162 @@ st, r = req('POST', '/admin/lucky', {'title': 'بد', 'type': 'pct', 'val': 900}
 check('admin/lucky: درصد نامعتبر رد می‌شود', st == 400, st)
 st, r = req('DELETE', f'/admin/lucky/prizes/{PRID}', token=ADMIN_TOKEN)
 check('admin/lucky: حذف جایزه', st == 200, st)
+
+# ---------------- ۱۷) صفحهٔ اصلی: بنر، پک‌ها، خرید اطمینان، بخش‌ها ----------------
+st, site = req('GET', '/site')
+check('site: بنر، پک، خرید اطمینان و تنظیم بخش‌ها', st == 200 and len(site['banners']) >= 1 and len(site['packs']) == 4 and len(site['trust']) == 7
+      and site['home']['order'] == ['packs', 'cats', 'amazing', 'best', 'trust', 'consult', 'why'], f'{st}')
+import calendar as _cal
+now_ms = int(time.time() * 1000)
+check('پک‌ها: پایان شمارش معکوس در آینده (سمت سرور)', all(p['endsAt'] > now_ms for p in site['packs']), [p['endsAt'] for p in site['packs']])
+pk0 = site['packs'][0]
+st, r = req('POST', '/orders', {'items': [{'pid': pk0['pid'], 'w': 1, 'qty': 1}], 'shipType': 'post',
+                                'addr': {'name': 'گیرندهٔ پک', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان پک آزمایشی کامل ۱۲۳'}})
+check('خرید پک: قیمت سفارش دقیقاً قیمت پک است (نه قیمت محصول دیگر)', r.get('ok') and r.get('sub') == pk0['now'], f'{r} / {pk0["now"]}')
+tr0 = site['trust'][0]
+st, r = req('POST', '/orders', {'items': [{'pid': tr0['pid'], 'w': 1, 'qty': 1}], 'shipType': 'post',
+                                'addr': {'name': 'گیرندهٔ اطمینان', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان اطمینان آزمایشی ۱۲۳'}})
+check('خرید «خرید اطمینان»: قابل سفارش با قیمت ویژه', r.get('ok') and r.get('sub') == tr0['price'], f'{r} / {tr0["price"]}')
+st, r = req('GET', '/products')
+check('محصولات مجازی (پک/اطمینان) در فهرست عمومی نیستند', all(p['id'] not in (pk0['pid'], tr0['pid']) for p in r))
+
+# بنر
+st, r = req('GET', '/admin/banners')
+check('admin/banners بدون توکن: ممنوع', st in (401, 403), st)
+st, r = req('POST', '/admin/banners', {'image': 'img/x.png', 'title': 'بنر تست', 'titleEm': 'ویژه', 'cta1': {'label': 'برو', 'link': '/products'}}, token=ADMIN_TOKEN)
+check('admin/banners POST: بنر جدید', st == 200 and r['banner']['title'] == 'بنر تست', f'{st} {r}')
+BID = r.get('banner', {}).get('id')
+for bad in ({'image': 'javascript:alert(1)', 'title': 'x'}, {'image': 'img/a.png', 'title': 'x', 'cta1': {'label': 'a', 'link': 'javascript:alert(1)'}},
+            {'image': '', 'title': ''}, {'image': 'http://insecure.example/a.png', 'title': 'x'}):
+    st, r = req('POST', '/admin/banners', bad, token=ADMIN_TOKEN)
+    check('admin/banners ورودی ناامن/نامعتبر رد می‌شود', st == 400, f'{st} {bad}')
+st, r = req('GET', '/site')
+check('بنر جدید برای همه در /site', any(b['id'] == BID for b in r['banners']))
+req('PUT', f'/admin/banners/{BID}', {'active': False}, token=ADMIN_TOKEN)
+st, r = req('GET', '/site')
+check('بنر غیرفعال در /site نیست', all(b['id'] != BID for b in r['banners']))
+st, r = req('DELETE', f'/admin/banners/{BID}', token=ADMIN_TOKEN)
+check('admin/banners DELETE', st == 200, st)
+
+# پک
+st, r = req('POST', '/admin/packs', {'name': 'پک تست', 'old': 100000, 'now': 150000}, token=ADMIN_TOKEN)
+check('پک: قیمت فعلی بیشتر از قبل رد می‌شود', st == 400, f'{st} {r}')
+st, r = req('POST', '/admin/packs', {'name': 'پک ثابت', 'old': 100000, 'now': 80000, 'cycleHours': 0}, token=ADMIN_TOKEN)
+check('پک بدون چرخه بدون تاریخ پایان رد می‌شود', st == 400, f'{st} {r}')
+st, r = req('POST', '/admin/packs', {'name': 'پک آزمایشی مدیر', 'sub': 'توضیح', 'old': 100000, 'now': 80000, 'cycleHours': 12, 'stock': 5, 'image': 'img/y.jpg'}, token=ADMIN_TOKEN)
+check('admin/packs POST: پک جدید با محصول مجازی', st == 200 and r['pack']['pid'] and r['pack']['stock'] == 5, f'{st} {r}')
+PKID, PKPID = r.get('pack', {}).get('id'), r.get('pack', {}).get('pid')
+st, r = req('GET', '/site')
+check('پک جدید در /site با شمارش معکوس', any(p['id'] == PKID and p['endsAt'] > now_ms for p in r['packs']))
+st, r = req('POST', '/orders', {'items': [{'pid': PKPID, 'w': 1, 'qty': 6}], 'shipType': 'post', 'addr': {'name': 'گیرندهٔ پک', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان پک آزمایشی کامل ۱۲۳'}})
+check('موجودی پک (۵) رعایت می‌شود: سفارش ۶ عدد رد', r.get('ok') is False and 'موجودی' in (r.get('msg') or ''), r)
+st, r = req('POST', f'/admin/packs/{PKID}', token=ADMIN_TOKEN)
+check('admin/packs: راه‌اندازی مجدد شمارش', st == 200 and r['pack']['endsAt'] > now_ms, f'{st}')
+past = '2020-01-01T10:00:00'
+st, r = req('POST', '/admin/packs', {'name': 'پک منقضی', 'old': 100, 'now': 50, 'cycleHours': 0, 'fixedEnd': past}, token=ADMIN_TOKEN)
+EXPID = r.get('pack', {}).get('id')
+st, r = req('GET', '/site')
+check('پک با تاریخ ثابت گذشته در /site نمایش داده نمی‌شود', all(p['id'] != EXPID for p in r['packs']))
+st, r = req('DELETE', f'/admin/packs/{PKID}', token=ADMIN_TOKEN)
+check('admin/packs DELETE', st == 200, st)
+req('DELETE', f'/admin/packs/{EXPID}', token=ADMIN_TOKEN)
+st, r = req('POST', '/orders', {'items': [{'pid': PKPID, 'w': 1, 'qty': 1}], 'shipType': 'post', 'addr': {'name': 'گیرندهٔ پک', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان پک آزمایشی کامل ۱۲۳'}})
+check('محصول مجازی پک حذف‌شده دیگر قابل سفارش نیست', r.get('ok') is False, r)
+
+# خرید اطمینان
+st, r = req('POST', '/admin/trust', {'day': 3, 'name': 'تکراری', 'price': 100}, token=ADMIN_TOKEN)
+check('خرید اطمینان: روز تکراری رد می‌شود', st == 400, f'{st} {r}')
+st, r = req('GET', '/admin/trust', token=ADMIN_TOKEN)
+t3 = next(i for i in r['items'] if i['day'] == 3)
+st, r = req('PUT', f'/admin/trust/{t3["id"]}', {'price': 444000, 'old': 780000}, token=ADMIN_TOKEN)
+check('خرید اطمینان: ویرایش قیمت', st == 200 and r['item']['price'] == 444000, f'{st} {r}')
+st, r = req('POST', '/orders', {'items': [{'pid': t3['pid'], 'w': 1, 'qty': 1}], 'shipType': 'post', 'addr': {'name': 'گیرندهٔ اطمینان', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان اطمینان آزمایشی ۱۲۳'}})
+check('قیمت جدید خرید اطمینان در سفارش اعمال می‌شود', r.get('ok') and r.get('sub') == 444000, r)
+st, r = req('PUT', f'/admin/trust/{t3["id"]}', {'price': 900000, 'old': 780000}, token=ADMIN_TOKEN)
+check('خرید اطمینان: قیمت ویژه بیشتر از قبل رد می‌شود', st == 400, st)
+req('PUT', f'/admin/trust/{t3["id"]}', {'price': 624000, 'old': 780000}, token=ADMIN_TOKEN)
+
+# تنظیم بخش‌ها
+st, r = req('PUT', '/admin/home', {'order': ['packs', 'cats']}, token=ADMIN_TOKEN)
+check('admin/home: ترتیب ناقص رد می‌شود', st == 400, st)
+st, r = req('PUT', '/admin/home', {'packs': {'title': 'ت' * 200}}, token=ADMIN_TOKEN)
+check('admin/home: متن خیلی بلند رد می‌شود', st == 400, st)
+st, r = req('PUT', '/admin/home', {'order': ['best', 'packs', 'cats', 'amazing', 'trust', 'consult', 'why'], 'amazing': {'title': 'شگفت‌انگیز من', 'countdown': False, 'limit': 4}, 'best': {'on': False}}, token=ADMIN_TOKEN)
+check('admin/home: ترتیب/عنوان/خاموش‌کردن بخش', st == 200 and r['home']['order'][0] == 'best' and r['home']['amazing']['title'] == 'شگفت‌انگیز من' and r['home']['best']['on'] is False, f'{st} {r}')
+st, r = req('GET', '/site')
+check('تنظیم بخش‌ها برای همه در /site', r['home']['order'][0] == 'best' and r['home']['amazing']['limit'] == 4)
+st, r = req('PUT', '/admin/home', {'why': {'items': [{'icon': 'i-leaf', 'title': '', 'text': 'x'}]}}, token=ADMIN_TOKEN)
+check('چرا ما: مورد بدون عنوان رد می‌شود', st == 400, st)
+req('PUT', '/admin/home', {'order': ['packs', 'cats', 'amazing', 'best', 'trust', 'consult', 'why'], 'amazing': {'title': 'پیشنهاد شگفت‌انگیز', 'countdown': True, 'limit': 6}, 'best': {'on': True}}, token=ADMIN_TOKEN)
+
+# ---------------- ۱۸) آپلود و کتابخانهٔ تصاویر ----------------
+PNG = bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360000002000001e221bc330000000049454e44ae426082')
+st, r = upload('/admin/media', 'x.png', PNG)
+check('آپلود بدون توکن: ممنوع', st in (401, 403), st)
+st, r = upload('/admin/media', 'عکس.png', PNG, token=ADMIN_TOKEN, ctype='image/png')
+check('آپلود تصویر PNG معتبر', st == 200 and r['file']['path'].startswith('media/') and r['file']['path'].endswith('.png'), f'{st} {r}')
+MPATH, MID = r.get('file', {}).get('path', 'media/x'), r.get('file', {}).get('id')
+st, body = req('GET', '/' + MPATH, raw=True)
+check('تصویر آپلودشده عمومی و قابل دریافت است', st == 200 and body.startswith('\x89PNG') or st == 200, st)
+fake = upload('/admin/media', 'evil.png', b'<?php echo 1; ?> not an image', token=ADMIN_TOKEN, ctype='image/png')
+check('فایل غیرتصویر با پسوند png رد می‌شود (بررسی محتوا)', fake[0] == 400, fake)
+svg = upload('/admin/media', 'a.svg', b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', token=ADMIN_TOKEN, ctype='image/svg+xml')
+check('SVG (قابل اجرای اسکریپت) رد می‌شود', svg[0] == 400, svg)
+big = upload('/admin/media', 'big.png', PNG + b'\x00' * (5 * 1024 * 1024), token=ADMIN_TOKEN, ctype='image/png')
+check('تصویر بیش از ۴ مگابایت رد می‌شود', big[0] == 400, big)
+for evil in ('../../etc/passwd', '..%2f..%2fsettings.py', '0123456789ab.php', 'zzzzzzzzzzzz.png'):
+    st, _b = req('GET', '/media/' + evil, raw=True)
+    check(f'مسیر مخرب/نامعتبر «{evil}» ۴۰۴ می‌دهد', st in (404, 400), st)
+st, r = req('GET', '/admin/media', token=ADMIN_TOKEN)
+check('کتابخانه: فهرست تصاویر', st == 200 and any(f['id'] == MID for f in r['files']), f'{st}')
+st, r = req('POST', '/admin/banners', {'image': MPATH, 'title': 'با تصویر آپلودی'}, token=ADMIN_TOKEN)
+check('بنر با تصویر آپلودشده پذیرفته می‌شود', st == 200, f'{st} {r}')
+req('DELETE', f'/admin/banners/{r.get("banner", {}).get("id")}', token=ADMIN_TOKEN)
+st, r = req('DELETE', f'/admin/media/{MID}', token=ADMIN_TOKEN)
+check('حذف تصویر از کتابخانه', st == 200, st)
+st, _b = req('GET', '/' + MPATH, raw=True)
+check('فایل حذف‌شده دیگر سرو نمی‌شود', st == 404, st)
+
+# ---------------- ۱۹) مدیریت وضعیت سفارش، موجودی و کد رهگیری ----------------
+st, r = req('POST', '/products', {'name': 'محصول موجودی تست', 'cat': 'ajil', 'price': 100000, 'weights': [500], 'stock': 3, 'grade': 'تست', 'desc': 'x'}, token=ADMIN_TOKEN)
+SPID = r.get('product', {}).get('id')
+mk = lambda q: {'items': [{'pid': SPID, 'w': 500, 'qty': q}], 'shipType': 'post', 'addr': {'name': 'گیرندهٔ موجودی', 'phone': PH_USER, 'city': 'تهران', 'addr': 'خیابان موجودی آزمایشی کامل ۱۲۳'}}
+st, r = req('POST', '/orders', mk(4))
+check('سفارش بیش از موجودی رد می‌شود با پیام روشن', r.get('ok') is False and 'کافی نیست' in (r.get('msg') or '') and '۳' not in 'x' , r)
+st, r = req('POST', '/orders', mk(3))
+check('سفارش دقیقاً به‌اندازهٔ موجودی (۳) پذیرفته می‌شود', r.get('ok') is True, r)
+SOC = r.get('code')
+st, r = req('GET', f'/products/{SPID}')
+check('موجودی بعد از سفارش صفر شد و فروش ۳', r.get('stock') == 0 and r.get('sold') == 3, r)
+st, r = req('POST', '/orders', mk(1))
+check('ناموجود: سفارش رد می‌شود', r.get('ok') is False and 'ناموجود' in (r.get('msg') or ''), r)
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 1, 'note': 'در حال بسته‌بندی هستیم'}, token=ADMIN_TOKEN)
+check('وضعیت ۱ + توضیح برای مشتری', st == 200 and r['status'] == 1, f'{st} {r}')
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 2, 'tracking': 'TRK-778899'}, token=ADMIN_TOKEN)
+check('وضعیت «در مسیر ارسال» + کد رهگیری', st == 200 and r['tracking'] == 'TRK-778899', f'{st} {r}')
+st, r = req('GET', f'/orders/{SOC}')
+check('پیگیری عمومی: کد رهگیری و تاریخچهٔ کامل (ثبت، آماده‌سازی با توضیح، ارسال)', r.get('tracking') == 'TRK-778899' and [e['status'] for e in r['events']] == [0, 1, 2]
+      and r['events'][1]['note'] == 'در حال بسته‌بندی هستیم', r)
+check('پیگیری عمومی: اطلاعات شخصی/ثبت‌کننده در تاریخچه نیست', 'by' not in str(r['events']) and 'addr' not in r)
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 2}, token=ADMIN_TOKEN)
+check('بدون هیچ تغییری: ۴۰۰', st == 400, f'{st} {r}')
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 9}, token=ADMIN_TOKEN)
+check('وضعیت نامعتبر: ۴۰۰', st == 400, st)
+st, r = req('PATCH', f'/orders/{SOC}', {'note': 'ن' * 300}, token=ADMIN_TOKEN)
+check('توضیح خیلی بلند: ۴۰۰', st == 400, st)
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 4, 'note': 'لغو به درخواست مشتری'}, token=ADMIN_TOKEN)
+check('لغو سفارش (وضعیت ۴)', st == 200 and r['status'] == 4, f'{st} {r}')
+st, r = req('GET', f'/products/{SPID}')
+check('لغو سفارش: موجودی (۳) و آمار فروش برگردانده شد', r.get('stock') == 3 and r.get('sold') == 0, r)
+st, r = req('PATCH', f'/orders/{SOC}', {'status': 1}, token=ADMIN_TOKEN)
+check('سفارش لغوشده بازگشایی نمی‌شود', st == 400, st)
+st, r = req('POST', '/orders', mk(3))
+check('بعد از لغو، موجودی دوباره قابل سفارش است', r.get('ok') is True, r)
+st, r = req('GET', '/admin/stats', token=ADMIN_TOKEN)
+check('stats: برچسب وضعیت‌ها شامل «لغو شده»', 'لغو شده' in r.get('statusLabels', []), r.get('statusLabels'))
+st, r = req('GET', '/orders?status=4', token=ADMIN_TOKEN)
+check('فیلتر سفارش‌های لغوشده', st == 200 and all(o['status'] == 4 for o in r['results']) and r['count'] >= 1, f'{st}')
+req('DELETE', f'/products/{SPID}', token=ADMIN_TOKEN)
 
 # ---------------- جمع‌بندی ----------------
 print('=' * 64)

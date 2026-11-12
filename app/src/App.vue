@@ -49,9 +49,8 @@ watch(() => route.fullPath, () => closeAll());
 /* راه‌اندازی: ظاهر/محتوا/نشست از سرور؛ کارت شانس فقط برای کاربر واردشده‌ای که می‌تواند بچرخاند خودکار باز می‌شود */
 onMounted(async () => {
   loadLook();          // تم/رنگ سراسری سایت از سرور
-  loadShop();          // اطلاعات تماس، ارسال، صفحات راهنما و تنظیم کارت شانس
   await refreshSession();    // نقش واقعی کاربر (سوپریوزر) از سرور
-  syncCatalog().then(pruneCart);
+  Promise.all([loadShop(), syncCatalog()]).then(pruneCart);   // محتوا + کاتالوگ (شامل پک/اعتماد)؛ سپس پاک‌سازی سبد از کالاهای حذف‌شده
   await refreshLucky();
   setTimeout(() => {
     if (lucky.enabled && lucky.loggedIn && lucky.canSpin && !sessionStorage.getItem('asalat_lucky_seen')) {

@@ -853,3 +853,12 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .id-note{font-size:.8rem;border-radius:12px;padding:10px 12px;background:var(--gold-050);border:1px solid var(--gold-100);color:var(--gold-600);line-height:1.9}
 .id-note.ok{background:var(--brand-050);border-color:var(--brand-100);color:var(--brand-700)}
 .id-note.err{background:#fdeceb;border-color:#f7cdc9;color:var(--red);margin-bottom:10px}
+
+.oc-track{font-size:.72rem;color:var(--brand-700);background:var(--brand-050);border:1px solid var(--brand-100);border-radius:999px;padding:2px 9px;margin-inline-start:6px}
+
+/* ---- صفحهٔ اصلی: ترتیب بخش‌ها از پنل مدیر + نقطه‌های اسلایدر ---- */
+.home-flow{display:flex;flex-direction:column}
+.hero-dots{position:absolute;bottom:14px;inset-inline:0;display:flex;justify-content:center;gap:7px;z-index:5}
+.hero-dots .hd{width:9px;height:9px;border-radius:50%;border:0;background:rgba(255,255,255,.5);cursor:pointer;padding:0;transition:var(--tr)}
+.hero-dots .hd.on{background:#fff;width:24px;border-radius:6px}
+.slide[aria-hidden="true"] .s-content{animation:none}

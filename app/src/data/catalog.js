@@ -129,6 +129,30 @@ export function applyAdminOverrides() {
 }
 applyAdminOverrides();
 
+/* ---- محصولات «مجازی» (پک‌ها و خرید اطمینان): در فهرست عمومی سرور نیستند؛ از دادهٔ /site ساخته می‌شوند ---- */
+let VIRTUAL = [];
+export function virtualFrom(packs = [], trust = [], img = u => u) {
+  const mk = (pid, name, image, price, stock, kind) => ({ id: Number(pid), name, cat: 'giftbox', img: img(image || ''), price: Number(price) * 1000, weights: [1],
+    stock: Number(stock) || 0, disc: 0, grade: kind, rate: 5, sold: 0, tags: [], sec: ['__virtual'], desc: '', hide: true });
+  return [
+    ...packs.filter(p => p.pid).map(p => mk(p.pid, p.name, p.image, p.now, p.stock, 'پک تخفیفی')),
+    ...trust.filter(t => t.pid).map(t => mk(t.pid, t.name, t.image, t.price, t.stock, 'خرید اطمینان')),
+  ];
+}
+export function applyVirtualProducts() {
+  for (const v of VIRTUAL) {
+    const i = products.findIndex(p => p.id === v.id);
+    if (i > -1) products.splice(i, 1, v); else products.push(v);
+  }
+}
+export function setVirtualProducts(list) { VIRTUAL = list; applyVirtualProducts(); }
+/* از کش مرورگر هنگام بارگذاری: سبد ذخیره‌شده با پک/کالای اعتماد بعد از رفرش پاک نشود */
+if (String(import.meta.env.VITE_API_ENABLED).toLowerCase() === 'true') {
+  const c = LS.get('shopCache', {});
+  if (c && (c.packs || c.trust)) VIRTUAL = virtualFrom(c.packs, c.trust, u => u);
+  applyVirtualProducts();
+}
+
 export const prod = id => products.find(p => p.id === Number(id));
 export const catOf = id => CATS.find(c => c.id === id);
 export const visibleProducts = () => products.filter(p => !p.hide);

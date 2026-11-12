@@ -22,7 +22,7 @@ python manage.py migrate && python manage.py seed_shop
 python manage.py runserver 8787
 
 # تست (سرور باید روشن باشد)
-python3 scripts/test_backend_api.py        # باید 173/173 سبز باشد (ارسال، محتوا، کارت شانس، مشاوره، کدها، کاربران)
+python3 scripts/test_backend_api.py        # باید 236/236 سبز باشد (ارسال، محتوا، کارت شانس، مشاوره، کدها، کاربران، صفحهٔ اصلی، تصاویر، وضعیت سفارش، موجودی)
 python3 scripts/test_backend_security.py   # باید 71/71 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
@@ -53,6 +53,13 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - **محتوا از پنل**: `GET /site` (اطلاعات تماس/متن‌ها/ارسال/صفحات/کارت شانس) → `stores/shop.js`؛ صفحات `Page` با نمای امن `utils/richtext.js` در `/page/:slug`؛ فرم مشاوره `ConsultRequest`.
 - **تاریخ‌ها همه شمسی**: `data/jalali.js` (نمایش با `fa-IR-u-ca-persian`؛ ورودی مدیر `۱۴۰۵/۱۲/۲۹` ↔ ISO). تاریخ میلادی فقط در sitemap و پنل `dj-admin` جنگو.
 - اجرای همهٔ تست‌ها: `bash scripts/run_all_tests.sh` (سرور تازه برای هر مجموعه؛ سقف نرخ ورود بین مجموعه‌ها نشت نکند).
+
+## صفحهٔ اصلی، تصاویر و وضعیت سفارش (از پنل مدیر)
+- **صفحهٔ اصلی داده‌محور است**: `GET /site` → `stores/shop.js` (`home` تنظیم بخش‌ها/عناوین/ترتیب/روشن‌خاموش، `banners` اسلایدر بنر، `packs`، `trust`). مدیر در تب «صفحهٔ اصلی» همه را ویرایش می‌کند. ترتیب بخش‌ها با CSS `order` در `.home-flow` اعمال می‌شود.
+- **پک‌ها و خرید اطمینان** هرکدام یک محصول «مجازی» پنهان دارند (`shop/bundles.py`؛ `sec=['__virtual']`، وزن [۱]، قیمت تومان×۱۰۰۰) تا قیمت/موجودی/سفارش مثل بقیه سمت سرور کار کند. چون در فهرست عمومی نیستند، فرانت آن‌ها را از `/site` در کاتالوگ ثبت می‌کند (`catalog.setVirtualProducts`) و در کش می‌ماند. شمارش معکوس پک‌ها **سمت سرور** است (`_pack_end`، چرخه‌ای خودتمدید).
+- **تصاویر**: آپلود مدیر `POST /admin/media` (multipart؛ فقط JPG/PNG/WebP/GIF با بررسی محتوا، ≤۴MB، نام تصادفی)، سرو با `GET /media/<12hex.ext>`؛ مسیر ذخیره‌شده `media/…` و در فرانت با `imgSrc()` به آدرس API تبدیل می‌شود. SVG رد می‌شود (XSS). `backend/media/` در گیت نیست؛ هنگام استقرار پوشهٔ media روی هاست می‌ماند.
+- **وضعیت سفارش**: ۵ وضعیت (۴=لغو شده)، تاریخچهٔ `OrderEvent` (با توضیح برای مشتری)، `tracking` (کد رهگیری)، پیامک تغییر وضعیت با کد رهگیری/توضیح. لغو → موجودی و آمار فروش برمی‌گردد و سفارش لغوشده بازنمی‌شود. **ثبت سفارش موجودی را کم می‌کند** (کنترل اتمی؛ ناموجود/ناکافی رد می‌شود).
+- SQLite محلی با `transaction_mode=IMMEDIATE` (پیامک پس‌زمینه هم‌زمان می‌نویسد؛ وگرنه «database is locked»).
 
 ## سئو و ترب
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.

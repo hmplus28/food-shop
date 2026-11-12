@@ -36,7 +36,9 @@
           <button :class="{ on: tab === 'coupons' }" @click="tab = 'coupons'">کدهای تخفیف</button>
           <button :class="{ on: tab === 'lucky' }" @click="tab = 'lucky'">کارت شانس</button>
           <button :class="{ on: tab === 'shipping' }" @click="tab = 'shipping'">هزینه ارسال</button>
-          <button :class="{ on: tab === 'content' }" @click="tab = 'content'">محتوای سایت</button>
+          <button :class="{ on: tab === 'home' }" @click="tab = 'home'">صفحهٔ اصلی</button>
+          <button :class="{ on: tab === 'media' }" @click="tab = 'media'">تصاویر</button>
+          <button :class="{ on: tab === 'content' }" @click="tab = 'content'">محتوا و صفحات</button>
           <button :class="{ on: tab === 'consults' }" @click="tab = 'consults'">مشاوره‌ها<span v-if="stats.consults" class="badge-hide" style="background:var(--red);color:#fff;border-color:var(--red)">{{ toFa(stats.consults) }}</span></button>
           <button :class="{ on: tab === 'users' }" @click="tab = 'users'">کاربران</button>
           <button :class="{ on: tab === 'sms' }" @click="tab = 'sms'">پنل پیامک</button>
@@ -83,6 +85,8 @@
 
         <AdminLucky v-else-if="tab === 'lucky'" />
         <AdminShipping v-else-if="tab === 'shipping'" />
+        <AdminHome v-else-if="tab === 'home'" />
+        <AdminMedia v-else-if="tab === 'media'" />
         <AdminContent v-else-if="tab === 'content'" />
         <AdminConsults v-else-if="tab === 'consults'" />
 
@@ -306,6 +310,22 @@
           <div><b>کد تخفیف:</b>{{ detail.coupon || '—' }}</div>
           <div v-if="detail.note" style="grid-column:1/-1"><b>توضیح مشتری:</b>{{ detail.note }}</div>
         </div>
+        <div class="ord-mgmt">
+          <h4 class="ad-h" style="margin-bottom:8px">مدیریت وضعیت سفارش</h4>
+          <div class="ad-grid">
+            <div class="fld w"><label>وضعیت</label>
+              <select v-model.number="ost.status" :disabled="detail.status === 4"><option v-for="(l, i) in STATUS" :key="i" :value="i">{{ l }}</option></select>
+            </div>
+            <div class="fld w"><label>کد رهگیری مرسوله</label><input v-model="ost.tracking" type="text" dir="ltr" maxlength="60" placeholder="مثلاً ۲۴۰۱۲۳۴۵۶۷۸۹"></div>
+            <div class="fld w full"><label>توضیح برای مشتری (در پیامک و پیگیری دیده می‌شود، اختیاری)</label><input v-model="ost.note" type="text" maxlength="200" placeholder="مثلاً بسته به پست تحویل داده شد"></div>
+          </div>
+          <button class="btn btn-brand btn-sm" :disabled="ost.busy || (detail.status === 4)" @click="saveOrderStatus">{{ ost.busy ? 'در حال ثبت…' : 'ثبت وضعیت' }}</button>
+          <span v-if="detail.status === 4" class="badge-hide">سفارش لغو شده و قابل تغییر نیست</span>
+          <div v-if="detail.events && detail.events.length" class="ord-hist">
+            <b>تاریخچه</b>
+            <div v-for="(e, i) in detail.events" :key="i">{{ jDateTime(e.ts) }} — {{ e.label }}<template v-if="e.note">: {{ e.note }}</template></div>
+          </div>
+        </div>
         <div class="tbl-wrap">
           <table class="tbl" style="min-width:0">
             <thead><tr><th>کالا</th><th>وزن</th><th>تعداد</th><th>جمع</th></tr></thead>
@@ -338,7 +358,15 @@
           <div class="fld w"><label>موجودی</label><input v-model.number="editing.stock" type="number" min="0"></div>
           <div class="fld w"><label>امتیاز (۰ تا ۵)</label><input v-model.number="editing.rate" type="number" min="0" max="5" step="0.1"></div>
           <div class="fld w" style="grid-column:1/-1"><label>توضیحات</label><textarea v-model="editing.desc" rows="2"></textarea></div>
-          <div class="fld w" style="grid-column:1/-1"><label>آدرس تصویر</label><input v-model="editing.img" type="text" dir="ltr" placeholder="/img/نام-فایل.jpg یا https://…"></div>
+          <div class="fld w" style="grid-column:1/-1"><label>تصویر محصول</label><ImageField v-model="editing.img" /></div>
+          <div class="fld w" style="grid-column:1/-1"><label>نمایش در بخش‌های صفحهٔ اصلی</label>
+            <div class="sec-chk">
+              <label class="chk"><input v-model="editing.sec" type="checkbox" value="best"> پرفروش‌ترین‌ها</label>
+              <label class="chk"><input v-model="editing.sec" type="checkbox" value="amz"> پیشنهاد شگفت‌انگیز</label>
+              <label class="chk"><input v-model="editing.sec" type="checkbox" value="new"> محصولات جدید</label>
+            </div>
+          </div>
+          <div class="fld w" style="grid-column:1/-1"><label>برچسب‌ها (با ویرگول جدا کنید؛ مثلاً پرفروش، ممتاز)</label><input v-model="tagsText" type="text" maxlength="120"></div>
           <label class="chk" style="grid-column:1/-1"><input v-model="editing.hide" type="checkbox"> پنهان از فروشگاه (در سایت نمایش داده نشود)</label>
         </div>
         <button class="btn btn-brand btn-block" style="margin-top:12px" @click="save"><svg class="icon"><use href="#i-check" /></svg> ذخیره محصول</button>
@@ -348,7 +376,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import { toFa, money, weightLabel, faDate, faTime, toEn } from '../data/site';
 import { CATS, catOf, IMG } from '../data/catalog';
 import { useSeo } from '../composables/useSeo';
@@ -356,15 +384,20 @@ import SiteStudio from '../components/SiteStudio.vue';
 import AdminLucky from './admin/AdminLucky.vue';
 import AdminShipping from './admin/AdminShipping.vue';
 import AdminContent from './admin/AdminContent.vue';
+import AdminHome from './admin/AdminHome.vue';
+import AdminMedia from './admin/AdminMedia.vue';
+import ImageField from '../components/ImageField.vue';
+import { jDateTime } from '../data/jalali';
 import AdminConsults from './admin/AdminConsults.vue';
 import { jalaliInputToIso, isoToJalaliInput } from '../data/jalali';
 import '../assets/admin.css';
 import { auth, adminLogin, adminLogout } from '../stores/auth';
 import { STATUS } from '../stores/orders';
 import { toast } from '../stores/ui';
-import { adminCall, adminStatsApi, ordersListApi, patchOrderStatusApi, adminSmsLogApi, adminSmsTestApi, adminUsersApi,
+import { adminCall, apiCall, adminStatsApi, ordersListApi, patchOrderStatusApi, adminSmsLogApi, adminSmsTestApi, adminUsersApi,
   adminProductsApi, productCreateApi, productUpdateApi, productDeleteApi, syncCatalog } from '../services/api';
 import { pruneCart } from '../stores/cart';
+import { loadShop } from '../stores/shop';
 
 useSeo({ title: 'پنل مدیریت', description: 'پنل مدیریت فروشگاه خانم گل', path: '/admin' });
 
@@ -386,21 +419,24 @@ const shownProducts = computed(() => {
 });
 async function loadProducts() {
   const l = await adminProductsApi();
-  if (l) plist.value = l; else toast('دریافت محصولات از سرور انجام نشد', 'err');
+  if (l) plist.value = l.filter(p => !(p.sec || []).includes('__virtual')); else toast('دریافت محصولات از سرور انجام نشد', 'err');
 }
 /* پس از هر تغییر، کاتالوگ عمومی و آمار هم تازه می‌شود */
-async function afterChange() { await Promise.all([loadProducts(), loadStats(), syncCatalog().then(pruneCart)]); }
+async function afterChange() { await Promise.all([loadProducts(), loadStats(), Promise.all([loadShop(), syncCatalog()]).then(pruneCart)]); }
 
 function startNew() {
   editing.value = { id: 0, name: '', cat: 'ajil', img: IMG + '66fd0cba7ee8.jpg', price: 1000000, weights: [250, 500, 1000, 2000], stock: 20, disc: 0, grade: 'درجه یک', rate: 4.5, sold: 0, tags: [], sec: [], desc: '', hide: false };
+  tagsText.value = '';
 }
-function startEdit(p) { editing.value = { ...p, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; }
+const tagsText = ref('');
+function startEdit(p) { editing.value = { ...p, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; tagsText.value = p.tags.join('، '); }
 
 async function save() {
   const e = editing.value;
   if (!e.name.trim()) return toast('نام محصول را وارد کنید', 'err');
   if (!e.price || e.price <= 0) return toast('قیمت پایه معتبر وارد کنید', 'err');
   if (e.disc < 0 || e.disc > 90) return toast('تخفیف باید بین ۰ تا ۹۰ باشد', 'err');
+  e.tags = tagsText.value.split(/[،,]/).map(x => x.trim()).filter(Boolean).slice(0, 8);
   const res = e.id ? await productUpdateApi(e.id, e) : await productCreateApi(e);
   if (!res) return toast('ذخیرهٔ محصول روی سرور انجام نشد؛ دوباره وارد شوید یا اتصال را بررسی کنید', 'err');
   editing.value = null;
@@ -427,7 +463,7 @@ const oq = ref('');
 function mapServerOrder(o) {
   return {
     code: o.code, ts: o.ts, status: o.status, sub: o.sub, off: o.off, coupon: o.coupon, note: o.note || '',
-    shipCost: o.ship_cost, shipLabel: o.ship_label, shipDays: o.ship_days, total: o.total,
+    shipCost: o.ship_cost, shipLabel: o.ship_label, shipDays: o.ship_days, total: o.total, tracking: o.tracking || '', events: o.events || [],
     items: (o.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name, cost: c.cost })),
     addr: { name: '', phone: '', prov: '', city: '', addr: '', ...(o.addr || {}) },
   };
@@ -436,7 +472,23 @@ async function loadOrders() {
   const r = await ordersListApi({ limit: 200, status: ostatus.value, q: oq.value.trim() });
   if (r) olist.value = (r.results || []).map(mapServerOrder); else toast('دریافت سفارش‌ها از سرور انجام نشد', 'err');
 }
+/* ---- مدیریت وضعیت سفارش (وضعیت + کد رهگیری + توضیح؛ تاریخچه و پیامک) ---- */
+const ost = reactive({ status: 0, note: '', tracking: '', busy: false });
+watch(detail, d => { if (d) { ost.status = d.status; ost.note = ''; ost.tracking = d.tracking || ''; } });
+async function saveOrderStatus() {
+  const d = detail.value;
+  if (ost.status === 4 && d.status !== 4 && !window.confirm('با لغو سفارش، موجودی کالاها برمی‌گردد و این کار قابل بازگشت نیست. ادامه می‌دهید؟')) return;
+  ost.busy = true;
+  const r = await apiCall('/orders/' + encodeURIComponent(d.code), { method: 'PATCH', body: { status: ost.status, note: ost.note, tracking: ost.tracking } });
+  ost.busy = false;
+  if (!r.ok) return toast(r.msg || 'ثبت وضعیت انجام نشد', 'err');
+  toast(`وضعیت سفارش ${d.code} ثبت شد ✅`, 'ok');
+  await loadOrders(); loadStats();
+  detail.value = olist.value.find(x => x.code === d.code) || null;
+}
+
 async function changeStatus(o, st) {
+  if (st === 4) { detail.value = o; ost.status = 4; return loadOrders(); }   // لغو فقط از پنجرهٔ مدیریت (با توضیح و تأیید)
   if (!(await patchOrderStatusApi(o.code, st))) { toast('تغییر وضعیت روی سرور انجام نشد', 'err'); return loadOrders(); }
   o.status = st;
   toast(`وضعیت سفارش ${o.code} به «${STATUS[st]}» تغییر کرد`, 'ok');
@@ -611,6 +663,9 @@ watch(() => auth.isAdmin, v => { if (v) loadAll(); });
 .bar i{display:block;width:100%;background:linear-gradient(180deg,var(--brand),var(--brand-700));border-radius:9px 9px 0 0;transition:height .4s ease}
 .bar-col span{font-size:.7rem;color:var(--ink-2)}
 @media(max-width:767px){.dash-grid{grid-template-columns:1fr}.bars{gap:4px}}
+.ord-mgmt{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;background:var(--bg-warm)}
+.ord-hist{margin-top:10px;font-size:.76rem;color:var(--ink-2);display:grid;gap:3px}
+.sec-chk{display:flex;gap:14px;flex-wrap:wrap}
 .chk{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ink-2)}
 .od-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:.84rem;margin-bottom:12px}
 .od-grid b{color:var(--ink-3);font-weight:600;margin-inline-end:4px}

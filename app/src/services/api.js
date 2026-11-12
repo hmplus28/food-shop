@@ -23,7 +23,7 @@
  */
 import { reactive } from 'vue';
 import { LS, toEn } from '../data/site';
-import { products, applyAdminOverrides } from '../data/catalog';
+import { products, applyAdminOverrides, applyVirtualProducts } from '../data/catalog';
 
 const raw = v => String(v ?? '').trim();
 export const API_BASE = raw(import.meta.env.VITE_API_BASE).replace(/\/+$/, '');
@@ -89,9 +89,20 @@ export const IMG_CDN = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/';
 const SITE_BASE = import.meta.env.BASE_URL || '/';
 /* آدرس CDN قدیمی → فایل هم‌نام در /img/ همین سایت؛ بقیهٔ آدرس‌ها (مثلاً تصویر دلخواه مدیر) دست‌نخورده */
 /* نسبی (img/x.jpg) → با مسیر پایهٔ سایت */
-const baseImg = u => (typeof u === 'string' && u.startsWith('img/')) ? SITE_BASE + u : u;
+const baseImg = u => {
+  if (typeof u !== 'string') return u;
+  if (u.startsWith('img/')) return SITE_BASE + u;
+  if (u.startsWith('media/')) return API_BASE + '/' + u;        // تصویر آپلودشده روی سرور (هم‌مبدأ با API)
+  return u;
+};
 /* هنگام ذخیره در سرور آدرس مستقل از مسیر پایه نگه داشته می‌شود */
-export const storeImg = u => (typeof u === 'string' && u.startsWith(SITE_BASE + 'img/')) ? u.slice(SITE_BASE.length) : u;
+export const storeImg = u => {
+  if (typeof u !== 'string') return u;
+  if (u.startsWith(SITE_BASE + 'img/')) return u.slice(SITE_BASE.length);
+  if (API_BASE && u.startsWith(API_BASE + '/media/')) return u.slice(API_BASE.length + 1);
+  return u;
+};
+export const imgSrc = u => localImg(u || '');
 export const localImg = u => (typeof u === 'string' && u.startsWith(IMG_CDN)) ? SITE_BASE + 'img/' + u.slice(IMG_CDN.length) : baseImg(u);
 
 /* ---------------- محصولات ---------------- */
@@ -138,6 +149,7 @@ export async function syncCatalog() {
     const mapped = list.map(normalizeProduct).filter(Boolean);
     if (!mapped.length) throw new Error('فهرست محصولات خالی بود');
     products.splice(0, products.length, ...mapped);
+    applyVirtualProducts();         // پک‌ها و کالاهای خرید اطمینان (پنهان) دوباره به کاتالوگ اضافه شوند
     LS.del('adminProducts');        // سرور مرجع است؛ نسخهٔ محلی قدیمی پنل مدیر کنار گذاشته می‌شود
     apiState.online = true;
     apiState.lastError = null;
@@ -320,6 +332,19 @@ export async function apiCall(path, { method = 'GET', body } = {}) {
 }
 
 export const adminCall = apiCall;   // سازگاری با نام قبلی
+
+/* آپلود تصویر (مدیر) — multipart؛ خروجی {ok, file:{id,path}} */
+export async function apiUpload(file) {
+  if (!API_ENABLED) return { ok: false, msg: 'اتصال به سرور برقرار نیست' };
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await fetch(API_BASE + '/admin/media', { method: 'POST', body: fd, headers: token() ? { Authorization: 'Bearer ' + token() } : {} });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, msg: data.msg || (res.status === 401 || res.status === 403 ? 'دسترسی مدیر لازم است' : 'آپلود انجام نشد') };
+    return data;
+  } catch { return { ok: false, msg: 'اتصال به سرور برقرار نشد' }; }
+}
 
 /* ---- محتوا، مشاوره، کارت شانس، ورود حین خرید (همه {ok, msg?, …}) ---- */
 export const siteApi = () => apiCall('/site');

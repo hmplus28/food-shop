@@ -120,15 +120,25 @@ class OrderItemOutSerializer(serializers.ModelSerializer):
         fields = ['pid', 'name', 'img', 'w', 'qty', 'unit_price', 'cost']
 
 
+def _events(obj):
+    from .pricing import STATUS_LABELS
+    return [{'status': e.status, 'label': STATUS_LABELS[e.status] if 0 <= e.status < len(STATUS_LABELS) else '',
+             'note': e.note, 'ts': int(e.created_at.timestamp() * 1000)} for e in obj.events.all()]
+
+
 class OrderOutSerializer(serializers.ModelSerializer):
     ts = serializers.SerializerMethodField()
     items = OrderItemOutSerializer(many=True, read_only=True)
     addr = serializers.SerializerMethodField()
+    events = serializers.SerializerMethodField()
+
+    def get_events(self, obj):
+        return _events(obj)
 
     class Meta:
         model = Order
         fields = ['code', 'client_code', 'status', 'ts', 'items', 'sub', 'off', 'coupon',
-                  'ship_cost', 'ship_type', 'ship_label', 'ship_days', 'total', 'addr', 'note']
+                  'ship_cost', 'ship_type', 'ship_label', 'ship_days', 'total', 'addr', 'note', 'tracking', 'events']
 
     def get_ts(self, obj):
         return int(obj.created_at.timestamp() * 1000)
@@ -142,14 +152,20 @@ class OrderTrackSerializer(serializers.ModelSerializer):
     """پاسخ عمومی پیگیری — حداقلِ اطلاعاتی که صفحهٔ پیگیری لازم دارد"""
     ts = serializers.SerializerMethodField()
     items = OrderItemOutSerializer(many=True, read_only=True)
+    events = serializers.SerializerMethodField()
+
+    def get_events(self, obj):
+        return _events(obj)
 
     class Meta:
         model = Order
-        fields = ['code', 'status', 'ts', 'total', 'ship_label', 'ship_days', 'items']
+        fields = ['code', 'status', 'ts', 'total', 'ship_label', 'ship_days', 'items', 'tracking', 'events']
 
     def get_ts(self, obj):
         return int(obj.created_at.timestamp() * 1000)
 
 
 class OrderStatusPatchSerializer(serializers.Serializer):
-    status = serializers.IntegerField(min_value=0, max_value=3)
+    status = serializers.IntegerField(min_value=0, max_value=4, required=False)
+    note = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    tracking = serializers.CharField(max_length=60, required=False, allow_blank=True)

@@ -67,7 +67,7 @@ const suffix = String(Date.now()).slice(-7);
   await a.click('.admin-login button[type=submit]'); await a.waitForTimeout(1200);
   t('ورود مدیر با موبایل+رمز موفق', await a.locator('.admin-tabs').count() === 1);
   const tabsA = await a.locator('.admin-tabs button').allInnerTexts();
-  t('پنل ادمین: ۱۱ تب (داشبورد، محصولات، سفارش‌ها، کدها، کارت شانس، ارسال، محتوا، مشاوره، کاربران، پیامک، ظاهر)', ['داشبورد', 'محصولات', 'سفارش‌ها', 'کدهای تخفیف', 'کارت شانس', 'هزینه ارسال', 'محتوای سایت', 'مشاوره‌ها', 'کاربران', 'پنل پیامک', 'ظاهر سایت'].every(x => tabsA.includes(x)), tabsA.join('|'));
+  t('پنل ادمین: ۱۳ تب (داشبورد، محصولات، سفارش‌ها، کدها، کارت شانس، ارسال، صفحهٔ اصلی، تصاویر، محتوا، مشاوره، کاربران، پیامک، ظاهر)', ['داشبورد', 'محصولات', 'سفارش‌ها', 'کدهای تخفیف', 'کارت شانس', 'هزینه ارسال', 'صفحهٔ اصلی', 'تصاویر', 'محتوا و صفحات', 'مشاوره‌ها', 'کاربران', 'پنل پیامک', 'ظاهر سایت'].every(x => tabsA.includes(x)), tabsA.join('|'));
   t('پنل ادمین: تب پیش‌فرض داشبورد با نمودار ۷ روزه', await a.locator('.bar-col').count() === 7, await a.locator('.bar-col').count());
   await a.locator('.admin-tabs button', { hasText: 'محصولات' }).click(); await a.waitForTimeout(300);
   t('پنل ادمین: ۲۸ محصول از سرور', await a.locator('.tbl tbody tr').count() >= 28, await a.locator('.tbl tbody tr').count());
@@ -268,7 +268,7 @@ const suffix = String(Date.now()).slice(-7);
   t('مشتری: هزینهٔ جدید ارسال در تسویه دیده می‌شود (۷۷٬۰۰۰)', (await scp.locator('.ship-opts').innerText()).includes('۷۷٬۰۰۰'), (await scp.locator('.ship-opts').innerText()).slice(0, 80));
   const tokA = await a.evaluate(() => JSON.parse(localStorage.getItem('asalat_apiToken')));
   await fetch(API + '/admin/shipping', { headers: { Authorization: 'Bearer ' + tokA } }).then(r => r.json()).then(async r => { const m = r.methods[0]; await fetch(API + '/admin/shipping/' + m.id, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tokA }, body: JSON.stringify({ cost: 89000 }) }); });
-  await a.locator('.admin-tabs button', { hasText: 'محتوای سایت' }).click(); await a.waitForTimeout(700);
+  await a.locator('.admin-tabs button', { hasText: 'محتوا و صفحات' }).click(); await a.waitForTimeout(700);
   await a.locator('.fld:has-text("تلفن (نمایشی") input').fill('۰۲۱-۵۵۵۵۵۵۵۵');
   await a.locator('button', { hasText: 'ذخیرهٔ اطلاعات و متن‌ها' }).click(); await a.waitForTimeout(900);
   const pv = await mkCtx(); const pvp = await pv.newPage(); await pvp.goto(U, { waitUntil: 'networkidle' }); await pvp.waitForTimeout(500);
@@ -292,6 +292,97 @@ const suffix = String(Date.now()).slice(-7);
   t('فرم مشاورهٔ صفحهٔ اصلی واقعاً ذخیره می‌شود و مدیر می‌بیند', (await a.locator('.tbl').innerText()).includes('مشتری مشاوره'));
   await a.locator('.admin-tabs button', { hasText: 'کارت شانس' }).click(); await a.waitForTimeout(800);
   t('مدیر: تب کارت شانس (جایزه‌ها + برنده‌ها)', await a.locator('.tbl').count() >= 2 && (await a.locator('.admin-card').first().innerText()).includes('جایزه'));
+
+
+  // ---------- صفحهٔ اصلی: بنر، پک، اعتماد، بخش‌ها، تصاویر ----------
+  await a.goto(U + 'admin', { waitUntil: 'networkidle' }); await a.waitForTimeout(900);
+  const hvctx = await mkCtx(); const hvp = await hvctx.newPage(); hvp.on('pageerror', e => errs.push(e.message));
+  await hvp.goto(U, { waitUntil: 'networkidle' }); await hvp.waitForTimeout(700);
+  t('صفحهٔ اصلی: بنر اصلی از سرور نمایش داده می‌شود', (await hvp.locator('.hero .s-title').first().innerText()).includes('طعم اصالت'));
+  t('صفحهٔ اصلی: ۴ پک با شمارش معکوس', await hvp.locator('.pack').count() === 4 && /\d/.test(await hvp.locator('.pack-timer b').first().innerText().then(x => x.replace(/[۰-۹]/g, '1'))));
+  t('صفحهٔ اصلی: بخش خرید اطمینان با کالای امروز', await hvp.locator('#etemad .t-title').count() === 1);
+  // مدیر: بنر دوم با تصویر آپلودشده
+  await a.locator('.admin-tabs button', { hasText: 'تصاویر' }).click(); await a.waitForTimeout(500);
+  const PNGB = Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360000002000001e221bc330000000049454e44ae426082', 'hex');
+  await a.locator('.admin-card input[type=file]').setInputFiles({ name: 'test-banner.png', mimeType: 'image/png', buffer: PNGB }); await a.waitForTimeout(1500);
+  t('تصاویر: آپلود از پنل و نمایش در کتابخانه', await a.locator('.mg-it').count() >= 1 && (await a.locator('.mg-it small').first().innerText()).startsWith('media/'));
+  const _bad = await a.locator('.admin-card input[type=file]').setInputFiles({ name: 'evil.png', mimeType: 'image/png', buffer: Buffer.from('<?php echo 1;?>') }).then(() => a.waitForTimeout(900));
+  t('تصاویر: فایل غیرتصویر رد می‌شود (فقط ۱ تصویر باقی می‌ماند)', await a.locator('.mg-it').count() === 1, await a.locator('.mg-it').count());
+  await a.locator('.admin-tabs button', { hasText: 'صفحهٔ اصلی' }).click(); await a.waitForTimeout(700);
+  await a.locator('button', { hasText: 'بنر جدید' }).click();
+  await a.locator('.modal:visible button', { hasText: 'انتخاب از کتابخانه' }).click(); await a.waitForTimeout(600);
+  await a.locator('.imgf-it').first().click(); await a.waitForTimeout(300);
+  await a.locator('.modal:visible .fld:has-text("عنوان") input').first().fill('بنر دوم مدیر');
+  await a.locator('.modal:visible button', { hasText: 'ذخیرهٔ بنر' }).click(); await a.waitForTimeout(1100);
+  await hvp.reload({ waitUntil: 'networkidle' }); await hvp.waitForTimeout(700);
+  t('بنر دوم: اسلایدر با ۲ نقطه ظاهر می‌شود', await hvp.locator('.hero-dots .hd').count() === 2, await hvp.locator('.hero-dots .hd').count());
+  const mimg = await hvp.locator('.hero .slide').nth(1).locator('img').evaluate(e => ({ src: e.src, ok: e.complete && e.naturalWidth > 0 }));
+  t('تصویر آپلودشده روی سایت لود می‌شود (از سرور خودمان)', /\/media\//.test(mimg.src) && mimg.ok, JSON.stringify(mimg));
+  await hvp.locator('.hero-dots .hd').nth(1).click(); await hvp.waitForTimeout(900);
+  t('اسلایدر: کلیک نقطه، اسلاید دوم را نشان می‌دهد', (await hvp.locator('.hero .slide').nth(1).getAttribute('aria-hidden')) === 'false');
+  // پک: ویرایش قیمت و خرید پک
+  await a.locator('.subtabs button', { hasText: 'پک‌های تخفیفی' }).click(); await a.waitForTimeout(500);
+  await a.locator('.tbl tbody tr').first().locator('button', { hasText: 'ویرایش' }).click();
+  await a.locator('.modal:visible .fld:has-text("قیمت فعلی") input').fill('900000');
+  await a.locator('.modal:visible button', { hasText: 'ذخیرهٔ پک' }).click(); await a.waitForTimeout(1100);
+  await hvp.goto(U, { waitUntil: 'networkidle' }); await hvp.waitForTimeout(600);
+  t('پک: قیمت جدید (۹۰۰٬۰۰۰) روی سایت دیده می‌شود', (await hvp.locator('.pack').first().innerText()).includes('۹۰۰٬۰۰۰'));
+  const t1 = await hvp.locator('.pack-timer b').first().innerText();
+  const hv2 = await mkCtx(); const hvp2 = await hv2.newPage(); await hvp2.goto(U, { waitUntil: 'networkidle' }); await hvp2.waitForTimeout(600);
+  const t2 = await hvp2.locator('.pack-timer b').first().innerText();
+  const secs = x => { const p = x.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).split(':').map(Number); return p[0] * 3600 + p[1] * 60 + p[2]; };
+  t('شمارش معکوس پک برای همهٔ بازدیدکننده‌ها یکسان است (سمت سرور)', Math.abs(secs(t1) - secs(t2)) <= 6, `${t1} vs ${t2}`);
+  await hvp.locator('.pack').first().locator('button', { hasText: 'خرید سریع پک' }).click(); await hvp.waitForTimeout(500);
+  await hvp.goto(U + 'cart', { waitUntil: 'networkidle' }); await hvp.waitForTimeout(500);
+  t('سبد: قیمت پک دقیقاً قیمت پک است (۹۰۰٬۰۰۰)', (await hvp.locator('#main .totals').innerText()).includes('۹۰۰٬۰۰۰'), (await hvp.locator('#main .totals').innerText()).slice(0, 60));
+  // خرید اطمینان
+  await a.locator('.subtabs button', { hasText: 'خرید اطمینان' }).click(); await a.waitForTimeout(500);
+  const todayRow = a.locator('.tbl tbody tr', { hasText: ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'][new Date().getDay()] }).first();
+  await todayRow.locator('button', { hasText: 'ویرایش' }).click();
+  await a.locator('.modal:visible .fld:has-text("نام کالا") input').fill('کالای امروز ویرایش‌شده');
+  await a.locator('.modal:visible button', { hasText: 'ذخیرهٔ کالا' }).click(); await a.waitForTimeout(1000);
+  await hvp2.reload({ waitUntil: 'networkidle' }); await hvp2.waitForTimeout(600);
+  t('خرید اطمینان: ویرایش کالای امروز روی سایت دیده می‌شود', (await hvp2.locator('#etemad .t-title').innerText()).includes('کالای امروز ویرایش‌شده'));
+  // بخش‌ها: خاموش‌کردن پرفروش‌ها و جابه‌جایی اعتماد
+  await a.locator('.subtabs button', { hasText: 'بخش‌ها، عناوین' }).click(); await a.waitForTimeout(500);
+  const boxBest = a.locator('.sec-box', { hasText: 'پرفروش‌ترین محصولات' });
+  await boxBest.locator('input[type=checkbox]').first().uncheck();
+  await a.locator('.sec-box', { hasText: 'خرید اطمینان' }).locator('button', { hasText: '▲' }).click();
+  await a.locator('.sec-box', { hasText: 'خرید اطمینان' }).locator('button', { hasText: '▲' }).click();
+  await a.locator('.sec-box', { hasText: 'خرید اطمینان' }).locator('.fld:has-text("عنوان") input').first().fill('خرید مطمئن');
+  await a.locator('button', { hasText: 'ذخیرهٔ بخش‌ها' }).click(); await a.waitForTimeout(1000);
+  await hvp2.reload({ waitUntil: 'networkidle' }); await hvp2.waitForTimeout(600);
+  t('بخش پرفروش‌ها خاموش شد و دیگر در صفحه نیست', await hvp2.locator('#best').count() === 0);
+  t('عنوان بخش خرید اطمینان از پنل عوض شد', (await hvp2.locator('#etemad .sec-title').innerText()).includes('خرید مطمئن'));
+  const posTrust = await hvp2.evaluate(() => Object.fromEntries([...document.querySelectorAll('.home-flow > section[id]')].map(s => [s.id, Math.round(s.getBoundingClientRect().top + window.scrollY)])));
+  t('ترتیب بخش‌ها از پنل اعمال می‌شود (خرید اطمینان بالاتر از شگفت‌انگیز، مشاوره و چرا ما)', posTrust.etemad < posTrust.amazing && posTrust.etemad < posTrust.consult && posTrust.etemad < posTrust.why, JSON.stringify(posTrust));
+  // محصول: بخش‌های صفحهٔ اصلی + برچسب
+  await a.locator('.admin-tabs button', { hasText: /^محصولات$/ }).click(); await a.waitForTimeout(500);
+  await a.locator('button', { hasText: 'افزودن محصول' }).first().click();
+  await a.locator('.modal:visible .fld:has-text("نام محصول") input').fill('محصول بخش‌دار تست');
+  await a.locator('.modal:visible label:has-text("پیشنهاد شگفت‌انگیز") input').check();
+  await a.locator('.modal:visible .fld:has-text("برچسب‌ها") input').fill('پرفروش، ممتاز');
+  await a.locator('.modal:visible button', { hasText: 'ذخیره محصول' }).click(); await a.waitForTimeout(1100);
+  const pnew = (await (await fetch(API + '/products')).json()).find(p => p.name === 'محصول بخش‌دار تست');
+  t('محصول جدید: بخش صفحهٔ اصلی و برچسب‌ها ذخیره شد', !!pnew && pnew.sec.includes('amz') && pnew.tags.join(',') === 'پرفروش,ممتاز', JSON.stringify(pnew && [pnew.sec, pnew.tags]));
+  t('محصولات مجازی پک/اعتماد در جدول محصولات مدیر نیستند', !(await a.locator('.tbl').innerText()).includes('پک آجیل مهمانی') && !(await a.locator('.tbl').innerText()).includes('کالای امروز ویرایش‌شده'));
+  // مدیریت وضعیت سفارش
+  await a.locator('.admin-tabs button', { hasText: 'سفارش‌ها' }).click(); await a.waitForTimeout(700);
+  await a.locator('.tbl tbody tr', { hasText: ordCode }).locator('button', { hasText: 'جزئیات' }).click(); await a.waitForTimeout(400);
+  await a.locator('.ord-mgmt select').selectOption({ label: 'در مسیر ارسال' });
+  await a.locator('.ord-mgmt input[placeholder^="مثلاً ۲۴"]').fill('TRK-UI-4455');
+  await a.locator('.ord-mgmt input[placeholder^="مثلاً بسته"]').fill('تحویل پست شد');
+  await a.locator('.ord-mgmt button', { hasText: 'ثبت وضعیت' }).click(); await a.waitForTimeout(1200);
+  const trk = await mkCtx(); const trp = await trk.newPage(); await trp.goto(U + 'track?code=' + ordCode, { waitUntil: 'networkidle' }); await trp.waitForTimeout(900);
+  const ttxt = await trp.locator('#main').innerText();
+  t('پیگیری مشتری: وضعیت «در مسیر ارسال»، کد رهگیری و توضیح مدیر', ttxt.includes('TRK-UI-4455') && ttxt.includes('تحویل پست شد') && ttxt.includes('در مسیر ارسال'), ttxt.slice(0, 160));
+  t('پیگیری مشتری: تاریخچهٔ وضعیت با تاریخ شمسی', /۱۴۰[۵-۹]\//.test(ttxt));
+  await a.locator('.ord-mgmt select').selectOption({ label: 'لغو شده' });
+  a.once('dialog', d => d.accept());
+  await a.locator('.ord-mgmt button', { hasText: 'ثبت وضعیت' }).click(); await a.waitForTimeout(1200);
+  await trp.reload({ waitUntil: 'networkidle' }); await trp.waitForTimeout(700);
+  t('لغو سفارش: مشتری «لغو شده» می‌بیند', (await trp.locator('#main').innerText()).includes('لغو شده'));
+  t('سفارش لغوشده در پنل مدیر غیرقابل ویرایش است', await a.locator('.ord-mgmt select').isDisabled());
 
   // ---------- ورود مدیر از صفحهٔ ورود عادی ----------
   const sa = await b.newContext({ viewport: { width: 1280, height: 900 } }); await sa.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); } catch (e) {} });
