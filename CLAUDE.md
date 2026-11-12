@@ -26,6 +26,7 @@ python3 scripts/test_backend_api.py        # باید 67/67 سبز باشد (ش�
 python3 scripts/test_backend_security.py   # باید 69/69 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
+python3 scripts/test_ascii_locale.py         # رگرسیون ۵۰۰ هاست (locale ASCII + .env فارسی)
 python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ روی هاست
 ```
 
