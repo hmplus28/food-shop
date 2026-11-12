@@ -107,7 +107,7 @@
       <div class="container">
         <div class="sec-head trust-head">
           <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-shield" /></svg></span>
-            <div><h2 class="sec-title">خرید <i>اطمینان</i></h2><span class="sec-sub">هر روز یک کالای منتخب غیرخوراکی با قیمت ویژه؛ چون به نام ما اعتماد دارید، با خیال راحت بخرید</span></div></span>
+            <div><h2 class="sec-title">خرید <i>اطمینان</i></h2><span class="sec-sub">هر روز یک کالای منتخب با قیمت ویژه؛ چون به نام ما اعتماد دارید، با خیال راحت بخرید</span></div></span>
           <div class="t-count"><svg class="icon"><use href="#i-clock" /></svg><span>تا پایان پیشنهاد امروز</span><b>{{ trustCd }}</b></div>
         </div>
         <div class="trust-wrap">
@@ -118,7 +118,7 @@
               <span class="t-off tag red">٪{{ toFa(trustItem.off) }} تخفیف</span>
             </div>
             <div class="t-body">
-              <span class="t-kicker"><svg class="icon"><use href="#i-shield" /></svg> کالای غیرخوراکی منتخب خانم گل</span>
+              <span class="t-kicker"><svg class="icon"><use href="#i-shield" /></svg> کالای منتخب خانم گل</span>
               <h3 class="t-title">{{ trustItem.name }}</h3>
               <p class="t-why"><b>چرا این‌جا؟</b> {{ TRUST_WHY }}</p>
               <div class="t-price"><del>{{ money(trustItem.old) }}</del><b>{{ money(trustItem.price) }}</b><small>تومان</small><span class="t-save">سود شما: {{ money(trustItem.old - trustItem.price) }} تومان</span></div>
@@ -141,7 +141,6 @@
               <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-truck" /></svg></span><div><b>ارسال سریع و ضربه‌گیر</b><span>بسته‌بندی چندلایه و رهگیری لحظه‌ای مرسوله.</span></div></div>
               <div class="ts-item"><span class="ti"><svg class="icon"><use href="#i-wallet" /></svg></span><div><b>پرداخت مطمئن</b><span>درگاه بانکی معتبر یا پرداخت در محل، به انتخاب شما.</span></div></div>
             </div>
-            <div class="ts-card ts-note"><b>چرا غیرخوراکی؟</b> چون وقتی نام «خانم گل» پشت کالایی است، کیفیتش را تضمین می‌کنیم — خوراکی یا هر چیز دیگر. کالای امروز را از دست ندهید؛ فردا با پیشنهاد تازه‌ای برمی‌گردیم! ☀️</div>
           </aside>
         </div>
       </div>

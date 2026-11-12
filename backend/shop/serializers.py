@@ -38,22 +38,6 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, write_only=True)
 
 
-class OtpRequestSerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=15)
-
-    def validate_phone(self, v):
-        from .sms import normalize_phone
-        p = normalize_phone(v)
-        if not p:
-            raise serializers.ValidationError('شماره موبایل معتبر وارد کنید (۰۹…)')
-        return p
-
-
-class OtpVerifySerializer(serializers.Serializer):
-    phone = serializers.CharField(max_length=15)
-    code = serializers.CharField(max_length=6)
-
-
 # ---------------- محصولات (فیلدها = قرارداد normalizeProduct فرانت) ----------------
 
 class ProductSerializer(serializers.ModelSerializer):

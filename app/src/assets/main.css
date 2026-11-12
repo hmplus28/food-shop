@@ -251,8 +251,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .acc{border-bottom:1px solid var(--line)}
 .acc>button{width:100%;display:flex;align-items:center;gap:10px;padding:13px 4px;font-size:.92rem;font-weight:600;text-align:right}
 .acc>button .icon{color:var(--gold-600)}
-.acc>button .chev{margin-inline-start:auto;transition:var(--tr);color:var(--ink-3)}
-.acc.open>button .chev{transform:rotate(180deg)}
+.acc>button .chev{margin-inline-start:auto;transition:var(--tr);color:var(--ink-3);transform:rotate(180deg)}   /* بسته: رو به چپ (RTL) */
+.acc.open>button .chev{transform:rotate(90deg)}   /* باز: رو به پایین */
 .acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
 .acc.open .acc-panel{grid-template-rows:1fr}
 .acc-panel>div{overflow:hidden}
@@ -519,8 +519,6 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .ts-item .ti .icon{width:16px;height:16px;fill:var(--gold)}
 .ts-item b{display:block;font-size:.82rem;color:#fff;margin-bottom:2px}
 .ts-item span{font-size:.72rem;color:#c9b892;line-height:1.8}
-.ts-note{font-size:.78rem;color:#e7dcc4;line-height:2}
-.ts-note b{color:var(--gold)}
 @media(min-width:820px){
   .trust-head{flex-direction:row;align-items:flex-end;justify-content:space-between}
   .trust-card{grid-template-columns:1.05fr 1fr}
@@ -847,7 +845,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .m-cart-bar b{font-size:.88rem;display:block;color:var(--ink)}
 .m-cart-bar span{font-size:.68rem;color:var(--ink-3);display:block}
 .m-cart-bar .btn{margin-inline-start:auto}
-@media(max-width:767px){.m-cart-bar.show{display:flex}.fab-wrap{bottom:78px}.toasts{bottom:84px}}
+@media(max-width:767px){body.has-m-cart{padding-bottom:calc(84px + env(safe-area-inset-bottom))}.m-cart-bar.show{display:flex}.fab-wrap{bottom:78px}.toasts{bottom:84px}}
 
 /* ================= حرکت کمتر / چاپ ================= */
 @media(prefers-reduced-motion:reduce){

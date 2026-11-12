@@ -17,15 +17,14 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Order, OtpCode, Product, ShopUser, SmsLog
+from .models import Order, Product, ShopUser, SiteSetting, SmsLog
 from .permissions import IsShopAdmin
 from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
 from .seed import ensure_seed
 from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
-                          OrderStatusPatchSerializer, OrderTrackSerializer, OtpRequestSerializer,
-                          OtpVerifySerializer, ProductSerializer, ProductWriteSerializer,
+                          OrderStatusPatchSerializer, OrderTrackSerializer, ProductSerializer, ProductWriteSerializer,
                           RegisterSerializer)
-from .sms import notify_new_order, notify_status_change, normalize_phone, provider_status, send_otp, send_sms
+from .sms import notify_new_order, notify_status_change, normalize_phone, provider_status, send_sms
 
 API_VERSION = '1.0.0'
 
@@ -55,10 +54,6 @@ def issue_tokens(user):
 
 class AuthThrottle(AnonRateThrottle):
     scope = 'auth'
-
-
-class OtpThrottle(AnonRateThrottle):
-    scope = 'otp'
 
 
 # ---------------- سلامت سرویس ----------------
@@ -177,75 +172,6 @@ class LoginView(APIView):
         if not user or not user.check_password(d['password']) or not user.is_active:
             return fail('شماره یا رمز عبور اشتباه است')
         return ok({'user': user.public, **issue_tokens(user)})
-
-
-class OtpRequestView(APIView):
-    """درخواست کد ورود پیامکی — با فاصلهٔ ارسال و سقف ساعتی"""
-    permission_classes = [AllowAny]
-    throttle_classes = [OtpThrottle]
-
-    def post(self, request):
-        s = OtpRequestSerializer(data=request.data)
-        if not s.is_valid():
-            return fail(first_msg(s.errors), 400)
-        phone = s.validated_data['phone']
-        now = timezone.now()
-
-        # پاک‌سازی سابقهٔ قدیمی (بیش از یک روز)
-        OtpCode.objects.filter(last_sent__lt=now - timezone.timedelta(days=1)).delete()
-
-        latest = OtpCode.objects.filter(phone=phone).first()
-        if latest:
-            wait = settings.OTP_COOLDOWN - int((now - latest.last_sent).total_seconds())
-            if wait > 0:
-                return fail(f'برای ارسال مجدد {wait} ثانیه صبر کنید')
-            sent_last_hour = OtpCode.objects.filter(
-                phone=phone, last_sent__gte=now - timezone.timedelta(hours=1)).count()
-            if sent_last_hour >= settings.OTP_HOURLY:
-                return fail('تعداد درخواست کد بیش از حد مجاز است؛ کمی بعد تلاش کنید')
-
-        code = f'{random.randint(0, 999999):06d}'
-        OtpCode.objects.create(phone=phone, code=code, expires_at=now + timezone.timedelta(seconds=settings.OTP_TTL))
-        sent, detail = send_otp(phone, code)
-        if not sent and settings.SMS_PROVIDER != 'console':
-            return fail('ارسال پیامک انجام نشد؛ چند لحظه بعد دوباره تلاش کنید')
-        body = {'expires_in': settings.OTP_TTL, 'cooldown': settings.OTP_COOLDOWN}
-        if settings.SMS_PROVIDER == 'console':
-            body['dev'] = {'code': code}      # حالت توسعه: کد در پاسخ می‌آید
-        return ok(body)
-
-
-class OtpVerifyView(APIView):
-    """بررسی کد ورود؛ اگر کاربر نبود ساخته می‌شود (ثبت‌نام بدون رمز)"""
-    permission_classes = [AllowAny]
-    throttle_classes = [AuthThrottle]
-
-    def post(self, request):
-        s = OtpVerifySerializer(data=request.data)
-        if not s.is_valid():
-            return fail(first_msg(s.errors), 400)
-        phone = normalize_phone(s.validated_data['phone'])
-        code = ''.join(ch for ch in str(s.validated_data['code']) if ch.isdigit())
-        rec = OtpCode.objects.filter(phone=phone).first()
-        if not rec or rec.used:
-            return fail('کدی برای این شماره ثبت نشده؛ دوباره درخواست کنید')
-        if rec.is_expired:
-            return fail('کد منقضی شده است؛ دوباره درخواست کنید')
-        if rec.attempts >= settings.OTP_MAX_ATTEMPTS:
-            return fail('تلاش‌های ناموفق زیاد است؛ کد جدید بگیرید')
-        if code != rec.code:
-            rec.attempts += 1
-            rec.save(update_fields=['attempts'])
-            remain = settings.OTP_MAX_ATTEMPTS - rec.attempts
-            return fail(f'کد واردشده اشتباه است ({remain} تلاش باقی مانده)')
-        rec.used = True
-        rec.save(update_fields=['used'])
-
-        user = ShopUser.objects.filter(phone=phone).first()
-        created = user is None
-        if created:
-            user = ShopUser.objects.create_user(phone=phone, name='کاربر خانم گل')
-        return ok({'user': user.public, 'created': created, **issue_tokens(user)})
 
 
 class MeView(APIView):
@@ -446,6 +372,45 @@ class OrderTrackPatchView(APIView):
         o.save(update_fields=['status', 'updated_at'])
         notify_status_change(o, o.status)
         return ok({'code': o.code, 'status': o.status, 'status_label': STATUS_LABELS[o.status]})
+
+
+# ---------------- ظاهر سایت (تم/رنگ) — سراسری، فقط مدیر ویرایش می‌کند ----------------
+
+THEME_IDS = ('default', 'anari', 'zeitoni', 'gahvei', 'tousi', 'banafsh', 'abi')
+_HEX = __import__('re').compile(r'^#[0-9a-fA-F]{6}$')
+
+
+def _look():
+    rec = SiteSetting.objects.filter(key='look').first()
+    v = rec.value if rec and isinstance(rec.value, dict) else {}
+    theme = v.get('theme') if v.get('theme') in THEME_IDS else 'default'
+    tune = v.get('tune') if isinstance(v.get('tune'), list) and len(v['tune']) == 4 \
+        and all(isinstance(h, str) and _HEX.match(h) for h in v['tune']) else None
+    return {'theme': theme, 'tune': tune}
+
+
+class SiteSettingsView(APIView):
+    """GET /settings — عمومی: تم و رنگ برند سایت (برای همهٔ بازدیدکنندگان یکسان)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return ok(_look())
+
+
+class AdminSiteSettingsView(APIView):
+    """PUT /admin/settings {theme, tune} — فقط مدیر؛ مقدار نامعتبر رد می‌شود"""
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request):
+        theme = request.data.get('theme', 'default')
+        tune = request.data.get('tune', None)
+        if theme not in THEME_IDS:
+            return fail('تم نامعتبر است', 400)
+        if tune is not None and not (isinstance(tune, list) and len(tune) == 4
+                                     and all(isinstance(h, str) and _HEX.match(h) for h in tune)):
+            return fail('رنگ‌های برند نامعتبر است (۴ مقدار #rrggbb)', 400)
+        SiteSetting.objects.update_or_create(key='look', defaults={'value': {'theme': theme, 'tune': tune}})
+        return ok(_look())
 
 
 # ---------------- مدیر فروشگاه ----------------

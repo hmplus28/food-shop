@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Order, OrderItem, OtpCode, Product, ShopUser, SmsLog
+from .models import Order, OrderItem, Product, ShopUser, SiteSetting, SmsLog
 
 
 @admin.register(ShopUser)
@@ -39,10 +39,9 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('code', 'client_code')
 
 
-@admin.register(OtpCode)
-class OtpCodeAdmin(admin.ModelAdmin):
-    list_display = ('phone', 'code', 'attempts', 'used', 'expires_at', 'last_sent')
-    list_filter = ('used',)
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    list_display = ('key', 'value', 'updated_at')
 
 
 @admin.register(SmsLog)

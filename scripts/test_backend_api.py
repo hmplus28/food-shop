@@ -130,26 +130,12 @@ check('me با توکن: شماره درست', st == 200 and r.get('user', {}).g
 st, r = req('GET', '/auth/me')
 check('me بدون توکن: ۴۰۱/۴۰۳', st in (401, 403), st)
 
-# ---------------- ۴) ورود با کد پیامکی ----------------
-st, r = req('POST', '/auth/otp/request', {'phone': PH_OTP_A})
-code_a = r.get('dev', {}).get('code') if isinstance(r.get('dev'), dict) else None
-check('otp/request: ok=true', st == 200 and r.get('ok') is True, f'{st} {r}')
-check('otp/request: کد توسعه‌ای در حالت console', bool(code_a), r.get('dev'))
-check('otp/request: expires_in و cooldown', r.get('expires_in', 0) > 0 and r.get('cooldown', 0) > 0, r)
-st, r = req('POST', '/auth/otp/request', {'phone': PH_OTP_A})
-check('otp/request فوری دوم: ok=false (فاصلهٔ ارسال)', st == 200 and r.get('ok') is False
-      and 'صبر' in (r.get('msg') or ''), r)
-for i in range(5):
-    st, r = req('POST', '/auth/otp/verify', {'phone': PH_OTP_A, 'code': '000000' if code_a != '000000' else '111111'})
-check('otp/verify کد غلط ×۵: ok=false', all(True for _ in range(5)) and st == 200 and r.get('ok') is False, r)
-st, r = req('POST', '/auth/otp/verify', {'phone': PH_OTP_A, 'code': '000001'})
-check('otp/verify بعد از سقف تلاش: پیام سقف', r.get('ok') is False and 'تلاش' in (r.get('msg') or ''), r)
-st, r = req('POST', '/auth/otp/request', {'phone': PH_OTP_B})
-code_b = r.get('dev', {}).get('code') if isinstance(r.get('dev'), dict) else None
-check('otp/request شمارهٔ دوم: ok=true', r.get('ok') is True and bool(code_b), r)
-st, r = req('POST', '/auth/otp/verify', {'phone': PH_OTP_B, 'code': code_b or ''})
-check('otp/verify درست: ورود/ثبت‌نام خودکار', st == 200 and r.get('ok') and r.get('token')
-      and r.get('created') is True and r.get('user', {}).get('phone') == PH_OTP_B, f'{st} {r}')
+# ---------------- ۴) ورود با کد پیامکی حذف شده ----------------
+for ep in ('/auth/otp/request', '/auth/otp/verify'):
+    st, r = req('POST', ep, {'phone': PH_OTP_A, 'code': '123456'})
+    check(f'{ep}: حذف شده (۴۰۴)', st == 404, st)
+st, r = req('POST', '/auth/register', {'name': 'کاربر تست دو', 'phone': PH_OTP_B, 'password': 'pass-1234'})
+check('register: پاسخ شامل نقش user (بدون امتیاز مدیر)', r.get('ok') and r.get('user', {}).get('role') == 'user', r)
 
 # ---------------- ۵) ثبت سفارش (قیمت سمت سرور) ----------------
 w1, q1, w2, q2 = 500, 2, 1000, 1
@@ -201,6 +187,24 @@ check('admin/login رمز غلط: ok=false', st == 200 and r.get('ok') is False,
 st, r = req('POST', '/admin/login', {'username': 'admin', 'password': 'admin1234'})
 check('admin/login درست: توکن', st == 200 and r.get('ok') and r.get('token'), f'{st} {r}')
 ADMIN_TOKEN = r.get('token')
+
+# ---------------- ۷-الف) ظاهر سایت (تم/رنگ) سراسری ----------------
+st, r = req('GET', '/settings')
+check('settings: عمومی و دارای theme', st == 200 and r.get('ok') and r.get('theme') in ('default','anari','zeitoni','gahvei','tousi','banafsh','abi'), r)
+st, r = req('PUT', '/admin/settings', {'theme': 'anari', 'tune': None})
+check('admin/settings بدون توکن: ممنوع', st in (401, 403), st)
+st, r = req('PUT', '/admin/settings', {'theme': 'anari', 'tune': None}, token=ADMIN_TOKEN)
+check('admin/settings با مدیر: ذخیره شد', st == 200 and r.get('ok') and r.get('theme') == 'anari', f'{st} {r}')
+st, r = req('GET', '/settings')
+check('settings: تم ذخیره‌شده برای همه (بدون توکن) دیده می‌شود', r.get('theme') == 'anari', r)
+st, r = req('PUT', '/admin/settings', {'theme': '<script>', 'tune': None}, token=ADMIN_TOKEN)
+check('admin/settings: تم نامعتبر رد می‌شود', st == 400, st)
+st, r = req('PUT', '/admin/settings', {'theme': 'default', 'tune': ['#48b500', '#3f9d00', 'red;}', '#2f7600']}, token=ADMIN_TOKEN)
+check('admin/settings: رنگ تزریقی (CSS) رد می‌شود', st == 400, st)
+st, r = req('PUT', '/admin/settings', {'theme': 'default', 'tune': ['#48b500', '#3f9d00', '#378800', '#2f7600']}, token=ADMIN_TOKEN)
+check('admin/settings: ۴ رنگ معتبر ذخیره', st == 200 and r.get('tune') == ['#48b500', '#3f9d00', '#378800', '#2f7600'], r)
+req('PUT', '/admin/settings', {'theme': 'default', 'tune': None}, token=ADMIN_TOKEN)
+
 st, r = req('GET', '/orders', token=ADMIN_TOKEN)
 check('orders GET مدیر: ok و count', st == 200 and r.get('ok') and r.get('count', 0) >= 1, f'{st} {r}')
 check('orders GET مدیر: اقلام در نتایج', bool(r.get('results'))

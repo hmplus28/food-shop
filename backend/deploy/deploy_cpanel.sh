@@ -169,20 +169,13 @@ SMS_STATUS_TO_CUSTOMER|true
 SMS_PROVIDER|console
 SMS_SENDER|
 KAVENEGAR_API_KEY|
-KAVENEGAR_OTP_TEMPLATE|
 SMSIR_API_KEY|
-SMSIR_OTP_TEMPLATE_ID|
 SMSIR_LINE|
 GHASEDAK_API_KEY|
-GHASEDAK_OTP_TEMPLATE|
 GHASEDAK_LINE|
 MELIPAYAMAK_USERNAME|
 MELIPAYAMAK_PASSWORD|
 MELIPAYAMAK_FROM|
-OTP_TTL|120
-OTP_COOLDOWN|90
-OTP_HOURLY|5
-OTP_MAX_ATTEMPTS|5
 APPEOF
     if ! grep -Eq "^[[:space:]]*(export[[:space:]]+)?SECRET_KEY=" "$ENV_FILE"; then
         printf '\n# کلید امنیتی توکن‌ها (تولیدشده توسط deploy/deploy_cpanel.sh — تغییر ندهید)\nSECRET_KEY=%s\n' "$(random_key)" >> "$ENV_FILE"
@@ -258,22 +251,14 @@ SMS_STATUS_TO_CUSTOMER=true
 SMS_PROVIDER=console
 SMS_SENDER=
 KAVENEGAR_API_KEY=
-KAVENEGAR_OTP_TEMPLATE=
 SMSIR_API_KEY=
-SMSIR_OTP_TEMPLATE_ID=
 SMSIR_LINE=
 GHASEDAK_API_KEY=
-GHASEDAK_OTP_TEMPLATE=
 GHASEDAK_LINE=
 MELIPAYAMAK_USERNAME=
 MELIPAYAMAK_PASSWORD=
 MELIPAYAMAK_FROM=
 
-# ---------- محدودیت‌های کد یکبار مصرف ----------
-OTP_TTL=120
-OTP_COOLDOWN=90
-OTP_HOURLY=5
-OTP_MAX_ATTEMPTS=5
 
 # ---------- زیرمسیر Passenger (Application URL = /food-shop) ----------
 # اگر برنامه را در Setup Python App روی مسیر دیگری سرو می‌کنید، هر دو را
