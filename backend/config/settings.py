@@ -94,13 +94,50 @@ TEMPLATES = [{
     },
 }]
 
-# ---------- پایگاه داده (SQLite — بدون نیاز به سرور جدا) ----------
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# ---------- پایگاه داده ----------
+# توسعهٔ محلی: پیش‌فرض SQLite (بدون نیاز به سرور جدا).
+# هاست cPanel: با DB_ENGINE=mysql و کلیدهای DB_* دیتابیس MySQL فعال می‌شود
+# (نمونهٔ کامل در backend/.env.example؛ دیتابیس از cPanel → MySQL® Databases ساخته می‌شود).
+DB_ENGINE = env('DB_ENGINE', 'sqlite3').strip().lower()
+
+if DB_ENGINE in ('mysql', 'mariadb'):
+    # درایور ترجیحی mysqlclient است؛ اگر نصب نبود PyMySQL (خالص‌پایتون، بدون
+    # نیاز به کامپایل — روی هاست اشتراکی مطمئن‌تر) خودکار جایگزین می‌شود.
+    try:
+        import MySQLdb  # noqa: F401
+    except ImportError:
+        try:
+            import pymysql
+            pymysql.install_as_MySQLdb()
+        except ImportError as exc:
+            raise RuntimeError(
+                'DB_ENGINE=mysql است اما درایور MySQL پیدا نشد؛ '
+                'در محیط مجازی اجرا کنید: pip install PyMySQL'
+            ) from exc
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST', 'localhost'),
+            'PORT': env_int('DB_PORT', 3306),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                # داده‌های ناقص را بپذیر نما؛ رفتار یکسان با توسعه
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+            # اتصال ماندگار برای پاسخ سریع‌تر زیر Passenger
+            'CONN_MAX_AGE': env_int('DB_CONN_MAX_AGE', 60),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # ---------- احراز هویت ----------
 AUTH_USER_MODEL = 'shop.ShopUser'
@@ -158,7 +195,15 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------- استاتیک (برای پنل ادمین جنگو) ----------
-STATIC_URL = 'static/'
+# زیر Passenger وقتی برنامه روی زیرمسیر سرو می‌شود (الگوی همین پروژه:
+# Application URL = /food-shop)، این دو مقدار در .env لازم است تا لینک‌های
+# پنل ادمین و CSS آن درست کار کنند:
+#   FORCE_SCRIPT_NAME=/food-shop
+#   STATIC_URL=/food-shop/static/
+# (Whitenoise خودش بخش مسیرِ اسکریپت را از STATIC_URL جدا می‌کند و به
+#  path_info — که Passenger بدون پیشوند /food-shop می‌دهد — تطبیق می‌دهد.)
+STATIC_URL = env('STATIC_URL', 'static/')
+FORCE_SCRIPT_NAME = env('FORCE_SCRIPT_NAME') or None
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},

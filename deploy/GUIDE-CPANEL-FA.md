@@ -1,67 +1,199 @@
-# راهنمای استقرار فروشگاه خانم گل روی هاست اشتراکی cPanel
+# راهنمای کامل استقرار فروشگاه خانم گل روی cPanel
 
-این راهنما برای انتشار نسخهٔ **Vue 3 + Vite** فروشگاه روی هاست cPanel است
-(برای GitHub Pages نیازی به این مراحل نیست — بیلد در ریشهٔ ریپو همان انتشار است).
+سه بخش دارد: **دیتابیس MySQL**، **بک‌اند Django** و (اختیاری) **فرانت Vue روی خود هاست**.
+فرانت اصلی فروشگاه روی GitHub Pages منتشر می‌شود و نیازی به این مراحل ندارد —
+بیلدِ commit‌شده در ریشهٔ ریپو همان انتشار است.
 
-## خلاصهٔ سریع
+## پیکربندی فعلی هاست (مقادیر واقعی)
 
-```bash
-# روی هاست (ترمینال cPanel یا SSH):
-git clone https://github.com/hmplus28/food-shop.git   # یا git pull برای به‌روزرسانی
-cd food-shop
-bash deploy/deploy_cpanel.sh --webroot ~/public_html
-```
-
-همین! بیلدِ آماده در گیت هست و روی هاست به Node نیازی نیست.
-
-## روش‌های بردن ریپو روی هاست
-
-| روش | مراحل |
+| مورد | مقدار |
 | --- | --- |
-| **Git_version_control در cPanel** (پیشنهادی) | cPanel → «Git™ Version Control» → Create → آدرس ریپو → Clone |
-| SSH | `ssh user@host` سپس `git clone …` |
-| آپلود دستی | دانلود ZIP از GitHub → آپلود در File Manager → Extract (به‌روزرسانی‌های بعدی دستی می‌شود) |
+| کاربر cPanel | `khanomgo` |
+| پوشهٔ برنامهٔ بک‌اند (Application Root) | `/home/khanomgo/public_html/food-shop` |
+| محیط مجازی Python | `/home/khanomgo/virtualenv/public_html/food-shop/3.11` |
+| نسخهٔ Python | ‏3.11 (برنامهٔ «Setup Python App» ساخته شده) |
+| دیتابیس | **MySQL** — ساخته‌شده از cPanel → «MySQL® Databases» |
+| آدرس API روی هاست | `https://دامنه-شما/food-shop/api/v1/…` |
+| فرانت فروشگاه | `https://hmplus28.github.io/food-shop/` |
 
-> بهتر است ریپو **خارج از ریشهٔ وب** باشد (مثلاً `~/repos/food-shop`) و اسکریپت فقط
-> فایل‌های انتشار را به `~/public_html` کپی کند؛ اگر ریپو داخل ریشهٔ وب است نگران
-> نباشید — `.htaccess` ساخته‌شده مسیرهای `app/`, `deploy/`, `scripts/`, `download/`,
-> `upload/`, `skills/` و `.git` را مسدود می‌کند.
+> اسکریپت بک‌اند این مسیرها را خودش پیدا می‌کند؛ چون venv سی‌پنل از الگوی
+> `~/virtualenv/<مسیر-نسبی-پوشهٔ-برنامه>/<نسخه>` پیروی می‌کند و پوشهٔ برنامه
+> `~/public_html/food-shop` است، به‌صورت خودکار شناسایی می‌شود.
 
-## گزینه‌های اسکریپت
+---
+
+## گام ۰ — ساخت دیتابیس MySQL (یک‌بار، ۳ دقیقه)
+
+cPanel → **MySQL® Databases**:
+
+1. **Create New Database** → نام: `foodshop`
+   (سی‌پنل پیشوند حساب را خودش می‌گذارد → نام کامل: `khanomgo_foodshop`)
+2. **MySQL Users → Add New User** → نام: `shop` (کامل: `khanomgo_shop`) + رمز قوی.
+   از «Password Generator» سی‌پنل استفاده کنید و رمز را همان لحظه ذخیره کنید.
+3. **Add User To Database** → هر دو را انتخاب کنید → تیک **ALL PRIVILEGES** → «Make Changes»
+4. پیشنهادی: phpMyAdmin → انتخاب دیتابیس → Operations → Collation:
+   `utf8mb4_unicode_ci` (پشتیبانی کامل فارسی)
+
+این سه مقدار را (`DB_NAME`، `DB_USER`، `DB_PASSWORD`) برای گام ۲ نگه دارید.
+
+## گام ۱ — بردن کد بک‌اند به پوشهٔ برنامه
+
+در ترمینال cPanel یا SSH:
 
 ```bash
-bash deploy/deploy_cpanel.sh                          # پیش‌فرض: کپی بیلد commit‌شده
-bash deploy/deploy_cpanel.sh --webroot ~/public_html  # تعیین ریشهٔ وب مقصد
-bash deploy/deploy_cpanel.sh --clean                  # پاک‌سازی کامل ریشهٔ وب قبل از کپی (احتیاط!)
-bash deploy/deploy_cpanel.sh --build                  # بیلد روی خود هاست (نیاز به Node ≥18)
-bash deploy/deploy_cpanel.sh --build --base /         # بیلد با مسیر پایهٔ دامنهٔ اختصاصی (پیش‌فرض)
-bash deploy/deploy_cpanel.sh --build --api-base https://api.example.ir/api/v1 --api-enabled
+cd ~
+# اگر قبلاً کلون شده فقط آپدیت کنید:
+if [ -d ~/food-shop-repo/.git ]; then (cd ~/food-shop-repo && git pull); else
+  git clone https://github.com/hmplus28/food-shop.git ~/food-shop-repo; fi
+
+# اولین بار — ساخت پوشهٔ برنامه و کپی بک‌اند:
+mkdir -p ~/public_html/food-shop
+cp -r ~/food-shop-repo/backend/. ~/public_html/food-shop/
 ```
 
-## دو نکتهٔ مهم دربارهٔ مسیر پایه و بک‌اند
-
-### ۱) مسیر پایه (VITE_BASE)
-
-بیلدِ commit‌شده در ریشهٔ ریپو برای **GitHub Pages** با مسیر پایهٔ `/food-shop/`
-بسته شده است. اگر دامنهٔ cPanel را مستقیم روی ریشهٔ وب نشانه بروید، css/js لود
-نمی‌شود. اسکریپت این را تشخیص می‌دهد و هشدار می‌دهد؛ کافی است یک‌بار بگیرید:
+به‌روزرسانی‌های بعدی (بدون دست زدن به `.env`، استاتیک‌ها و پشتیبان‌ها):
 
 ```bash
-bash deploy/deploy_cpanel.sh --build        # Vite با VITE_BASE=/ بیلد می‌گیرد
+rsync -a --delete \
+  --exclude '.env' --exclude '.env.*' --exclude 'db.sqlite3' \
+  --exclude 'staticfiles' --exclude 'backups' --exclude 'logs' --exclude 'tmp' \
+  ~/food-shop-repo/backend/ ~/public_html/food-shop/
 ```
 
-### ۲) اتصال به بک‌اند (VITE_API_BASE)
+اگر rsync در دسترس نبود، همان `cp -r ~/food-shop-repo/backend/. ~/public_html/food-shop/`
+کافی است — فایل `.env` روی هاست بازنویسی نمی‌شود چون در ریپو وجود ندارد.
 
-آدرس بک‌اند در **زمان بیلد** داخل باندل می‌رود (بعد از build، تغییر `.env` بی‌اثر است).
+## گام ۲ — پر کردن `.env`
+
+اگر `.env` هنوز ساخته نشده، گام ۳ خودش آن را با مقادیر امن می‌سازد و در پایان
+می‌گوید چه چیزهایی باید پر شود. برای دیتابیس این چهار خط لازم است:
+
+```env
+DB_ENGINE=mysql
+DB_NAME=khanomgo_foodshop
+DB_USER=khanomgo_shop
+DB_PASSWORD=رمزی-که-در-گام-۰-ساختید
+DB_HOST=localhost
+DB_PORT=3306
+```
+
+## گام ۳ — اجرای اسکریپت استقرار
 
 ```bash
-# روی هاست:
+source /home/khanomgo/virtualenv/public_html/food-shop/3.11/bin/activate
+cd /home/khanomgo/public_html/food-shop
+bash deploy/deploy_cpanel.sh
+```
+
+اسکریپت خودکار این کارها را می‌کند:
+
+1. **پایتون ≥۳.۱۰** را پیدا می‌کند (`/opt/alt/python3XX` کلودلینوکس هم چک می‌شود)
+2. **venv سی‌پنلِ همین پروژه** را شناسایی می‌کند (`~/virtualenv/public_html/food-shop/3.11`)
+3. **وابستگی‌ها** را نصب می‌کند (شامل `PyMySQL` برای MySQL — خالص‌پایتون، بدون کامپایل)
+4. **.env**: کلیدهای غایب را با مقادیر امن اضافه می‌کند (`SECRET_KEY` و
+   `ADMIN_PASSWORD` تصادفی)؛ مقادیر موجود بازنویسی نمی‌شوند و فایل
+   دست‌کاری‌شده پاک‌سازی می‌شود — و **پیکربندی MySQL را کنترل می‌کند**:
+   اگر `DB_NAME/DB_USER/DB_PASSWORD` خالی باشد با راهنمای دقیق متوقف می‌شود
+5. **مایگریشن‌ها روی MySQL** + درج اولیهٔ محصولات (seed_shop — idempotent) + **collectstatic**
+6. **passenger_wsgi.py** مناسب venv سی‌پنل می‌سازد (بدون re-exec — تا خطای ۵۰۳ لودر lswsgi پیش نیاید)
+7. **.htaccess امن**: دانلود `.env`، سورس‌ها و لاگ‌ها را از وب می‌بندد
+8. **پشتیبان اولیهٔ MySQL** با `mysqldump` در `backups/` + ری‌استارت برنامه
+
+تست محلی بدون MySQL (روی سیستم خودتان): `KHANOMGOL_ALLOW_SQLITE=1 bash deploy/deploy_cpanel.sh`
+
+## گام ۴ — تست سلامت
+
+| آدرس | پاسخ مورد انتظار |
+| --- | --- |
+| `https://دامنه-شما/` | صفحهٔ فروشگاه (اگر فرانت روی خود هاست منتشر شده باشد — **نه** «It works! Python») |
+| `https://دامنه-شما/food-shop/api/v1/health` | `{"ok":true,"sms":{...}}` |
+| `https://دامنه-شما/food-shop/dj-admin/` | صفحهٔ ورود ادمین جنگو (با CSS) |
+
+### اگر صفحهٔ «It works! Python 3.11.18» به‌جای فروشگاه دیدید
+
+این صفحهٔ نمایشیِ خودِ «Setup Python App» است — نه خطای بک‌اند. وقتی برنامهٔ
+پایتون با **Application URL = `/`** ساخته شود، Passenger **همهٔ درخواست‌های
+دامنه را می‌رباید** و به همان اپ نمایشی می‌دهد؛ یعنی فروشگاه استاتیکِ
+`public_html` هم زیر این صفحه پنهان می‌شود. (`passenger_wsgi.py` واقعی هم
+اگر داخل `backend/` باشد اصلاً خوانده نمی‌شود، چون Passenger فقط ریشهٔ
+Application Root را نگاه می‌کند و آنجا نسخهٔ demo سی‌پنل نشسته است.)
+
+رفع در ۳ قدم:
+
+**۱) Application URL را از `/` به `/food-shop` تغییر دهید** — در cPanel →
+Setup Python App → روی برنامه **Edit** بزنید → «Application URL» →
+`/food-shop` → **Save**. از این پس فقط مسیرهای `/food-shop/…` (بک‌اند) به
+Passenger می‌روند و ریشهٔ دامنه به فایل‌های استاتیک فروشگاه.
+
+**۲) فایل `passenger_wsgi.py` درست را در ریشهٔ برنامه بگذارید و وابستگی‌ها را داخل venv سی‌پنل نصب کنید** — هر دو را یک‌جا این‌طور انجام دهید (کد به‌روز + اجرای دوبارهٔ اسکریپت که حالا venv سی‌پنل را خودکار می‌شناسد و Startup File ریشه را خودش می‌نویسد):
+
+```bash
+source /home/khanomgo/virtualenv/public_html/food-shop/3.11/bin/activate
+# کد به‌روز را بگیرید (یا اگر کلون ندارید بسازید)
+if [ -d ~/food-shop-repo/.git ]; then (cd ~/food-shop-repo && git pull); else
+  git clone https://github.com/hmplus28/food-shop.git ~/food-shop-repo; fi
+# بک‌اند به‌روز را در پوشهٔ برنامهٔ سی‌پنل همگام کنید (بدون دست زدن به .env و استاتیک‌ها)
+mkdir -p ~/public_html/food-shop/backend
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --exclude '.env' --exclude '.env.*' --exclude '.venv-host' \
+    --exclude 'staticfiles' --exclude 'backups' --exclude 'logs' --exclude 'tmp' \
+    ~/food-shop-repo/backend/ ~/public_html/food-shop/backend/
+else
+  cp -r ~/food-shop-repo/backend/. ~/public_html/food-shop/backend/
+fi
+# اگر .env فقط داخل کلون بود، یک‌بار به پوشهٔ برنامه بیاورید
+[ -f ~/public_html/food-shop/backend/.env ] || \
+  cp ~/food-shop-repo/backend/.env ~/public_html/food-shop/backend/.env 2>/dev/null || true
+cd ~/public_html/food-shop/backend
+KHANOMGOL_APP_ROOT=/home/khanomgo/public_html/food-shop bash deploy/deploy_cpanel.sh
+touch ~/public_html/food-shop/tmp/restart.txt
+```
+
+اگر اسکریپت برای «پیکربندی دیتابیس MySQL ناقص» توقف کرد، یعنی `.env` این پوشه
+رمز دیتابیس را ندارد — همان رمز گام ۰ را در `DB_PASSWORD` بگذارید و دوباره اجرا کنید.
+
+`KHANOMGOL_APP_ROOT` می‌گوید Application Root واقعی سی‌پنل کجاست تا
+`passenger_wsgi.py` حتی اگر اسکریپت را از جای دیگری اجرا کنید، دقیقاً در
+همان پوشه نوشته شود (نسخهٔ نمایشی سی‌پنل هم خودکار در `passenger_wsgi.py.kg-backup` پشتیبان می‌شود).
+
+**۳) تست:** رفرش `https://دامنه-شما/` باید فروشگاه را نشان دهد و
+`/food-shop/api/v1/health` باید JSON بدهد. بعد از هر تغییر در پنل، دکمهٔ
+**Restart** را بزنید یا `touch ~/public_html/food-shop/tmp/restart.txt`.
+
+اگر ۵۰۳ گرفتید: cPanel → Setup Python App → دکمهٔ **Restart**؛ و مطمئن شوید
+Startup File همان `passenger_wsgi.py` است. پس از هر تغییر `.env`:
+`touch ~/public_html/food-shop/tmp/restart.txt`
+
+## گام ۵ — تنظیمات پس از استقرار (۵ دقیقه)
+
+`.env` را ویرایش کنید و سپس `touch tmp/restart.txt` بزنید:
+
+```env
+ALLOWED_HOSTS=دامنه-شما.ir
+CORS_ORIGINS=https://hmplus28.github.io
+ADMIN_PASSWORD=یک-رمز-قوی        # اگر تصادفی ساخته شده، از خروجی اسکریپت کپی کنید
+SHOP_NOTIFY_PHONE=0912…          # پیامک «سفارش جدید» به مدیر
+SMS_PROVIDER=kavenegar           # یا smsir / ghasedak / melipayamak / console
+KAVENEGAR_API_KEY=…
+KAVENEGAR_OTP_TEMPLATE=khanomgol-otp
+SECURE_SSL_REDIRECT=True         # فقط بعد از فعال‌شدن https
+SECURE_HSTS_SECONDS=31536000
+```
+
+پس از نصب SSL روی دامنه (cPanel → SSL/TLS Status → AutoSSL) این دو مقدار را
+روشن کنید؛ قبل از https فعال‌شان نکنید.
+
+## گام ۶ — اتصال فرانت به بک‌اند
+
+آدرس بک‌اند در **زمان بیلد** داخل باندل فرانت می‌رود (بعد از build تغییر `.env`
+بی‌اثر است). پس بعد از بالا آمدن بک‌اند، فرانت را یک‌بار با آدرس هاست بیلد و
+انتشار کنید:
+
+```bash
+# روی هاست (یا محلی) — ریشهٔ ریپو:
 bash deploy/deploy_cpanel.sh --build \
-  --api-base https://دامنه-بک‌اند/api/v1 --api-enabled
+  --api-base https://دامنه-شما/food-shop/api/v1 --api-enabled
 ```
-
-یا دستی: `app/.env` را ویرایش کنید (`VITE_API_ENABLED=true` و `VITE_API_BASE=…`)
-و `--build` بگیرید. قرارداد کامل نقاط پایانی در `app/.env.example` هست:
 
 | نقطهٔ پایانی | روش | پاسخ |
 | --- | --- | --- |
@@ -78,37 +210,66 @@ bash deploy/deploy_cpanel.sh --build \
 | `{BASE}/admin/stats` | GET | آمار فروشگاه (مدیر) |
 | `{BASE}/admin/sms` | GET | گزارش پیامک‌ها (مدیر) |
 
-تا بک‌اند در دسترس نباشد یا پاسخ ندهد، فروشگاه **بی‌صدا** به دادهٔ محلی برمی‌گردد
+تا بک‌اند در دسترس نباشد، فروشگاه **بی‌صدا** به دادهٔ محلی برمی‌گردد
 (هیچ‌وقت صفحهٔ خطا نمی‌بینید).
 
-## بک‌اند Django (پوشهٔ `backend`)
+## گام ۷ — پشتیبان‌گیری دوره‌ای MySQL (Cron)
 
-بک‌اند کامل فروشگاه با **Django 5 + DRF** در پوشهٔ `backend` قرار دارد:
-احراز هویت با رمز یا کد پیامکی (OTP)، محصولات، سفارش‌ها با محاسبهٔ قیمت سمت
-سرور، پنل مدیر و اتصال به پنل پیامکی (کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک).
-جزئیات کامل و جدول همهٔ نقاط پایانی در `backend/README.md` هست.
+یک‌بار فایل `~/.my.cnf` بسازید (تا رمز داخل خود دستور cron نباشد):
 
-### راه‌اندازی روی cPanel (Setup Python App)
-
-```bash
-# در ترمینال cPanel:
-cd ~/repos/food-shop/backend        # یا هر مسیری که ریپو را کلون کردید
-pip install -r requirements.txt
-cp .env.example .env                # ویرایش: ADMIN_PASSWORD، SMS_PROVIDER، کلید پنل پیامک
-python manage.py migrate
-python manage.py seed_shop          # ۲۸ محصول + حساب مدیر
+```
+[client]
+user=khanomgo_shop
+password=رمز-دیتابیس
 ```
 
-سپس در cPanel → **Setup Python App**: نسخهٔ Python ≥ 3.10، مسیر پوشهٔ
-`backend`، و «Application startup file» را `passenger_wsgi.py` بگذارید.
-بعد از Restart، آدرس بک‌اند را در بیلد فرانت بدهید:
+سطح دسترسی: `chmod 600 ~/.my.cnf` — سپس در cPanel → **Cron Jobs**:
 
-```bash
-bash deploy/deploy_cpanel.sh --build \
-  --api-base https://دامنه-یا-پورت-بک‌اند/api/v1 --api-enabled
+```cron
+0 3 * * * mysqldump --no-defaults -h localhost khanomgo_foodshop | gzip > ~/public_html/food-shop/backups/db-$(date +\%F).sql.gz && find ~/public_html/food-shop/backups -name 'db-*.sql.gz' -mtime +30 -delete
 ```
 
-### راه‌اندازی روی سرور مجازی (VPS)
+(هر شب ساعت ۳ صبح، پشتیبان فشردهٔ روزانه، نگهداری ۳۰ روز.)
+
+---
+
+## انتشار فرانت روی خود cPanel (اختیاری)
+
+```bash
+git clone https://github.com/hmplus28/food-shop.git   # یا git pull برای به‌روزرسانی
+cd food-shop
+bash deploy/deploy_cpanel.sh --webroot ~/public_html
+```
+
+بیلدِ آماده در گیت هست و روی هاست به Node نیازی نیست. اسکریپت فرانت
+`.htaccess` ساخته‌شده را طوری می‌نویسد که مسیرهای `/food-shop/…`
+(برنامهٔ بک‌اند) به SPA ریدایرکت نشوند — API با رفرش مستقیم هم کار می‌کند.
+
+> نکتهٔ مسیر پایه: بیلدِ commit‌شده برای GitHub Pages با `/food-shop/` بسته شده.
+> برای دامنهٔ اختصاصی cPanel یک‌بار با `--build` بگیرید تا با `VITE_BASE=/` بیلد شود.
+> و برای اتصال به بک‌اند: `--api-base https://دامنه-شما/food-shop/api/v1 --api-enabled`.
+
+## گزینه‌های اسکریپت
+
+```bash
+bash deploy/deploy_cpanel.sh                          # پیش‌فرض: کپی بیلد commit‌شده
+bash deploy/deploy_cpanel.sh --webroot ~/public_html  # تعیین ریشهٔ وب مقصد
+bash deploy/deploy_cpanel.sh --clean                  # پاک‌سازی کامل ریشهٔ وب قبل از کپی (احتیاط!)
+bash deploy/deploy_cpanel.sh --build                  # بیلد روی خود هاست (نیاز به Node ≥18)
+bash deploy/deploy_cpanel.sh --build --base /         # بیلد با مسیر پایهٔ دامنهٔ اختصاصی
+bash deploy/deploy_cpanel.sh --build --api-base https://دامنه-شما/food-shop/api/v1 --api-enabled
+```
+
+اسکریپت بک‌اند:
+
+```bash
+bash deploy/deploy_cpanel.sh --venv ~/virtualenv/public_html/food-shop/3.11   # venv مشخص
+bash deploy/deploy_cpanel.sh --python /opt/alt/python311/bin/python3.11      # پایتون مشخص
+KHANOMGOL_ALLOW_SQLITE=1 bash deploy/deploy_cpanel.sh                        # تست محلی بدون MySQL
+KHANOMGOL_APP_ROOT=~/public_html/food-shop bash deploy/deploy_cpanel.sh      # نوشتن Startup File در ریشهٔ برنامهٔ سی‌پنل
+```
+
+## راه‌اندازی روی سرور مجازی (VPS)
 
 ```bash
 cd backend && pip install -r requirements.txt
@@ -116,65 +277,32 @@ python manage.py migrate && python manage.py seed_shop && python manage.py colle
 gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 ```
 
-### اتصال پنل پیامکی
-
-در `backend/.env`:
-
-```env
-SMS_PROVIDER=kavenegar              # یا smsir / ghasedak / melipayamak / console
-KAVENEGAR_API_KEY=…
-KAVENEGAR_OTP_TEMPLATE=khanomgol-otp
-SHOP_NOTIFY_PHONE=0912…             # پیامک «سفارش جدید» به مدیر
-```
-
-پیامک‌های خودکار: کد ورود (OTP)، تأیید سفارش به مشتری، اطلاع سفارش جدید به
-مدیر و تغییر وضعیت سفارش به مشتری. تست سریع: پنل مدیریت فرانت → تب
-«پنل پیامک» → «ارسال پیامک تست». تا وقتی پنل پیامک تنظیم نشده
-(`SMS_PROVIDER=console`) همه‌چیز کار می‌کند و پیامک‌ها فقط ثبت می‌شوند.
-
-## SSL و دامنه
-
-1. cPanel → **Domains / Subdomains**: ریشهٔ وب (Document Root) را روی همان مسیری
-   بگذارید که به اسکریپت دادید (پیش‌فرض `~/public_html`).
-2. cPanel → **SSL/TLS Status** → **AutoSSL** را فعال/اجرا کنید تا https کار کند.
-3. بعد از https، آدرس بک‌اند هم باید `https://` باشد (وگرنه مرورگر درخواست mixed-content را می‌بندد).
-4. اگر بک‌اند جداگانه است، CORS را تنظیم کنید (مثلاً Django:
-   `CORS_ALLOWED_ORIGINS=https://دامنه-فرانت-شما`).
-
-## به‌روزرسانی‌های بعدی
-
-```bash
-# روی ماشین محلی (تغییر کد):
-cd app && npm run build && cp -r dist/. ..
-git add -A && git commit -m "build: …" && git push
-
-# روی هاست:
-cd food-shop && git pull && bash deploy/deploy_cpanel.sh
-```
-
 ## عیب‌یابی
 
 | نشانه | علت احتمالی / راه‌حل |
 | --- | --- |
+| «پیکربندی دیتابیس MySQL ناقص است» | `DB_NAME/DB_USER/DB_PASSWORD` در `.env` خالی است — گام ۰ و گام ۲ را کامل کنید |
+| خطای `Access denied for user` (1045) | `DB_USER/DB_PASSWORD` اشتباه است — در cPanel → MySQL® Databases → «Change Password» همان کاربر و آپدیت `.env` + `touch tmp/restart.txt` |
+| خطای `Unknown database` | نام دیتابیس را کامل با پیشوند حساب بنویسید: `khanomgo_foodshop` نه `foodshop` |
+| خطای `Can't connect to local MySQL server` (2002) | `DB_HOST=localhost` بماند؛ اگر MySQL روی سرور جدا است، آدرس را از هاست بگیرید |
+| حروف فارسی به‌صورت `????` ذخیره می‌شود | Collation دیتابیس را `utf8mb4_unicode_ci` کنید (phpMyAdmin → Operations) |
 | صفحهٔ سفید، خطای ۴۰۴ برای `/assets/…` در کنسول | بیلد با مسیر پایهٔ `/food-shop/` منتشر شده → `--build` بگیرید |
-| رفرش مسیرهای عمیق (`/products`) خطای ۴۰۴ می‌دهد | `.htaccess` ساخته نشده — اسکریپت را دوباره اجرا کنید؛ اگر Apache اجازهٔ Override نمی‌دهد، در cPanel → MultiPHP INI / پشتیبانی هاست `AllowOverride All` را بخواهید |
+| رفرش مسیرهای عمیق (`/products`) خطای ۴۰۴ می‌دهد | `.htaccess` ساخته نشده — اسکریپت فرانت را دوباره اجرا کنید؛ اگر Apache اجازهٔ Override نمی‌دهد، از پشتیبانی هاست `AllowOverride All` را بخواهید |
 | css/js لود می‌شود ولی داده‌ها از سرور نمی‌آیند | `VITE_API_BASE` placeholder است یا `VITE_API_ENABLED=false` → `--build --api-base … --api-enabled` |
-| «Node ≥18 پیدا نشد» هنگام `--build` | در cPanel «Setup Node.js App» برنامه بسازید یا `--node /opt/alt/alt-nodejs18/bin/node` بدهید؛ یا بیلد را محلی بگیرید و commit کنید (پیشنهادی) |
+| «Node ≥18 پیدا نشد» هنگام `--build` | در cPanel «Setup Node.js App» برنامه بسازید یا بیلد را محلی بگیرید و commit کنید (پیشنهادی) |
 | تغییرات دیده نمی‌شود | کش مرورگر — `index.html` بدون کش منتشر می‌شود؛ با Ctrl+F5 بگیرید |
 | خطای ۵۰۰ | مالکیت/سطح دسترسی فایل‌ها را در File Manager چک کنید (۶۴۴ برای فایل‌ها) |
+| بک‌اند خطای ۵۰۳ می‌دهد (Passenger) | پس از هر تغییر venv/passenger_wsgi.py ری‌استارت لازم است: `touch tmp/restart.txt` یا دکمهٔ Restart در Setup Python App؛ Startup File باید `passenger_wsgi.py` باشد |
+| صفحهٔ «It works! Python 3.11.18» به‌جای فروشگاه | Application URL در Setup Python App روی `/` است → ویرایش به `/food-shop` + Restart (بخش «اگر صفحهٔ It works دیدید» در گام ۴) |
+| پنل `dj-admin` بدون CSS است | `FORCE_SCRIPT_NAME` و `STATIC_URL` در `.env` هم‌اهنگ با Application URL نیستند → `FORCE_SCRIPT_NAME=/food-shop` و `STATIC_URL=/food-shop/static/` + `touch tmp/restart.txt` |
+| «پایتون ≥3.10 پیدا نشد» در اسکریپت بک‌اند | در cPanel → Setup Python App برنامه با Python 3.11 بسازید (Application root = `public_html/food-shop`) و دوباره اجرا کنید؛ یا مسیر بدهید: `--python /opt/alt/python311/bin/python3.11` |
+| `api/v1/health` پاسخ نمی‌دهد | `ALLOWED_HOSTS` در `backend/.env` دامنه را ندارد → ویرایش و `touch tmp/restart.txt`؛ لاگ‌ها در `backend/logs/` |
+| فرانت به بک‌اند وصل نمی‌شود (CORS) | `CORS_ORIGINS` در `backend/.env` باید دقیقاً دامنهٔ فرانت باشد (با https و بدون اسلش آخر) |
 
-## امنیت
+## امنیت و تست‌ها
 
-- `.htaccess` ساخته‌شده مسیرهای حساس ریپو (`app/`, `deploy/`, `scripts/`, `download/`, `upload/`, `skills/`, `.git`, `.env`) و فایل‌های پیکربندی را از وب مسدود می‌کند و هدرهای `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` را فعال می‌سازد.
-- **CSP**: بلوک پیشنهادی به‌صورت کامنت در قالب `.htaccess` هست؛ قبل از فعال‌سازی دامنهٔ بک‌اند را در `connect-src` بگذارید.
-- تست‌های امنیتی پروژه (بررسی ایستا + پروب XSS پویا + `npm audit`): با `Vite ≥ 6.4.6` الان **۰ آسیب‌پذیری** دارد؛ بعد از تغییر کد `cd app && npm audit` را تکرار کنید.
-- پس از اتصال بک‌اند: رمز و نقش مدیر باید سمت سرور بیاید (در دموی فعلی `admin/admin1234` فقط محلی است) و CORS بک‌اند فقط به دامنهٔ فرانت اجازه بدهد.
-
-## چه چیزی به ریشهٔ وب کپی می‌شود؟
-
-- `index.html` (بیلد)
-- `assets/` (css/js هش‌شده — کاملاً جایگزین می‌شود)
-- `404.html`، `robots.txt`، `sitemap.xml`، `.nojekyll` (محتویات `app/public`)
-- `.htaccess` (ساخته/به‌روزرسانی می‌شود — بلوک `KHANOMGOL-SPA`)
-
-سایر فایل‌های ریشهٔ وب دست نمی‌خورند (مگر با `--clean` که همه — جز `cgi-bin` — را پاک می‌کند).
+- `.htaccess` بک‌اند مسیرهای حساس (`shop/`, `config/`, `deploy/`, `logs/`, `tmp/`, `.git`, `.env`) و فایل‌های پیکربندی را از وب می‌بندد؛ `.htaccess` فرانت هدرهای `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` را فعال می‌کند.
+- رمز دیتابیس MySQL فقط در `.env` (محافظت‌شده از وب) و `~/.my.cnf` (سطح دسترسی ۶۰۰) نگه‌داری می‌شود — هرگز داخل کد یا ریپو نیست.
+- **تست امنیتی بک‌اند** (۶۹ بررسی: تزریق، JWT، IDOR، throttle OTP، دستکاری مالی): `python scripts/test_backend_security.py` — همه سبز.
+- **تست ریسپانسیو موبایل** (۶ دستگاه از ۳۲۰px تا تبلت × ۷ صفحهٔ فروشگاه): ۰ سرریز افقی، ۰ خطای کنسول؛ برای بازبینی، در Chrome DevTools → Device Toolbar عرض‌های ۳۲۰/۳۶۰/۳۹۰/۴۱۴/۷۶۸/۱۰۲۴ را روی صفحات اصلی چک کنید.
+- پس از اتصال بک‌اند: `ADMIN_PASSWORD` را عوض کنید و `CORS_ORIGINS` فقط دامنهٔ فرانت باشد.
