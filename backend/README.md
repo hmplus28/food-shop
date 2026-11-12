@@ -4,8 +4,8 @@ REST API کامل فروشگاه: احراز هویت با رمز یا **کد ی
 سفارش‌ها (با محاسبهٔ قیمت سمت سرور)، پنل مدیر و **اتصال به پنل پیامکی**
 (کاوه‌نگار / SMS.ir / قاصدک / ملی پیامک).
 
-- پایگاه داده: SQLite (بدون نیاز به سرور جدا — برای شروع و فروشگاه‌های متوسط کافی است)
-- تنها وابستگی‌ها: Django + DRF + SimpleJWT + cors-headers + whitenoise (همه در `requirements.txt`)
+- پایگاه داده: توسعهٔ محلی SQLite (بدون نیاز به سرور)؛ روی هاست cPanel با `DB_ENGINE=mysql` و کلیدهای `DB_*` روی **MySQL** (utf8mb4) اجرا می‌شود — دیتابیس از cPanel → «MySQL® Databases» ساخته می‌شود
+- تنها وابستگی‌ها: Django + DRF + SimpleJWT + cors-headers + whitenoise + درایور MySQL (PyMySQL — همه در `requirements.txt`)
 
 ## اجرای سریع محلی
 
@@ -178,7 +178,7 @@ Python 3.11+ ، Application root = پوشهٔ backend ، Startup File = `passeng
 - [ ] `CORS_ORIGINS` فقط دامنهٔ فرانت (به‌جای `*`).
 - [ ] `SECRET_KEY` را در `.env` ثابت کنید (در نبودش خودکار ساخته و ذخیره می‌شود).
 - [ ] سقف‌های OTP (`OTP_TTL/OTP_COOLDOWN/OTP_HOURLY/OTP_MAX_ATTEMPTS`) را با متن کسب‌وکار تنظیم کنید.
-- [ ] پشتیبان‌گیری دوره‌ای از `backend/db.sqlite3`.
+- [ ] پشتیبان‌گیری دوره‌ای دیتابیس MySQL با `mysqldump` (cron پیشنهادی در `deploy/GUIDE-CPANEL-FA.md`).
 
 ## تست
 

@@ -522,6 +522,9 @@ RewriteRule (^|/)(app|deploy|scripts|download|upload|skills|tool-results)(/|$) -
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
+    # بک‌اند Django زیر ‎/food-shop/‎ است (برنامهٔ Passenger؛ Application URL = /food-shop).
+    # این مسیرها نباید به SPA ریدایرکت شوند وگرنه ‎/food-shop/api/v1/…‎ از کار می‌افتد.
+    RewriteCond %{REQUEST_URI} !^/food-shop(/|$)
     RewriteRule ^ index.html [L]
 </IfModule>
 # END KHANOMGOL-SPA

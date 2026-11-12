@@ -8,13 +8,15 @@
 #       ‎/opt/alt/python3XX‎ کلودلینوکس (پایتون پیش‌فرضِ ترمینال cPanel معمولاً
 #       قدیمی است؛ نسخهٔ واقعی هر کاندید اجرا و بررسی می‌شود)
 #    ۲. تشخیص خودکار venv سی‌پنل (‎~/virtualenv/...‎ اگر از «Setup Python App»
-#       استفاده کرده باشید) و در نبودش، ساخت ‎.venv-host‎
-#    ۳. نصب وابستگی‌ها از ‎deploy/requirements-cpanel.txt‎
-#       (بدون gunicorn — زیر Passenger نیازی به آن نیست)
-#    ۴. ساخت/تکمیل فایل ‎.env‎ — SECRET_KEY و ADMIN_PASSWORD تصادفی + همهٔ
-#       کلیدهای فروشگاه و پنل پیامکی (کلیدهای غایب اضافه می‌شوند و مقادیر
-#       موجود بازنویسی نمی‌شوند)
-#    ۵. اجرای مایگریشن‌ها، درج اولیهٔ محصولات (seed_shop) و جمع‌آوری استاتیک
+#       استفاده کرده باشید؛ در این استقرار: ‎~/virtualenv/public_html/food-shop/3.11‎)
+#       و در نبودش، ساخت ‎.venv-host‎
+#    ۳. نصب وابستگی‌ها از ‎deploy/requirements-cpanel.txt‎ (شامل PyMySQL برای
+#       دیتابیس MySQL؛ بدون gunicorn — زیر Passenger نیازی به آن نیست)
+#    ۴. ساخت/تکمیل فایل ‎.env‎ — SECRET_KEY و ADMIN_PASSWORD تصادفی + کلیدهای
+#       دیتابیس MySQL، فروشگاه و پنل پیامکی (کلیدهای غایب اضافه می‌شوند و مقادیر
+#       موجود بازنویسی نمی‌شوند) و کنترل سخت‌گیرانهٔ پیکربندی MySQL:
+#       DB_ENGINE=mysql الزامی است (دیتابیس از cPanel → MySQL® Databases ساخته می‌شود)
+#    ۵. اجرای مایگریشن‌ها روی MySQL، درج اولیهٔ محصولات (seed_shop) و جمع‌آوری استاتیک
 #    ۶. ساخت/به‌روزرسانی ‎passenger_wsgi.py‎ (Startup File برای Passenger سی‌پنل)
 #       — دو حالت: venv سی‌پنل (بدون re-exec) و venv معمولی (با re-exec)
 #    ۷. افزودن قواعد امنیتی به ‎.htaccess‎ (جلوی دانلود ‎.env‎، دیتابیس و سورس
@@ -26,7 +28,7 @@
 #
 #  گزینه‌ها:
 #      --venv <مسیر>    استفاده از محیط مجازی مشخص
-#                       (مثلاً ‎--venv ~/virtualenv/backend/3.11‎)
+#                       (مثلاً ‎--venv ~/virtualenv/public_html/food-shop/3.11‎)
 #      --python <مسیر>  استفاده از پایتون مشخص برای ساخت venv
 #                       (مثلاً ‎--python /opt/alt/python311/bin/python3.11‎)
 #      -h | --help      نمایش راهنما
@@ -145,6 +147,12 @@ ALLOWED_HOSTS|*
 CORS_ORIGINS|${FRONT_ORIGIN}
 CSRF_TRUSTED_ORIGINS|
 TOKEN_TTL_DAYS|30
+DB_ENGINE|mysql
+DB_NAME|khanomgo_foodshop
+DB_USER|khanomgo_shop
+DB_PASSWORD|
+DB_HOST|localhost
+DB_PORT|3306
 SECURE_SSL_REDIRECT|False
 SECURE_HSTS_SECONDS|0
 SECURE_PROXY_SSL_HEADER|False
@@ -214,6 +222,15 @@ DEBUG=False
 # دامنه‌های مجاز — دامنهٔ خود را جایگزین * کنید (با کاما)
 ALLOWED_HOSTS=*
 
+# ---------- دیتابیس MySQL (از cPanel → MySQL® Databases) ----------
+# نام دیتابیس و کاربر در cPanel پیشوند حساب می‌گیرند: khanomgo_foodshop / khanomgo_shop
+DB_ENGINE=mysql
+DB_NAME=khanomgo_foodshop
+DB_USER=khanomgo_shop
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=3306
+
 # ---------- CORS (دامنهٔ فرانت — فروشگاه روی GitHub Pages) ----------
 CORS_ORIGINS=${FRONT_ORIGIN}
 
@@ -268,8 +285,46 @@ _pass="$(env_value ADMIN_PASSWORD)"
 if [ -z "$_pass" ] || [ "$_pass" = "admin1234" ]; then
     warn "رمز مدیر پیش‌فرض است؛ پس از استقرار حتماً در ‎.env‎ عوض کنید و اسکریپت را دوباره اجرا کنید."
 fi
-info "دیتابیس: SQLite در فایل ‎backend/db.sqlite3‎ — برای فروشگاه‌های متوسط کافی است؛"
-info "  پشتیبان‌گیری دوره‌ای در قدم‌های پایانی پیشنهاد شده است."
+# ---------------------------------------------- کنترل دیتابیس MySQL ----
+# دیتابیس فروشگاه روی هاست MySQL است (نه SQLite). مقادیر را از cPanel →
+# «MySQL® Databases» بگیرید؛ نام دیتابیس/کاربر پیشوند حساب دارد (khanomgo_…).
+DB_ENGINE_VAL="$(env_value DB_ENGINE)"
+DB_NAME_VAL="$(env_value DB_NAME)"
+DB_USER_VAL="$(env_value DB_USER)"
+DB_PASS_VAL="$(env_value DB_PASSWORD)"
+DB_HOST_VAL="$(env_value DB_HOST)";  DB_HOST_VAL="${DB_HOST_VAL:-localhost}"
+DB_PORT_VAL="$(env_value DB_PORT)";  DB_PORT_VAL="${DB_PORT_VAL:-3306}"
+
+case "$(echo "$DB_ENGINE_VAL" | tr '[:upper:]' '[:lower:]')" in
+    mysql|mariadb) ;;
+    *)
+        if [ "${KHANOMGOL_ALLOW_SQLITE:-0}" = "1" ]; then
+            warn "KHANOMGOL_ALLOW_SQLITE=1 — مایگریشن‌ها روی SQLite اجرا می‌شود (فقط برای تست محلی)."
+            export DB_ENGINE=sqlite3   # تنظیمات جنگو از متغیر محیطی پیروی می‌کند
+            KHANOMGOL_DB_SKIP=1
+        else
+            die "دیتابیس باید MySQL باشد؛ در ‎.env‎ مقدار DB_ENGINE=mysql را بگذارید.
+(تست محلی بدون MySQL:  KHANOMGOL_ALLOW_SQLITE=1 bash deploy/deploy_cpanel.sh)"
+        fi
+        ;;
+esac
+if [ -z "${KHANOMGOL_DB_SKIP:-}" ]; then
+    if [ -z "$DB_NAME_VAL" ] || [ -z "$DB_USER_VAL" ] || [ -z "$DB_PASS_VAL" ]; then
+        die "پیکربندی دیتابیس MySQL در ‎.env‎ ناقص است (DB_NAME/DB_USER/DB_PASSWORD خالی).
+قدم‌های دقیق:
+  ۱) cPanel → «MySQL® Databases» → Create New Database → نام: foodshop
+     (نام کامل با پیشوند حساب: khanomgo_foodshop)
+  ۲) در همان صفحه → MySQL Users → Add New User → نام: shop (کامل: khanomgo_shop) + رمز قوی
+  ۳) «Add User To Database» → تیک ALL PRIVILEGES → Make Changes
+  ۴) در ‎.env‎ همین پوشه وارد کنید:
+       DB_ENGINE=mysql
+       DB_NAME=khanomgo_foodshop
+       DB_USER=khanomgo_shop
+       DB_PASSWORD=رمزی-که-ساختید
+  ۵) دوباره اجرا کنید: bash deploy/deploy_cpanel.sh"
+    fi
+    say "دیتابیس MySQL: $DB_NAME_VAL روی $DB_HOST_VAL:$DB_PORT_VAL (کاربر: $DB_USER_VAL)"
+fi
 
 # ----------------------------------------------------- ابزار یافتن پایتون ----
 # پایتون ≥3.10 لازم است (Django 5.x). نسخهٔ «واقعی» هر کاندید اجرا و بررسی
@@ -551,12 +606,24 @@ case "$PROJECT_DIR" in
 esac
 
 # ------------------------------------------------- پشتیبان‌گیری اولیه ----
+# MySQL: با mysqldump؛ رمز با MYSQL_PWD پاس داده می‌شود تا در لیست پروسه‌ها دیده نشود.
 BACKUPS_DIR="$PROJECT_DIR/backups"
 if [ -f "$PROJECT_DIR/db.sqlite3" ]; then
     mkdir -p "$BACKUPS_DIR"
     if [ ! -f "$BACKUPS_DIR/db-first-deploy.sqlite3" ]; then
         cp "$PROJECT_DIR/db.sqlite3" "$BACKUPS_DIR/db-first-deploy.sqlite3"
-        say "پشتیبان اولیهٔ دیتابیس: backups/db-first-deploy.sqlite3"
+        say "پشتیبان اولیهٔ دیتابیس SQLite: backups/db-first-deploy.sqlite3"
+    fi
+fi
+if [ -z "${KHANOMGOL_DB_SKIP:-}" ] && command -v mysqldump >/dev/null 2>&1; then
+    mkdir -p "$BACKUPS_DIR"
+    if [ ! -s "$BACKUPS_DIR/db-first-deploy.sql.gz" ]; then
+        if MYSQL_PWD="$DB_PASS_VAL" mysqldump -h "$DB_HOST_VAL" -P "$DB_PORT_VAL" \
+            -u "$DB_USER_VAL" "$DB_NAME_VAL" | gzip > "$BACKUPS_DIR/db-first-deploy.sql.gz"; then
+            say "پشتیبان اولیهٔ دیتابیس MySQL: backups/db-first-deploy.sql.gz"
+        else
+            warn "پشتیبان‌گیری اولیهٔ MySQL ناموفق بود؛ استقرار ادامه می‌یابد."
+        fi
     fi
 fi
 
@@ -580,14 +647,15 @@ echo "قدم‌های بعدی (اگر برای اولین بار استقرار
 echo ""
 echo -e "  ۱. ${C_YELLOW}cPanel → Setup Python App${C_OFF} را باز کنید و بررسی/ایجاد کنید:"
 echo "     • Python version: 3.11 (یا بالاتر)"
-echo "     • Application root: مسیر پوشهٔ backend (همین پوشه)"
-echo "     • Application URL: دامنه یا زیردامنهٔ بک‌اند (مثل api.example.ir)"
+echo "     • Application root: public_html/food-shop (همین پوشه)"
+echo "     • Application URL: /food-shop (برنامه زیر دامنهٔ اصلی سرو می‌شود)"
 echo "     • Startup File: passenger_wsgi.py (خودکار شناسایی می‌شود)"
 echo -e "     • اگر venv را سی‌پنل ساخته، اسکریپت در اجرای بعدی خودش آن را پیدا می‌کند؛"
-echo -e "       یا همین حالا مسیرش را بدهید: ${C_YELLOW}--venv ~/virtualenv/backend/3.11${C_OFF}"
+echo -e "       در همین استقرار venv سی‌پنل خودکار پیدا می‌شود: ${C_YELLOW}~/virtualenv/public_html/food-shop/3.11${C_OFF}"
 echo ""
 echo "  ۲. فایل ‎.env‎ را ویرایش کنید:"
-echo "     • ALLOWED_HOSTS=دامنه-بک‌اند-شما.ir"
+echo "     • ALLOWED_HOSTS=دامنه-شما.ir"
+echo "     • DB_NAME / DB_USER / DB_PASSWORD  (دیتابیس MySQL از cPanel → MySQL® Databases)"
 echo "     • CORS_ORIGINS=https://hmplus28.github.io  (همان دامنهٔ فروشگاه)"
 echo "     • ADMIN_PASSWORD=یک-رمز-قوی  (اگر تصادفی ساخته شده، بالا را کپی کنید)"
 echo "     • SHOP_NOTIFY_PHONE=موبایل-خودتان  (پیامک سفارش جدید)"
@@ -596,17 +664,21 @@ echo "     • بعد از نصب SSL: SECURE_SSL_REDIRECT=True و SECURE_HSTS_S
 echo "     سپس: touch tmp/restart.txt  (یا دوباره: bash deploy/deploy_cpanel.sh)"
 echo ""
 echo "  ۳. تست سلامت سرویس:"
-echo "     • https://دامنه-بک‌اند-شما/api/v1/health   → باید {\"ok\":true,...} بدهد"
-echo "     • پنل ادمین جنگو: https://دامنه-بک‌اند-شما/dj-admin/"
+echo "     • https://دامنه-شما/food-shop/api/v1/health   → باید {\"ok\":true,...} بدهد"
+echo "     • پنل ادمین جنگو: https://دامنه-شما/food-shop/dj-admin/"
 echo ""
 echo "  ۴. اتصال فرانت Vue به این بک‌اند (بیلد مجدد و انتشار در ریپو):"
-echo "     cd app && VITE_API_ENABLED=true VITE_API_BASE=https://دامنه-بک‌اند/api/v1 \\"
+echo "     cd app && VITE_API_ENABLED=true VITE_API_BASE=https://دامنه-شما/food-shop/api/v1 \\"
 echo "       VITE_BASE=/food-shop/ npm run build && cp -r dist/. .."
 echo ""
 echo "  ۵. تست اتصال پنل پیامکی: در پنل مدیریت فرانت، تب «پنل پیامک» → ارسال پیامک آزمایشی."
 echo ""
-echo "  ۶. پشتیبان‌گیری دوره‌ای دیتابیس — در cPanel → Cron Jobs:"
-echo "     0 3 * * * cp $PROJECT_DIR/db.sqlite3 $BACKUPS_DIR/db-\$(date +\\%F).sqlite3"
+echo "  ۶. پشتیبان‌گیری دوره‌ای دیتابیس MySQL — یک‌بار فایل ‎~/.my.cnf‎ بسازید:"
+echo "       [client]"
+echo "       user=${DB_USER_VAL:-DB_USER}"
+echo "       password=رمز-دیتابیس"
+echo "     سپس در cPanel → Cron Jobs (روزانه ساعت ۳ صبح، نگهداری ۳۰ روز):"
+echo "     0 3 * * * mysqldump -h $DB_HOST_VAL $DB_NAME_VAL | gzip > $BACKUPS_DIR/db-\$(date +\\%F).sql.gz && find $BACKUPS_DIR -name 'db-*.sql.gz' -mtime +30 -delete"
 echo ""
 echo "  ۷. راهنمای کامل گام‌به‌گام: backend/README.md و deploy/GUIDE-CPANEL-FA.md"
 echo ""
