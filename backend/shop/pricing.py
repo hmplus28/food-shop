@@ -43,26 +43,26 @@ def line_unit_price(product, w):
 
 
 def coupon_effect(code, sub, first_order):
-    """اعتبارسنجی و اثر کد تخفیف → (off, ship_free, error_msg)
+    """اعتبارسنجی و اثر کد تخفیف (از جدول Coupon) → (off, ship_free, error_msg)
     خطا → (0, False, پیام فارسی)"""
+    from .models import Coupon
     code = (code or '').strip().upper()
     if not code:
         return 0, False, None
-    rule = COUPONS.get(code)
-    if not rule:
-        return 0, False, 'کد تخفیف نامعتبر است'
-    if rule.get('first') and not first_order:
-        return 0, False, 'کد WELCOME10 فقط برای اولین خرید است'
-    if sub < rule.get('min', 0):
+    rule = Coupon.objects.filter(code=code).first()
+    if not rule or rule.problem():
+        return 0, False, (rule.problem() if rule else None) or 'کد تخفیف نامعتبر است'
+    if rule.first_only and not first_order:
+        return 0, False, f'کد {code} فقط برای اولین خرید است'
+    if sub < rule.min_total:
         return 0, False, 'مبلغ سفارش برای این کد تخفیف کافی نیست'
-    t = rule['type']
-    if t == 'pct':
-        return js_round(sub * rule['val'] / 100), False, None
-    if t == 'cash':
-        return min(rule['val'], sub), False, None
-    if t == 'ship':
+    if rule.kind == 'pct':
+        return js_round(sub * min(rule.value, 100) / 100), False, None
+    if rule.kind == 'cash':
+        return min(rule.value, sub), False, None
+    if rule.kind == 'ship':
         return 0, True, None
-    return 0, False, None     # نوع day (SAMEDAY) اثر مالی ندارد
+    return 0, False, None     # نوع day (اولویت ارسال) اثر مالی ندارد
 
 
 def compute_order(items, coupon, ship_type, first_order):

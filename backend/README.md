@@ -48,7 +48,11 @@ cp -r dist/. ..       # انتشار در ریشهٔ ریپو (GitHub Pages) ی�
 | `/auth/login` | POST | عمومی | `{phone, password}` → `{ok, user, token}` |
 | `/settings` | GET | عمومی | تم و رنگ برند سراسری سایت `{theme, tune}` |
 | `/admin/settings` | PUT | مدیر | `{theme, tune}` → ذخیرهٔ ظاهر سایت برای همه |
-| `/admin/users` | GET | مدیر | فهرست مشتریان `?q=` با تعداد و مجموع سفارش |
+| `/admin/users` | GET | مدیر | فهرست کاربران `?q=` با تعداد و مجموع سفارش |
+| `/admin/users/{id}` | PATCH | مدیر | `{active?, role?, password?}` — فعال/غیرفعال، نقش، رمز موقت (تغییر حساب خود ممنوع) |
+| `/admin/coupons` | GET/POST | مدیر | فهرست / ساخت کد تخفیف `{code, type: pct\|cash\|ship\|day, val, min, maxUses, expiresAt, first, label, active}` |
+| `/admin/coupons/{id}` | PUT/DELETE | مدیر | ویرایش / حذف کد تخفیف |
+| `/coupons/check?code=` | GET | عمومی | قاعدهٔ کد تخفیف معتبر برای نمایش در سبد |
 | `/auth/me` | GET | توکن | پروفایل کاربر جاری |
 | `/products` | GET | عمومی | فهرست محصولات (`?all=1` فقط مدیر: با پنهان‌ها) |
 | `/products` | POST | مدیر | افزودن محصول (شناسه طبق قانون فرانت: max(100)+1) |

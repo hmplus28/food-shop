@@ -42,7 +42,7 @@
         </div>
       </div>
       <div class="f-bottom">
-        <span>© ۱۴۰۴ فروشگاه خشکبار <b>خانم گل</b> — تمامی حقوق محفوظ است.</span>
+        <span>© {{ jy }} فروشگاه خشکبار <b>خانم گل</b> — تمامی حقوق محفوظ است.</span>
         <a class="f-dayna" href="https://daynacode.ir" target="_blank" rel="noopener" aria-label="توسعه توسط تیم دایناکد — daynacode.ir">
           <span>توسعه توسط تیم <b>دایناکد</b></span>
           <img :src="DAYNA_LOGO" alt="دایناکد" width="84" height="28" loading="lazy">
@@ -55,6 +55,8 @@
 <script setup>
 import { CATS, IMG } from '../../data/catalog';
 
+/* سال شمسی جاری (۱۴۰۵ و بعد از آن خودکار) */
+const jy = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date());
 const DAYNA_LOGO = IMG + 'dayna-logo.png';   // کپی محلی؛ در نبودش main.js به daynacode.ir برمی‌گردد
 import { toast } from '../../stores/ui';
 

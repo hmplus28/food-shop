@@ -29,7 +29,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useSeo } from '../composables/useSeo';
-import { login, register } from '../stores/auth';
+import { auth, login, register } from '../stores/auth';
 import { toast } from '../stores/ui';
 
 useSeo({ title: 'ورود | ثبت‌نام', description: 'ورود یا ثبت‌نام در فروشگاه اینترنتی خانم گل برای دسترسی به پنل کاربری', path: '/auth' });
@@ -46,7 +46,7 @@ async function done(p) {
   busy.value = false;
   if (!res.ok) return toast(res.msg, 'err');
   toast('خوش آمدید! 🌰', 'gold');
-  router.push(String(route.query.redirect || '/account'));
+  router.push(String(route.query.redirect || (auth.isAdmin ? '/admin' : '/account')));   // مدیر مستقیم به پنل مدیریت
 }
 const doLogin = () => done(login(phone.value, pass.value));
 const doReg = () => done(register(name.value, phone.value, pass.value));

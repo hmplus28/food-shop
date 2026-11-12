@@ -180,6 +180,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '300/hour',
         'auth': '60/hour',
+        'coupon': '200/hour',
     },
 }
 

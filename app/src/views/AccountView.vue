@@ -10,6 +10,7 @@
               <div class="up-phone">{{ auth.user?.phone ? toFa(auth.user.phone) : 'برای فعال‌سازی پنل، یک خرید ثبت کنید' }}</div>
             </div>
             <div class="up-tier"><b>{{ tier.i }} {{ tier.n }}</b><span>سطح عضویت</span></div>
+            <RouterLink v-if="auth.isAdmin" class="btn btn-brand btn-sm" to="/admin" style="margin-inline-start:auto">پنل مدیریت</RouterLink>
           </div>
           <div v-if="!buyer" class="up-welcome">
             <svg class="icon"><use href="#i-gift" /></svg>
