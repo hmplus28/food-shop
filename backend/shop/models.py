@@ -159,6 +159,8 @@ class Coupon(models.Model):
     first_only = models.BooleanField('فقط اولین خرید', default=False)
     label = models.CharField('توضیح', max_length=120, blank=True, default='')
     active = models.BooleanField('فعال', default=True)
+    owner = models.ForeignKey('ShopUser', null=True, blank=True, on_delete=models.CASCADE, related_name='personal_coupons',
+                              verbose_name='متعلق به (کد شخصی)')
     max_uses = models.PositiveIntegerField('سقف استفاده (۰ = نامحدود)', default=0)
     used = models.PositiveIntegerField('دفعات استفاده', default=0)
     expires_at = models.DateTimeField('انقضا', null=True, blank=True)
@@ -178,8 +180,10 @@ class Coupon(models.Model):
         return {'code': self.code, 'type': self.kind, 'val': self.value, 'min': self.min_total,
                 'first': self.first_only, 'label': self.label or self.code}
 
-    def problem(self):
-        """پیام فارسی اگر الان قابل استفاده نیست، وگرنه None"""
+    def problem(self, user=None):
+        """پیام فارسی اگر الان قابل استفاده نیست، وگرنه None (کدهای شخصی فقط برای صاحب حساب)"""
+        if self.owner_id and (user is None or getattr(user, 'id', None) != self.owner_id):
+            return 'این کد متعلق به حساب دیگری است'
         if not self.active:
             return 'کد تخفیف نامعتبر است'
         if self.expires_at and timezone.now() >= self.expires_at:
@@ -187,6 +191,99 @@ class Coupon(models.Model):
         if self.max_uses and self.used >= self.max_uses:
             return 'ظرفیت استفاده از این کد تخفیف تمام شده است'
         return None
+
+
+class ShippingMethod(models.Model):
+    """روش ارسال — هزینه و زمان را مدیر از پنل تعیین می‌کند"""
+    key = models.CharField('شناسه', max_length=20, unique=True)
+    label = models.CharField('عنوان', max_length=120)
+    cost = models.BigIntegerField('هزینه (تومان)', default=0)
+    days = models.CharField('زمان تحویل', max_length=60, blank=True, default='')
+    hint = models.CharField('توضیح کوتاه', max_length=120, blank=True, default='')
+    active = models.BooleanField('فعال', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'روش ارسال'
+        verbose_name_plural = 'روش‌های ارسال'
+        ordering = ['sort', 'id']
+
+    def __str__(self):
+        return self.label
+
+    @property
+    def public(self):
+        return {'type': self.key, 'label': self.label, 'cost': self.cost, 'days': self.days, 'hint': self.hint or self.days}
+
+
+class Page(models.Model):
+    """صفحات محتوایی (راهنمای خرید، سوالات متداول، قوانین، …) — توسط مدیر ویرایش می‌شود"""
+    KIND = [('text', 'متنی'), ('faq', 'سوالات متداول'), ('shipping', 'ارسال (جدول هزینه‌ها)'), ('contact', 'تماس')]
+    GROUP = [('guide', 'راهنمای خرید'), ('about', 'دربارهٔ ما'), ('legal', 'قوانین')]
+    slug = models.CharField('نشانی', max_length=60, unique=True)
+    title = models.CharField('عنوان', max_length=120)
+    kind = models.CharField('نوع', max_length=10, choices=KIND, default='text')
+    group = models.CharField('گروه', max_length=10, choices=GROUP, default='guide')
+    body = models.TextField('متن', blank=True, default='')
+    items = models.JSONField('سوال و جواب‌ها', default=list, blank=True)
+    active = models.BooleanField('نمایش', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'صفحه'
+        verbose_name_plural = 'صفحات'
+        ordering = ['sort', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class LuckyPrize(models.Model):
+    """جایزه‌های کارت شانس (وزن = احتمال نسبی)"""
+    title = models.CharField('عنوان', max_length=80)
+    desc = models.CharField('توضیح', max_length=200, blank=True, default='')
+    kind = models.CharField('نوع', max_length=6, choices=Coupon.KIND, default='pct')
+    value = models.PositiveIntegerField('مقدار', default=0)
+    min_total = models.BigIntegerField('حداقل خرید', default=0)
+    weight = models.PositiveSmallIntegerField('وزن (احتمال نسبی)', default=10)
+    icon = models.CharField('آیکن', max_length=30, default='i-gift')
+    active = models.BooleanField('فعال', default=True)
+
+    class Meta:
+        verbose_name = 'جایزهٔ کارت شانس'
+        verbose_name_plural = 'جایزه‌های کارت شانس'
+        ordering = ['-weight', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class LuckyWin(models.Model):
+    """سابقهٔ هر بار استفاده از کارت شانس — روی حساب کاربر ثبت می‌شود"""
+    user = models.ForeignKey('ShopUser', on_delete=models.CASCADE, related_name='lucky_wins')
+    prize_title = models.CharField(max_length=80)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True, on_delete=models.SET_NULL, related_name='lucky_wins')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'برندهٔ کارت شانس'
+        verbose_name_plural = 'برنده‌های کارت شانس'
+        ordering = ['-created_at']
+
+
+class ConsultRequest(models.Model):
+    """درخواست مشاورهٔ تلفنی از صفحهٔ اصلی"""
+    name = models.CharField('نام', max_length=120)
+    phone = models.CharField('موبایل', max_length=15)
+    topic = models.CharField('موضوع', max_length=80, blank=True, default='')
+    done = models.BooleanField('پیگیری شد', default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name = 'درخواست مشاوره'
+        verbose_name_plural = 'درخواست‌های مشاوره'
+        ordering = ['done', '-created_at']
 
 
 class SmsLog(models.Model):

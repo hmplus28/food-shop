@@ -181,6 +181,7 @@ REST_FRAMEWORK = {
         'anon': '300/hour',
         'auth': '60/hour',
         'coupon': '200/hour',
+        'consult': '10/hour',
     },
 }
 

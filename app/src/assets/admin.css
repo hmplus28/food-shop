@@ -1,0 +1,32 @@
+/* استایل مشترک پنل مدیریت (برای AdminView و کامپوننت‌های views/admin/*) */
+.admin-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-sm);padding:14px}
+.admin-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.sync-chip{font-size:.72rem;padding:6px 12px;border-radius:999px;font-weight:700}
+.sync-chip.on{background:var(--brand-050);color:var(--brand-700);border:1px solid var(--brand-100)}
+.sync-chip.off{background:var(--bg-warm);color:var(--ink-3);border:1px solid var(--line)}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem;min-width:640px}
+.tbl th{background:var(--bg-warm);padding:9px 10px;text-align:start;color:var(--ink-2);font-size:.76rem;white-space:nowrap}
+.tbl td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:middle}
+.td-acts{white-space:nowrap}
+.td-acts .del,.btn.del{color:var(--red);border-color:#f7cdc9}
+.td-items{max-width:280px;font-size:.74rem;color:var(--ink-2)}
+.badge-hide{background:var(--bg-warm);color:var(--ink-3);border:1px solid var(--line);border-radius:999px;font-size:.66rem;padding:1px 8px;margin-inline-start:6px}
+.chk{display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ink-2)}
+.ad-h{font-size:.95rem;margin:0 0 10px;color:var(--ink)}
+.ad-sub{font-size:.76rem;color:var(--ink-3);margin:-4px 0 12px;line-height:1.9}
+.ad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px}
+.ad-grid .full{grid-column:1/-1}
+.ad-split{display:grid;grid-template-columns:230px 1fr;gap:14px;align-items:start}
+.ad-list{display:grid;gap:6px}
+.ad-list button{text-align:start;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;color:var(--ink-2)}
+.ad-list button.on{background:var(--brand-050);border-color:var(--brand-100);color:var(--brand-700);font-weight:700}
+.ad-list button small{display:block;color:var(--ink-3);font-weight:500}
+.subtabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.subtabs button{padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;color:var(--ink-2)}
+.subtabs button.on{background:var(--brand-050);border-color:var(--brand-100);color:var(--brand-700);font-weight:700}
+.preview{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;background:var(--bg-warm);font-size:.86rem}
+.preview :deep(h2),.preview h2{font-size:1rem;margin:12px 0 6px}
+.preview p{margin:6px 0;line-height:1.9}
+.preview ul,.preview ol{padding-inline-start:20px;line-height:1.9}
+@media(max-width:767px){.ad-grid,.ad-split{grid-template-columns:1fr}}

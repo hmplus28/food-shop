@@ -46,7 +46,7 @@
             <div class="up-sec-title"><svg class="icon"><use href="#i-refresh" /></svg> دسترسی سریع</div>
             <div class="up-actions">
               <RouterLink class="up-act" to="/track"><svg class="icon"><use href="#i-truck" /></svg> پیگیری سفارش</RouterLink>
-              <a class="up-act" href="tel:02191092000"><svg class="icon"><use href="#i-headset" /></svg> پشتیبانی تلفنی</a>
+              <a class="up-act" :href="telLink"><svg class="icon"><use href="#i-headset" /></svg> پشتیبانی تلفنی</a>
               <RouterLink class="up-act" to="/#consult"><svg class="icon"><use href="#i-user" /></svg> مشاوره خرید</RouterLink>
               <button class="up-act" @click="openModal('lucky')"><svg class="icon"><use href="#i-gift" /></svg> کارت شانس امروز</button>
             </div>
@@ -74,18 +74,21 @@
 
           <!-- کدهای من -->
           <div v-else-if="tab === 'codes'">
-            <div class="code-card">
-              <div><span class="cc-c">WELCOME10</span><b>۱۰٪ تخفیف اولین خرید</b><span>حداقل سفارش: ۵۰۰٬۰۰۰ تومان {{ isFirstOrder ? '' : '— استفاده شده' }}</span></div>
+            <div v-if="!myOrders.length" class="code-card">
+              <div><span class="cc-c">WELCOME10</span><b>۱۰٪ تخفیف اولین خرید</b><span>حداقل سفارش: ۵۰۰٬۰۰۰ تومان — هنگام ثبت سفارش وارد کنید</span></div>
             </div>
-            <template v-if="wonCodes().length">
-              <div v-for="c in wonCodes()" :key="c.code" class="code-card" :class="{ used: c.used }">
-                <div><span class="cc-c">{{ c.code }}</span><b>{{ c.label }}</b><span>{{ c.used ? 'استفاده شده' : 'فعال — هنگام پرداخت اعمال کنید' }} | {{ faDate(c.ts) }}</span></div>
-                <button v-if="!c.used" class="btn btn-gold btn-sm use" @click="copy(c.code)">کپی/اعمال</button>
+            <template v-if="wins.length">
+              <div v-for="c in wins" :key="c.code" class="code-card" :class="{ used: c.status !== 'قابل استفاده' }">
+                <div>
+                  <span class="cc-c" dir="ltr">{{ c.code }}</span><b>{{ c.title }}</b>
+                  <span>{{ c.status }} | {{ faDate(c.at) }}<template v-if="c.expiresAt"> | تا {{ faDate(Date.parse(c.expiresAt)) }}</template></span>
+                </div>
+                <button v-if="c.status === 'قابل استفاده'" class="btn btn-gold btn-sm use" @click="useCode(c.code)">استفاده در سبد</button>
               </div>
             </template>
             <div v-else class="up-empty">
               <svg class="icon"><use href="#i-gift" /></svg>
-              <p>کارت شانس را باز کنید؛ کدهای تخفیف این‌جا ذخیره می‌شوند.</p>
+              <p>کارت شانس را باز کنید؛ جایزه‌ها به‌صورت کد شخصی این‌جا ذخیره می‌شوند.</p>
               <button class="btn btn-gold btn-sm" @click="openModal('lucky')">باز کردن کارت شانس 🎁</button>
             </div>
           </div>
@@ -116,21 +119,25 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { toFa, money, priceOf, faDate, LS } from '../data/site';
 import { prod, visibleProducts } from '../data/catalog';
 import { useSeo } from '../composables/useSeo';
 import { auth, updateProfile, logout } from '../stores/auth';
 import { fav } from '../stores/fav';
-import { addToCart } from '../stores/cart';
+import { addToCart, applyCoupon } from '../stores/cart';
+import { apiState, luckyMineApi } from '../services/api';
 import { orders, spentTotal, tierOf, syncMineOrders } from '../stores/orders';
 import { openModal, toast } from '../stores/ui';
+import { telLink } from '../stores/shop';
 import OrderCard from '../components/OrderCard.vue';
 
 useSeo({ title: 'پنل کاربری', description: 'پنل کاربری فروشگاه خانم گل؛ سفارش‌ها، علاقه‌مندی‌ها و کدهای تخفیف شما', path: '/account' });
 
 const router = useRouter();
-const tab = ref('home');
+const route = useRoute();
+const TABS = ['home', 'orders', 'favs', 'codes', 'account'];
+const tab = ref(TABS.includes(String(route.query.tab)) ? String(route.query.tab) : 'home');
 const tabs = [
   { id: 'home', label: 'خانه', ic: 'i-nut' },
   { id: 'orders', label: 'سفارش‌ها', ic: 'i-box' },
@@ -140,20 +147,25 @@ const tabs = [
 ];
 const pf = reactive({ name: auth.user?.name || '', phone: auth.user?.phone || '' });
 
-const wonCodes = () => LS.get('codes', []);
-const myOrders = computed(() => orders.filter(o => !auth.user?.phone || o.addr.phone === auth.user.phone));
+const wins = ref([]);
+/* با سرور فعال، فقط سفارش‌های همین حساب (از سرور) نشان داده می‌شود */
+const myOrders = computed(() => (apiState.enabled ? orders.filter(o => o.fromServer) : orders.filter(o => !auth.user?.phone || o.addr.phone === auth.user.phone)));
 
-onMounted(() => { if (auth.user) syncMineOrders(); });
+onMounted(async () => {
+  if (!auth.user) return;
+  syncMineOrders();
+  const r = await luckyMineApi();
+  if (r.ok) wins.value = r.wins || [];
+});
 const buyer = computed(() => myOrders.value.length > 0);
 const tier = computed(() => tierOf(spentTotal()));
 const pts = computed(() => Math.floor(spentTotal() / 100000));
-const activeCodes = computed(() => wonCodes().filter(c => !c.used).length);
+const activeCodes = computed(() => wins.value.filter(c => c.status === 'قابل استفاده').length);
 const favList = computed(() => fav.ids.map(id => prod(id)).filter(Boolean));
-const isFirstOrder = computed(() => orders.length === 0);
 
-function copy(code) {
-  navigator.clipboard?.writeText(code).catch(() => {});
-  toast(`کد ${code} کپی شد؛ هنگام پرداخت وارد کنید`, 'gold');
+async function useCode(code) {
+  await applyCoupon(code);
+  router.push('/cart');
 }
 function saveProfile() {
   const res = updateProfile(pf.name, pf.phone);

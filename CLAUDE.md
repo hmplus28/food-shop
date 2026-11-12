@@ -22,7 +22,7 @@ python manage.py migrate && python manage.py seed_shop
 python manage.py runserver 8787
 
 # تست (سرور باید روشن باشد)
-python3 scripts/test_backend_api.py        # باید 106/106 سبز باشد (فید ترب، تنظیمات سایت، کدهای تخفیف، مدیریت کاربران)
+python3 scripts/test_backend_api.py        # باید 173/173 سبز باشد (ارسال، محتوا، کارت شانس، مشاوره، کدها، کاربران)
 python3 scripts/test_backend_security.py   # باید 71/71 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
@@ -44,6 +44,15 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - مدیر بعد از ورود عادی مستقیم به `/admin` می‌رود؛ سال فوتر شمسی و پویاست.
 - آفلاین: فونت‌ها با `@fontsource` داخل بیلد؛ تصاویر در `app/public/img/` (دانلود با `scripts/fetch_assets.py`) با fallback خودکار به منبع اصلی تا زمان دانلود.
 - تست‌ها: `scripts/test_ui_admin.js` (نیاز به بک‌اند 8787 و بیلد API-روشن روی 4174، راهنما در سرفایل).
+
+## محتوا، ارسال، کارت شانس و ثبت سفارش (قوانین)
+- **ثبت سفارش فقط با حساب**: `POST /orders` احراز هویت می‌خواهد. در تسویه: شمارهٔ موبایل → `POST /auth/phone-check` → اگر حساب هست رمز می‌گیریم و وارد می‌کنیم، وگرنه نام+رمز می‌گیریم و حساب می‌سازیم → ادامهٔ ثبت سفارش. «اولین خرید» و مالکیت کد جایزه روی **حساب** حساب می‌شود، نه شمارهٔ گیرنده.
+- **کد تخفیف فقط بعد از ورود**: `GET /coupons/check` احراز هویت می‌خواهد؛ در سبد برای مهمان کادر کد نیست.
+- **کارت شانس حساب‌محور**: `POST /lucky/spin` (فقط با حساب، هر `cooldownHours` ساعت یک‌بار، پشت‌سرهم رد می‌شود)؛ جایزه = کد شخصی یک‌بارمصرف `LK-…` (`Coupon.owner`، `max_uses=1`، انقضا). جایزه‌ها/وزن/فاصله از پنل. کدهای همگانیِ قدیمی (LUCK5 …) غیرفعال شدند.
+- **ارسال از پنل**: مدل `ShippingMethod` + تنظیم `shipping` (سقف رایگان) در `SiteSetting`؛ `pricing.shipping_options()` مرجع محاسبه است؛ حداقل یک روش فعال می‌ماند.
+- **محتوا از پنل**: `GET /site` (اطلاعات تماس/متن‌ها/ارسال/صفحات/کارت شانس) → `stores/shop.js`؛ صفحات `Page` با نمای امن `utils/richtext.js` در `/page/:slug`؛ فرم مشاوره `ConsultRequest`.
+- **تاریخ‌ها همه شمسی**: `data/jalali.js` (نمایش با `fa-IR-u-ca-persian`؛ ورودی مدیر `۱۴۰۵/۱۲/۲۹` ↔ ISO). تاریخ میلادی فقط در sitemap و پنل `dj-admin` جنگو.
+- اجرای همهٔ تست‌ها: `bash scripts/run_all_tests.sh` (سرور تازه برای هر مجموعه؛ سقف نرخ ورود بین مجموعه‌ها نشت نکند).
 
 ## سئو و ترب
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.

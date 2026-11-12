@@ -4,10 +4,10 @@
       <nav class="crumbs" aria-label="مسیر صفحه"><RouterLink to="/">خانه</RouterLink> ‹ <span>پیگیری سفارش</span></nav>
       <div class="sec-head">
         <span class="en"><span class="sec-ic"><svg class="icon"><use href="#i-truck" /></svg></span>
-          <div><h1 class="sec-title">پیگیری <i>سفارش</i></h1><span class="sec-sub">با کد سفارش یا شماره موبایل</span></div></span>
+          <div><h1 class="sec-title">پیگیری <i>سفارش</i></h1><span class="sec-sub">با کد سفارشی که پیامک شده</span></div></span>
       </div>
       <form class="track-row" @submit.prevent="doTrack">
-        <input v-model="q" class="fld" type="text" placeholder="کد سفارش مثل AS-1024 یا شماره موبایل" aria-label="کد سفارش یا موبایل">
+        <input v-model="q" class="fld" type="text" placeholder="کد سفارش مثل KG-12345" aria-label="کد سفارش">
         <button class="btn btn-brand" type="submit">جستجو</button>
       </form>
       <div v-if="found" style="margin-top:16px">
@@ -15,11 +15,8 @@
       </div>
       <div v-else-if="searched" class="up-empty" style="margin-top:16px">
         <svg class="icon"><use href="#i-search" /></svg>
-        <p>سفارشی با این کد/شماره پیدا نشد.</p>
-        <button class="btn btn-light btn-sm" @click="demo">مشاهده نمونه پیش‌نمایش پیگیری</button>
+        <p>سفارشی با این کد پیدا نشد. کد را دوباره بررسی کنید یا در «پنل کاربری» سفارش‌هایتان را ببینید.</p>
       </div>
-      <div v-if="demoOrder" style="margin-top:16px"><Timeline :order="demoOrder" /></div>
-      <p class="hint" style="font-size:.8rem;color:var(--ink-3);margin-top:14px">نمونه آزمایشی: کد <b>AS-1024</b> را جستجو کنید و دکمه «نمونه پیش‌نمایش» را بزنید.</p>
     </div>
   </div>
 </template>
@@ -28,7 +25,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSeo } from '../composables/useSeo';
-import { findOrder, findByPhone, refreshOrderStatus } from '../stores/orders';
+import { trackOrder } from '../stores/orders';
 import Timeline from '../components/Timeline.vue';
 
 useSeo({ title: 'پیگیری سفارش', description: 'پیگیری لحظه‌ای وضعیت سفارش‌های فروشگاه خانم گل با کد سفارش یا شماره موبایل', path: '/track' });
@@ -36,19 +33,11 @@ useSeo({ title: 'پیگیری سفارش', description: 'پیگیری لحظه�
 const route = useRoute();
 const q = ref('');
 const found = ref(null);
-const demoOrder = ref(null);
 const searched = ref(false);
 
 async function doTrack() {
   searched.value = true;
-  demoOrder.value = null;
-  const byPhone = findByPhone(q.value);
-  found.value = byPhone[0] || findOrder(q.value) || null;
-  /* وضعیت واقعی سفارش از بک‌اند (اگر فعال باشد)؛ در نبودش همان وضعیت محلی نمایش داده می‌شود */
-  if (found.value) await refreshOrderStatus(found.value.code);
-}
-function demo() {
-  demoOrder.value = { code: 'AS-1024', ts: Date.now() - 9 * 60000, shipType: 'peyk', addr: { phone: '۰۹۱۲۳۴۵۶۷۸۹' }, items: [] };
+  found.value = await trackOrder(q.value);
 }
 onMounted(() => { if (route.query.code) { q.value = String(route.query.code); doTrack(); } });
 </script>

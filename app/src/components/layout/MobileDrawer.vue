@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="drawer-foot">
-      <a href="tel:02191092000"><svg class="icon"><use href="#i-phone" /></svg> ۰۲۱-۹۱۰۹۲۰۰۰</a>
+      <a :href="telLink"><svg class="icon"><use href="#i-phone" /></svg> {{ shop.info.phone }}</a>
       <RouterLink to="/#consult"><svg class="icon"><use href="#i-headset" /></svg> مشاوره خرید</RouterLink>
       <RouterLink to="/track"><svg class="icon"><use href="#i-doc" /></svg> پیگیری سفارش</RouterLink>
     </div>
@@ -34,6 +34,7 @@
 import { ref } from 'vue';
 import { CATS } from '../../data/catalog';
 import { ui, closeNav } from '../../stores/ui';
+import { shop, telLink } from '../../stores/shop';
 
 const accOpen = ref(null);
 </script>

@@ -1,9 +1,11 @@
 /* ---------- سبد خرید ---------- */
 import { reactive, computed } from 'vue';
-import { LS, priceOf, money, toFa, FREE_SHIP } from '../data/site';
+import { LS, priceOf, money, toFa } from '../data/site';
+import { freeFrom, freeShipOn, defaultShipCost } from './shop';
 import { prod, COUPONS } from '../data/catalog';
 import { toast } from './ui';
 import { apiState, couponCheckApi } from '../services/api';
+import { auth } from './auth';
 
 /* فقط ردیف‌های سالم: محصول موجود، وزن مجاز و تعداد ۱ تا ۲۰ */
 const sanitize = list => (Array.isArray(list) ? list : []).filter(c =>
@@ -63,9 +65,9 @@ export const couponVal = computed(() => {
   return { off: 0, ship: 0 };
 });
 
-export const shipRemain = computed(() => Math.max(0, FREE_SHIP - cartSub.value));
-export const shipFree = computed(() => cartSub.value === 0 ? false : (shipRemain.value <= 0 || couponVal.value.ship === 1));
-export const shipCost = computed(() => cartSub.value === 0 ? 0 : (shipFree.value ? 0 : 89000));
+export const shipRemain = computed(() => (freeShipOn.value ? Math.max(0, freeFrom.value - cartSub.value) : Infinity));
+export const shipFree = computed(() => cartSub.value === 0 ? false : ((freeShipOn.value && shipRemain.value <= 0) || couponVal.value.ship === 1));
+export const shipCost = computed(() => cartSub.value === 0 ? 0 : (shipFree.value ? 0 : defaultShipCost.value));
 export const grandTotal = computed(() => Math.max(0, cartSub.value - couponVal.value.off + shipCost.value));
 
 export function addToCart(pid, w, qty = 1, pack = false) {
@@ -93,6 +95,12 @@ export async function applyCoupon(raw) {
   const code = (raw || '').trim().toUpperCase();
   if (!code) return toast('کد تخفیف را وارد کنید', 'err');
   let rule = null;
+  if (apiState.enabled && !auth.user) {                // کد تخفیف فقط بعد از ورود به حساب
+    toast('برای استفاده از کد تخفیف ابتدا وارد حساب کاربری شوید', 'err');
+    const { default: router } = await import('../router');
+    router.push({ path: '/auth', query: { redirect: router.currentRoute.value.fullPath } });
+    return;
+  }
   if (apiState.enabled) {
     const r = await couponCheckApi(code);
     if (!r) return toast('اتصال به سرور برقرار نشد؛ دوباره تلاش کنید', 'err');

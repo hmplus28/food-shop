@@ -1,7 +1,7 @@
 /* ---------- وضعیت سراسری رابط (تم، کشوها، مودال‌ها، اعلان‌ها) ---------- */
 import { reactive } from 'vue';
 import { LS } from '../data/site';
-import { siteSettingsApi, adminSettingsApi } from '../services/api';
+import { siteSettingsApi, adminSettingsApi, luckyStatusApi } from '../services/api';
 
 export const ui = reactive({
   cartOpen: false,
@@ -67,3 +67,12 @@ export async function saveLook(theme, tune) {
   return true;
 }
 applyLook();
+
+/* ---------- کارت شانس: وضعیت حساب (سرور تعیین می‌کند) ---------- */
+export const lucky = reactive({ loaded: false, enabled: true, loggedIn: false, canSpin: false, nextAt: null });
+export async function refreshLucky() {
+  const r = await luckyStatusApi();
+  if (!r.ok) return false;
+  Object.assign(lucky, { loaded: true, enabled: !!r.enabled, loggedIn: !!r.loggedIn, canSpin: !!r.canSpin, nextAt: r.nextAt || null });
+  return true;
+}

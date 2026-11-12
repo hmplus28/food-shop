@@ -31,8 +31,9 @@ import Toasts from './components/Toasts.vue';
 import FabWrap from './components/FabWrap.vue';
 import MobileCartBar from './components/MobileCartBar.vue';
 import SiteStudio from './components/SiteStudio.vue';
-import { ui, closeAll, openModal, loadLook } from './stores/ui';
-import { refreshSession } from './stores/auth';
+import { ui, closeAll, openModal, loadLook, refreshLucky, lucky } from './stores/ui';
+import { loadShop } from './stores/shop';
+import { auth, refreshSession } from './stores/auth';
 import { syncCatalog } from './services/api';
 import { pruneCart } from './stores/cart';
 
@@ -45,16 +46,20 @@ watch(lock, v => { document.body.style.overflow = (v !== 'falsefalsenull') ? 'hi
 /* با هر جابه‌جایی مسیر، کشوها و مودال‌ها بسته شوند */
 watch(() => route.fullPath, () => closeAll());
 
-/* کارت شانس: هر بار ورود به سایت (هر سشن جدید) + همگام‌سازی بی‌صدای محصولات با بک‌اند */
-onMounted(() => {
+/* راه‌اندازی: ظاهر/محتوا/نشست از سرور؛ کارت شانس فقط برای کاربر واردشده‌ای که می‌تواند بچرخاند خودکار باز می‌شود */
+onMounted(async () => {
   loadLook();          // تم/رنگ سراسری سایت از سرور
-  refreshSession();    // نقش واقعی کاربر (سوپریوزر) از سرور
-  syncCatalog().then(pruneCart);   // اگر بک‌اند فعال/در دسترس نباشد، بی‌صدا به دادهٔ محلی برمی‌گردد
+  loadShop();          // اطلاعات تماس، ارسال، صفحات راهنما و تنظیم کارت شانس
+  await refreshSession();    // نقش واقعی کاربر (سوپریوزر) از سرور
+  syncCatalog().then(pruneCart);
+  await refreshLucky();
   setTimeout(() => {
-    if (!sessionStorage.getItem('asalat_lucky_seen')) {
+    if (lucky.enabled && lucky.loggedIn && lucky.canSpin && !sessionStorage.getItem('asalat_lucky_seen')) {
       sessionStorage.setItem('asalat_lucky_seen', '1');
       openModal('lucky');
     }
-  }, 1600);
+  }, 1400);
 });
+/* ورود/خروج کاربر → وضعیت کارت شانس تازه شود */
+watch(() => auth.user && auth.user.phone, () => refreshLucky());
 </script>

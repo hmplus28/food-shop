@@ -659,6 +659,7 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .modal-x{margin-inline-start:auto;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--bg-warm);color:var(--ink-2);transition:var(--tr)}
 .modal-x:hover{background:#fdeceb;color:var(--red)}
 .lucky-modal{position:relative}
+.lc-inner.locked{cursor:not-allowed;filter:saturate(.55)}
 .lucky-x{position:absolute;top:10px;inset-inline-start:10px;margin:0;z-index:5;background:rgba(255,255,255,.92)}
 .modal-body{padding:20px}
 
@@ -846,3 +847,9 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 @media print{.topbar,.site-header,.fab-wrap,.m-cart-bar,.overlay,.panel-shell,.toasts{display:none!important}}
+
+/* ---- تکمیل خرید: مرحلهٔ شمارهٔ موبایل ---- */
+.auth-form{display:grid;gap:12px}
+.id-note{font-size:.8rem;border-radius:12px;padding:10px 12px;background:var(--gold-050);border:1px solid var(--gold-100);color:var(--gold-600);line-height:1.9}
+.id-note.ok{background:var(--brand-050);border-color:var(--brand-100);color:var(--brand-700)}
+.id-note.err{background:#fdeceb;border-color:#f7cdc9;color:var(--red);margin-bottom:10px}

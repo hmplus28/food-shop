@@ -5,11 +5,14 @@
 import { LS, toEn, money } from '../data/site';
 import { toast } from './ui';
 import { cart, couponVal, cartSub, shipCost, clearCart, markCouponUsed } from './cart';
-import { SHIP_OPTIONS } from '../data/site';
-import { apiState, createOrderApi, fetchOrderStatusApi, patchOrderStatusApi, myOrdersApi } from '../services/api';
+import { shipMethods, freeFrom, freeShipOn } from './shop';
+import { apiState, apiCall, createOrderStrict, createOrderApi, fetchOrderStatusApi, patchOrderStatusApi, myOrdersApi } from '../services/api';
 
 export const orders = LS.get('orders', []);
 const save = () => LS.set('orders', orders);
+
+/* با تغییر حساب (ورود/خروج) سفارش‌های محلیِ حساب قبلی نباید دیده شوند */
+export function clearOrders() { orders.splice(0); save(); }
 
 export const STATUS = ['در حال ثبت', 'در حال آماده‌سازی', 'در مسیر ارسال', 'تحویل شده'];
 
@@ -21,10 +24,32 @@ export function orderStep(o) {
   return m < 2 ? 0 : m < 6 ? 1 : m < 15 ? 2 : 3;
 }
 
+/* ثبت سفارش با سرور فعال: فقط با حساب؛ قیمت‌ها را سرور محاسبه و برمی‌گرداند. خروجی {ok, order?, msg?} */
+export async function placeOrderServer({ addr, shipType, note = '' }) {
+  const body = {
+    items: cart.items.map(c => ({ pid: c.pid, w: c.w, qty: c.qty })),
+    coupon: cart.coupon || '', shipType,
+    addr: { name: addr.name.trim(), phone: toEn(addr.phone).replace(/\D/g, ''), prov: addr.prov, city: addr.city.trim(), addr: addr.addr.trim() },
+    note,
+  };
+  const r = await createOrderStrict(body);
+  if (!r.ok) return { ok: false, msg: r.msg || 'ثبت سفارش انجام نشد', status: r.status };
+  const opt = shipMethods.value.find(m => m.type === shipType) || {};
+  const order = {
+    code: r.code, remoteCode: r.code, ts: Date.now(), items: cart.items.map(c => ({ ...c })),
+    sub: r.sub, off: r.off, coupon: cart.coupon, shipCost: r.ship_cost, shipType, shipLabel: opt.label, shipDays: opt.days,
+    total: r.total, addr: body.addr, status: Number(r.status) || 0, fromServer: true,
+  };
+  orders.unshift(order);
+  save();
+  clearCart();
+  return { ok: true, order };
+}
+
 export function placeOrder({ addr, shipType }) {
   const sub = cartSub.value, cv = couponVal.value;
-  const free = (Math.max(0, 1500000 - sub) <= 0) || cv.ship === 1;
-  const opt = SHIP_OPTIONS.find(s => s.type === shipType) || SHIP_OPTIONS[0];
+  const free = (freeShipOn.value && sub >= freeFrom.value) || cv.ship === 1;
+  const opt = shipMethods.value.find(s => s.type === shipType) || shipMethods.value[0];
   const sc = free ? 0 : opt.cost;
   const total = Math.max(0, sub - cv.off + sc);
   const code = 'AS-' + (1000 + orders.length + Math.floor(Math.random() * 90));
@@ -60,6 +85,22 @@ function pushOrder(order) {
     }
     if (res && Number.isInteger(Number(res.status))) { order.status = Number(res.status); save(); }
   }).catch(() => {});
+}
+
+/* پیگیری عمومی با کد سفارش: با سرور فعال از سرور (روی هر دستگاهی کار می‌کند)، وگرنه نسخهٔ محلی */
+export async function trackOrder(q) {
+  const code = toEn(q).trim().toUpperCase();
+  if (!code) return null;
+  if (apiState.enabled) {
+    const r = await apiCall('/orders/' + encodeURIComponent(code));
+    if (!r.ok || !r.code) return null;
+    return {
+      code: r.code, ts: r.ts, status: Number(r.status) || 0, total: r.total, shipLabel: r.ship_label, shipDays: r.ship_days,
+      shipType: /پیک/.test(r.ship_label || '') ? 'peyk' : 'post',
+      items: (r.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name })), addr: {},
+    };
+  }
+  return findOrder(code);
 }
 
 export function findOrder(q) {

@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Order, Coupon, OrderItem, Product, ShopUser, SiteSetting, SmsLog
+from .models import Order, ConsultRequest, Coupon, LuckyPrize, LuckyWin, OrderItem, Page, Product, ShippingMethod, ShopUser, SiteSetting, SmsLog
 
 
 @admin.register(ShopUser)
@@ -44,6 +44,31 @@ class CouponAdmin(admin.ModelAdmin):
     list_display = ('code', 'kind', 'value', 'min_total', 'active', 'used', 'max_uses', 'expires_at')
     list_filter = ('kind', 'active')
     search_fields = ('code', 'label')
+
+
+@admin.register(ShippingMethod)
+class ShippingMethodAdmin(admin.ModelAdmin):
+    list_display = ('label', 'key', 'cost', 'days', 'active', 'sort')
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'group', 'kind', 'active', 'sort')
+
+
+@admin.register(LuckyPrize)
+class LuckyPrizeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'kind', 'value', 'weight', 'active')
+
+
+@admin.register(LuckyWin)
+class LuckyWinAdmin(admin.ModelAdmin):
+    list_display = ('user', 'prize_title', 'created_at')
+
+
+@admin.register(ConsultRequest)
+class ConsultRequestAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'topic', 'done', 'created_at')
 
 
 @admin.register(SiteSetting)
