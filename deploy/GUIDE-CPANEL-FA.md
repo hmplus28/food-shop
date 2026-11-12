@@ -322,7 +322,18 @@ bash deploy.sh --domain دامنه-شما.ir
 - فقط یکی از دو بخش: `--skip-front` یا `--skip-back`
 - ساخت دوبارهٔ `host-dist` بعد از تغییر کد فرانت (ماشین محلی): `bash scripts/build_host.sh` سپس commit/push.
 
-### اگر `deploy.sh` گفت «۴۰۴ خودِ Django است» یا «Application URL روی / است»
+### API روی ساب‌دامین (`api.دامنه`) — حالت پیشنهادی
+
+در Setup Python App اپ را با **دامنهٔ `api.دامنه-شما.ir`** و Application URL خالی (`/`) بسازید (Application root = `public_html/food-shop/backend`). `deploy.sh` این را از `~/.cl.selector/python-selector.json` تشخیص می‌دهد و خودکار:
+- آدرس API را در فرانت می‌گذارد (`https://api.دامنه/api/v1`)،
+- `CORS_ORIGINS` را با `https://دامنه` و `https://www.دامنه` کامل می‌کند،
+- `FORCE_SCRIPT_NAME` را پاک و `STATIC_URL=/static/` می‌کند (پیشوند `/food-shop` فقط برای حالتی است که API زیرمسیر همان دامنه باشد).
+
+برای `ALLOWED_HOSTS` در تولید: `api.دامنه,دامنه,www.دامنه`. آدرس فید ترب: `https://api.دامنه/api/v1/torob/products`. اگر API را جای دیگری گذاشتید: `bash deploy.sh --domain دامنه --api-base https://آدرس/api/v1`.
+
+### حالت قدیمی: API زیرمسیر همان دامنه (`/food-shop`)
+
+### اگر `deploy.sh` گفت «۴۰۴ خودِ Django است» یا «Application URL روی / است» (فقط حالت زیرمسیر)
 
 Passenger کل دامنه را به Django داده و فرانت و API هر دو خراب می‌شوند. در cPanel → **Setup Python App** → آیکن ویرایش (مداد) کنار برنامه:
 - **Application URL**: دامنه را انتخاب و در کادر مسیر بنویسید `food-shop` (نه خالی) → **Save**

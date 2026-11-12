@@ -12,6 +12,7 @@
 #    ۳. بررسی نهایی: درخواست واقعی به سایت و API؛ اگر ۵xx بود لاگ‌ها و عیب‌یابی خودکار چاپ می‌شود.
 #
 #  گزینه‌ها:
+#    --api-base <url>   آدرس کامل API (پیش‌فرض: از «Setup Python App» خودکار؛ مثلاً https://api.دامنه/api/v1)
 #    --domain <دامنه>   دامنهٔ سایت بدون https (پیش‌فرض: اولین دامنهٔ ALLOWED_HOSTS در backend/.env)
 #    --webroot <مسیر>   ریشهٔ وب (پیش‌فرض ~/public_html)
 #    --skip-front       فقط بک‌اند
@@ -24,7 +25,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOMAIN="${KHANOMGOL_DOMAIN:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; SCHEME=https
+DOMAIN="${KHANOMGOL_DOMAIN:-}"; API_BASE="${KHANOMGOL_API_BASE:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; SCHEME=https
 
 if [ -t 1 ]; then G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; B='\033[0;34m'; O='\033[0m'; else G=; Y=; R=; B=; O=; fi
 say(){ echo -e "${G}✔${O} $*"; }; info(){ echo -e "${B}ℹ${O} $*"; }; warn(){ echo -e "${Y}⚠${O} $*" >&2; }
@@ -34,6 +35,8 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --domain) [ $# -ge 2 ] || die "--domain نیاز به مقدار دارد"; DOMAIN="$2"; shift 2 ;;
     --domain=*) DOMAIN="${1#*=}"; shift ;;
+    --api-base) [ $# -ge 2 ] || die "--api-base نیاز به مقدار دارد"; API_BASE="$2"; shift 2 ;;
+    --api-base=*) API_BASE="${1#*=}"; shift ;;
     --webroot) [ $# -ge 2 ] || die "--webroot نیاز به مسیر دارد"; WEBROOT="$2"; shift 2 ;;
     --webroot=*) WEBROOT="${1#*=}"; shift ;;
     --skip-front) DO_FRONT=0; shift ;;
@@ -58,7 +61,8 @@ for lf in "$ROOT/backend/logs/django-error.log" "$ROOT/stderr.log" "$ROOT/backen
 done
 
 # ── دامنه ──
-ENVF="$ROOT/backend/.env"
+ENVF="${KHANOMGOL_ENV_FILE:-$ROOT/backend/.env}"
+BACKEND_SCRIPT="${KHANOMGOL_BACKEND_SCRIPT:-$ROOT/backend/deploy/deploy_cpanel.sh}"
 if [ -z "$DOMAIN" ] && [ -f "$ENVF" ]; then
   DOMAIN="$(grep -E '^ALLOWED_HOSTS=' "$ENVF" | head -n1 | cut -d= -f2- | tr ',' '\n' | tr -d ' \r"' | grep -vE '^\*$|^\.|^$|^localhost|^127\.' | head -n1)"
 fi
@@ -67,6 +71,35 @@ DOMAIN="${DOMAIN#http://}"; DOMAIN="${DOMAIN#https://}"; DOMAIN="${DOMAIN%%/*}"
 case "$DOMAIN" in *[!a-zA-Z0-9.:-]*) die "دامنهٔ نامعتبر: $DOMAIN" ;; esac
 info "دامنه: $DOMAIN | ریشهٔ وب: $WEBROOT | ریپو: $ROOT"
 
+# ── آدرس API: از پایتون‌اپ ثبت‌شده در cPanel (دامنه/زیردامنه + مسیر) ──
+if [ -z "$API_BASE" ]; then
+  SEL="$HOME/.cl.selector/python-selector.json"
+  if [ -f "$SEL" ] && command -v python3 >/dev/null 2>&1; then
+    API_BASE="$(python3 - "$SEL" "$(basename "$ROOT")" <<'PYAPI' 2>/dev/null
+import json, sys
+d = json.load(open(sys.argv[1])); apps = (d.get("apps") or d) if isinstance(d, dict) else {}
+for name, a in apps.items():
+    if isinstance(a, dict) and a.get("domain") and sys.argv[2] in name:
+        uri = (a.get("app_uri") or "").strip("/")
+        print("https://%s%s/api/v1" % (a["domain"], ("/" + uri) if uri else "")); break
+PYAPI
+)"
+  fi
+  [ -n "$API_BASE" ] && info "آدرس API از Setup Python App تشخیص داده شد: $API_BASE" \
+                     || { API_BASE="https://$DOMAIN/food-shop/api/v1"; warn "اپ پایتون در cPanel پیدا نشد؛ پیش‌فرض: $API_BASE (با --api-base تغییر دهید)"; }
+fi
+API_BASE="${API_BASE%/}"
+case "$API_BASE" in http://*|https://*) ;; *) die "--api-base باید با http(s):// شروع شود: $API_BASE" ;; esac
+API_ORIGIN="$(echo "$API_BASE" | sed -E 's#^(https?://[^/]+).*#\1#')"; API_HOST="${API_ORIGIN#*://}"
+
+env_get() { grep -E "^$1=" "$ENVF" 2>/dev/null | tail -n1 | cut -d= -f2- | tr -d '\r'; }
+env_set() {  # env_set KEY VALUE — مقدار موجود را جایگزین یا کلید را اضافه می‌کند
+  local k="$1" v="$2" tmp; tmp="$(mktemp)"
+  if grep -qE "^$k=" "$ENVF"; then V="$v" awk -v k="$k" 'BEGIN{v=ENVIRON["V"];d=0} { if(!d && index($0,k"=")==1){print k"="v;d=1}else print }' "$ENVF" > "$tmp"
+  else cp "$ENVF" "$tmp"; printf '\n%s=%s\n' "$k" "$v" >> "$tmp"; fi
+  cat "$tmp" > "$ENVF"; rm -f "$tmp"
+}
+
 # ── ۱) فرانت ──
 if [ "$DO_FRONT" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then
   [ -f "$ROOT/host-dist/index.html" ] || die "host-dist/ پیدا نشد. روی ماشین محلی: bash scripts/build_host.sh و سپس commit/push و روی هاست git pull."
@@ -74,8 +107,8 @@ if [ "$DO_FRONT" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then
   trap 'rm -rf "$STAGE"' EXIT
   cp -a "$ROOT/host-dist/." "$STAGE/"
   find "$STAGE" -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' -o -name '*.xml' -o -name '*.txt' \) -print0 \
-    | xargs -0 sed -i "s/__SITE_HOST__/$DOMAIN/g"
-  LEFT="$(grep -rl '__SITE_HOST__' "$STAGE" 2>/dev/null | wc -l | tr -d ' ')"
+    | xargs -0 sed -i -e "s/__SITE_HOST__/$DOMAIN/g" -e "s#__API_BASE__#$API_BASE#g"
+  LEFT="$(grep -rlE '__SITE_HOST__|__API_BASE__' "$STAGE" 2>/dev/null | wc -l | tr -d ' ')"
   [ "$LEFT" = "0" ] || die "جانشین دامنه در $LEFT فایل باقی ماند."
   say "دامنه در فایل‌های فرانت جایگزین شد (canonical، sitemap، آدرس API)."
   bash "$ROOT/deploy/deploy_cpanel.sh" --dist "$STAGE" --webroot "$WEBROOT" || die "استقرار فرانت ناموفق بود."
@@ -84,10 +117,32 @@ fi
 # ── ۲) بک‌اند ──
 if [ "$DO_BACK" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then
   if [ -f "$ENVF" ]; then
+    [ -f "$ENVF.deploy-backup" ] || cp "$ENVF" "$ENVF.deploy-backup"
+    # CORS: وقتی API روی origin دیگری است (زیردامنه)، فرانت باید مجاز باشد
+    if [ "$API_HOST" != "$DOMAIN" ]; then
+      CUR="$(env_get CORS_ORIGINS)"
+      if [ "$CUR" = "*" ]; then warn "CORS_ORIGINS=* است؛ در تولید به $SCHEME://$DOMAIN محدود کنید."
+      else
+        NEWC="$CUR"
+        for o in "$SCHEME://$DOMAIN" "$SCHEME://www.$DOMAIN"; do
+          echo ",$NEWC," | grep -qF ",$o," || NEWC="${NEWC:+$NEWC,}$o"
+        done
+        [ "$NEWC" != "$CUR" ] && { env_set CORS_ORIGINS "$NEWC"; say "CORS_ORIGINS به‌روز شد: $NEWC"; }
+      fi
+      # API روی ریشهٔ ساب‌دامین است؛ پیشوند /food-shop برای Django غلط است
+      if [ -n "$(env_get FORCE_SCRIPT_NAME)" ]; then
+        env_set FORCE_SCRIPT_NAME ""; env_set STATIC_URL "/static/"
+        say "FORCE_SCRIPT_NAME پاک و STATIC_URL=/static/ شد (API روی ریشهٔ $API_HOST است)."
+      fi
+      AH="$(env_get ALLOWED_HOSTS)"
+      if [ "$AH" != "*" ] && ! echo ",$AH," | grep -qF ",$API_HOST,"; then
+        warn "ALLOWED_HOSTS شامل $API_HOST نیست؛ API ۴۰۰ می‌دهد. بگذارید: ALLOWED_HOSTS=$API_HOST,$DOMAIN,www.$DOMAIN"
+      fi
+    fi
     grep -qE '^SHOP_URL=.*github\.io' "$ENVF" && warn "SHOP_URL در backend/.env هنوز GitHub Pages است؛ برای فید ترب و پیامک‌ها بگذارید: SHOP_URL=$SCHEME://$DOMAIN/"
-    grep -qE '^ALLOWED_HOSTS=\*?$' "$ENVF" && warn "ALLOWED_HOSTS=* است؛ در تولید بگذارید: ALLOWED_HOSTS=$DOMAIN,www.$DOMAIN"
+    [ "$(env_get ALLOWED_HOSTS)" = "*" ] && warn "ALLOWED_HOSTS=* است؛ در تولید بگذارید: ALLOWED_HOSTS=$API_HOST,$DOMAIN,www.$DOMAIN"
   fi
-  ( cd "$ROOT/backend" && bash deploy/deploy_cpanel.sh ) || die "استقرار بک‌اند ناموفق بود."
+  ( cd "$ROOT/backend" && bash "$BACKEND_SCRIPT" ) || die "استقرار بک‌اند ناموفق بود."
 fi
 
 # ── هشدار Application URL ──
@@ -100,15 +155,15 @@ if [ -f "$WEBROOT/.htaccess" ]; then
   esac
 fi
 
-# ── ۳) بررسی نهایی ──
+# ── ۳) بررسی نهایی ── (+ بررسی CORS از دید مرورگر)
 echo ""; info "بررسی نهایی سایت ..."
 BAD=0
 probe() {  # probe <مسیر> <توضیح> <متن-مورد-انتظار-در-پاسخ>
-  local url="$SCHEME://$DOMAIN$1" out code want="${3:-}"
-  out="$(mktemp)"; code="$(curl -sS -L -m 25 -o "$out" -w '%{http_code}' "$url" 2>"$out.err" || echo 000)"
+  local url out code want="${3:-}"; case "$1" in http*) url="$1" ;; *) url="$SCHEME://$DOMAIN$1" ;; esac
+  out="$(mktemp)"; code="$(curl -sS -L -m 25 -o "$out" -w '%{http_code}' "$url" 2>"$out.err")" || true; [ -n "$code" ] || code=000
   if [ "${code:0:1}" != "2" ]; then
     BAD=1; warn "$2  [$code]  $url"; head -c 200 "$out" | tr '\n' ' ' >&2; echo >&2; head -c 200 "$out.err" >&2
-    grep -q "The requested resource was not found" "$out" 2>/dev/null && warn "   ↑ این صفحهٔ ۴۰۴ خودِ Django است: Passenger این مسیر را گرفته (Application URL پایتون‌اپ باید /food-shop باشد، نه /)"
+    grep -q "The requested resource was not found" "$out" 2>/dev/null && warn "   ↑ این صفحهٔ ۴۰۴ خودِ Django است: Passenger این مسیر را گرفته (آدرس API یا Application URL پایتون‌اپ را در Setup Python App بررسی کنید)"
   elif [ -n "$want" ] && ! grep -qF -- "$want" "$out"; then
     BAD=1; warn "$2  [$code]  $url — پاسخ همان چیزی که انتظار می‌رفت نیست (انتظار: «$want»)"; head -c 160 "$out" | tr '\n' ' ' >&2; echo >&2
   else say "$2  [$code]  $url"; fi
@@ -117,9 +172,16 @@ probe() {  # probe <مسیر> <توضیح> <متن-مورد-انتظار-در-پ
 probe "/" "صفحهٔ اصلی فرانت" 'id="app"'
 probe "/product/1/" "صفحهٔ محصول (پیش‌رندر)" 'application/ld+json'
 probe "/sitemap.xml" "sitemap"
-probe "/food-shop/api/v1/health" "سلامت API" '"ok"'
-probe "/food-shop/api/v1/products" "محصولات API" '"name"'
-probe "/food-shop/api/v1/torob/products?page=1" "فید ترب" '"products"'
+probe "$API_BASE/health" "سلامت API" '"ok"'
+probe "$API_BASE/products" "محصولات API" '"name"'
+probe "$API_BASE/torob/products?page=1" "فید ترب" '"products"'
+
+# CORS از دید مرورگر: فرانت روی origin دیگری است و API باید آن را مجاز کند
+if [ "$BAD" -eq 0 ] && [ "$API_HOST" != "$DOMAIN" ]; then
+  ACAO="$(curl -sS -m 20 -D - -o /dev/null -H "Origin: $SCHEME://$DOMAIN" "$API_BASE/health" 2>/dev/null | tr -d '\r' | grep -i '^access-control-allow-origin' | head -n1)"
+  if [ -n "$ACAO" ]; then say "CORS برای $SCHEME://$DOMAIN مجاز است  [$ACAO]"
+  else BAD=1; warn "CORS: API هدر access-control-allow-origin برای $SCHEME://$DOMAIN نمی‌دهد → مرورگر درخواست‌های فرانت را رد می‌کند. CORS_ORIGINS در backend/.env را بررسی و touch backend/tmp/restart.txt بزنید."; fi
+fi
 
 if [ "$BAD" -ne 0 ]; then
   echo ""; warn "مشکل پیدا شد — عیب‌یابی خودکار:"
@@ -145,7 +207,7 @@ PYSEL
     [ -f "$hf" ] && { echo "[$hf]"; grep -nE 'Passenger(AppRoot|BaseURI|Python|AppType|StartupFile|Enabled)' "$hf" | sed 's/^/   /'; }
   done
   echo "── پاسخ خام API (هدرها) ──"
-  curl -sS -I -m 20 "$SCHEME://$DOMAIN/food-shop/api/v1/health" 2>&1 | head -12 | sed 's/^/   /'
+  curl -sS -I -m 20 "$API_BASE/health" 2>&1 | head -12 | sed 's/^/   /'
   echo "── محتوای ریشهٔ اپ ──"; ls -la "$ROOT" | head -30 | sed 's/^/   /'; ls -la "$ROOT/tmp" 2>/dev/null | sed 's/^/   /'
 
   # venv سی‌پنل در هر عمقی (مثلاً ~/virtualenv/public_html/food-shop/backend/3.11/bin/python)؛ python3 سیستمی ۳.۶ است و Django ندارد
