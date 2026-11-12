@@ -123,9 +123,34 @@ probe "/food-shop/api/v1/torob/products?page=1" "فید ترب" '"products"'
 
 if [ "$BAD" -ne 0 ]; then
   echo ""; warn "مشکل پیدا شد — عیب‌یابی خودکار:"
-  # venv سی‌پنل: ~/virtualenv/public_html/food-shop/3.11/bin/python (سه سطح) — python3 سیستمی ۳.۶ است و Django ندارد
-  VPY="$(ls -d "$HOME"/virtualenv/*/*/*/bin/python "$HOME"/virtualenv/*/*/bin/python 2>/dev/null | grep -F "$(basename "$ROOT")" | head -n1)"
-  [ -z "$VPY" ] && VPY="$(ls -d "$HOME"/virtualenv/*/*/*/bin/python 2>/dev/null | head -n1)"
+  echo "── اپ‌های پایتون ثبت‌شده در cPanel (Setup Python App) ──"
+  SEL="$HOME/.cl.selector/python-selector.json"
+  if [ -f "$SEL" ]; then
+    python3 - "$SEL" <<'PYSEL' 2>&1 | head -30
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception as e:
+    print("خواندن ناموفق:", e); sys.exit()
+apps = (d.get("apps") or d) if isinstance(d, dict) else {}
+print("  (کلیدهای فایل:", ", ".join(list(d.keys())[:8]) if isinstance(d, dict) else type(d).__name__, ")")
+for name, a in (apps.items() if isinstance(apps, dict) else []):
+    if isinstance(a, dict):
+        print("  •", name, "| url:", a.get("app_uri"), "| domain:", a.get("domain"), "| python:", a.get("python_version"),
+              "| startup:", a.get("startup_file"), "| status:", a.get("app_status"))
+PYSEL
+  else echo "  (فایل $SEL پیدا نشد)"; fi
+  echo "── قواعد Passenger در .htaccess ها ──"
+  for hf in "$WEBROOT/.htaccess" "$ROOT/.htaccess" "$ROOT/backend/.htaccess" "$WEBROOT/food-shop/.htaccess"; do
+    [ -f "$hf" ] && { echo "[$hf]"; grep -nE 'Passenger(AppRoot|BaseURI|Python|AppType|StartupFile|Enabled)' "$hf" | sed 's/^/   /'; }
+  done
+  echo "── پاسخ خام API (هدرها) ──"
+  curl -sS -I -m 20 "$SCHEME://$DOMAIN/food-shop/api/v1/health" 2>&1 | head -12 | sed 's/^/   /'
+  echo "── محتوای ریشهٔ اپ ──"; ls -la "$ROOT" | head -30 | sed 's/^/   /'; ls -la "$ROOT/tmp" 2>/dev/null | sed 's/^/   /'
+
+  # venv سی‌پنل در هر عمقی (مثلاً ~/virtualenv/public_html/food-shop/backend/3.11/bin/python)؛ python3 سیستمی ۳.۶ است و Django ندارد
+  VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | grep -F "$(basename "$ROOT")" | sort -r | head -n1)"
+  [ -z "$VPY" ] && VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | sort -r | head -n1)"
   [ -z "$VPY" ] && VPY="python3"
   echo "── diagnose.py ($VPY) ──"
   ( cd "$ROOT/backend" && "$VPY" deploy/diagnose.py "$DOMAIN" 2>&1 | tail -60 )
