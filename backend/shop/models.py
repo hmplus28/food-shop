@@ -92,6 +92,7 @@ class Order(models.Model):
     user = models.ForeignKey(ShopUser, verbose_name='کاربر', null=True, blank=True,
                              on_delete=models.SET_NULL, related_name='orders')
     status = models.PositiveSmallIntegerField('وضعیت', default=0)
+    tracking = models.CharField('کد رهگیری مرسوله', max_length=60, blank=True, default='')
     sub = models.BigIntegerField('جمع کالاها', default=0)
     off = models.BigIntegerField('تخفیف', default=0)
     coupon = models.CharField('کد تخفیف', max_length=40, blank=True, default='')
@@ -116,6 +117,20 @@ class Order(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class OrderEvent(models.Model):
+    """تاریخچهٔ وضعیت سفارش (ثبت، تغییر وضعیت، توضیح برای مشتری)"""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='events')
+    status = models.PositiveSmallIntegerField('وضعیت')
+    note = models.CharField('توضیح برای مشتری', max_length=200, blank=True, default='')
+    by = models.CharField('ثبت‌کننده', max_length=60, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'رویداد سفارش'
+        verbose_name_plural = 'رویدادهای سفارش'
+        ordering = ['created_at', 'id']
 
 
 class OrderItem(models.Model):
@@ -284,6 +299,76 @@ class ConsultRequest(models.Model):
         verbose_name = 'درخواست مشاوره'
         verbose_name_plural = 'درخواست‌های مشاوره'
         ordering = ['done', '-created_at']
+
+
+class MediaFile(models.Model):
+    """تصاویر آپلودشده توسط مدیر (کتابخانهٔ تصاویر)؛ فایل در MEDIA_ROOT و با نام تصادفی ذخیره می‌شود"""
+    name = models.CharField('نام فایل', max_length=40, unique=True)
+    original = models.CharField('نام اصلی', max_length=120, blank=True, default='')
+    size = models.PositiveIntegerField('حجم (بایت)', default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'تصویر'
+        verbose_name_plural = 'کتابخانهٔ تصاویر'
+        ordering = ['-created_at']
+
+
+class Banner(models.Model):
+    """اسلاید بنر اصلی صفحهٔ اصلی"""
+    image = models.CharField('تصویر', max_length=300, blank=True, default='')
+    tag = models.CharField('برچسب', max_length=80, blank=True, default='')
+    title = models.CharField('عنوان', max_length=120, blank=True, default='')
+    title_em = models.CharField('بخش برجسته', max_length=60, blank=True, default='')
+    text = models.CharField('توضیح', max_length=300, blank=True, default='')
+    cta1_label = models.CharField(max_length=40, blank=True, default='')
+    cta1_link = models.CharField(max_length=200, blank=True, default='')
+    cta2_label = models.CharField(max_length=40, blank=True, default='')
+    cta2_link = models.CharField(max_length=200, blank=True, default='')
+    active = models.BooleanField('نمایش', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'بنر'
+        verbose_name_plural = 'بنرها'
+        ordering = ['sort', 'id']
+
+
+class Pack(models.Model):
+    """پک تخفیفی ویژه (با شمارش معکوس سمت سرور). برای فروش، یک محصول «مجازی» پنهان با همین قیمت ساخته/همگام می‌شود."""
+    name = models.CharField('نام', max_length=80)
+    sub = models.CharField('توضیح', max_length=160, blank=True, default='')
+    image = models.CharField('تصویر', max_length=300, blank=True, default='')
+    old_price = models.BigIntegerField('قیمت قبل (تومان)', default=0)
+    now_price = models.BigIntegerField('قیمت فعلی (تومان)', default=0)
+    cycle_hours = models.PositiveSmallIntegerField('چرخهٔ شمارش (ساعت؛ ۰ = تاریخ ثابت)', default=24)
+    ends_at = models.DateTimeField('پایان فعلی', null=True, blank=True)
+    stock = models.PositiveIntegerField('موجودی', default=20)
+    product_id = models.IntegerField('محصول مجازی', null=True, blank=True)
+    active = models.BooleanField('نمایش', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'پک تخفیفی'
+        verbose_name_plural = 'پک‌های تخفیفی'
+        ordering = ['sort', 'id']
+
+
+class TrustItem(models.Model):
+    """کالای «خرید اطمینان» هر روز هفته"""
+    day = models.PositiveSmallIntegerField('روز هفته (۰=یکشنبه … ۶=شنبه)', unique=True)
+    name = models.CharField('نام', max_length=160)
+    image = models.CharField('تصویر', max_length=300, blank=True, default='')
+    old_price = models.BigIntegerField('قیمت قبل (تومان)', default=0)
+    price = models.BigIntegerField('قیمت ویژه (تومان)', default=0)
+    stock = models.PositiveIntegerField('موجودی', default=8)
+    product_id = models.IntegerField('محصول مجازی', null=True, blank=True)
+    active = models.BooleanField('نمایش', default=True)
+
+    class Meta:
+        verbose_name = 'کالای خرید اطمینان'
+        verbose_name_plural = 'کالاهای خرید اطمینان'
+        ordering = ['day']
 
 
 class SmsLog(models.Model):

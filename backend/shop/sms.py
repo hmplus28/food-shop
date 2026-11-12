@@ -190,12 +190,16 @@ def notify_new_order(order):
         _async(_safe_send, settings.SHOP_NOTIFY_PHONE, text, 'order-admin')
 
 
-def notify_status_change(order, status_index):
-    """پیامک تغییر وضعیت سفارش به مشتری"""
+def notify_status_change(order, status_index, note=''):
+    """پیامک تغییر وضعیت سفارش به مشتری (با کد رهگیری و توضیح مدیر در صورت وجود)"""
     if not settings.SMS_STATUS_TO_CUSTOMER:
         return
     label = pricing_status_label(status_index)
     text = f'{settings.SHOP_NAME}: وضعیت سفارش {order.code} به «{label}» تغییر کرد.'
+    if order.tracking and status_index == 2:
+        text += f' کد رهگیری: {order.tracking}'
+    if note:
+        text += f' {note}'
     _async(_safe_send, order.a_phone, text, 'status-change')
 
 

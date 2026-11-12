@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Order, ConsultRequest, Coupon, LuckyPrize, LuckyWin, OrderItem, Page, Product, ShippingMethod, ShopUser, SiteSetting, SmsLog
+from .models import Order, Banner, ConsultRequest, Coupon, MediaFile, OrderEvent, Pack, TrustItem, LuckyPrize, LuckyWin, OrderItem, Page, Product, ShippingMethod, ShopUser, SiteSetting, SmsLog
 
 
 @admin.register(ShopUser)
@@ -69,6 +69,26 @@ class LuckyWinAdmin(admin.ModelAdmin):
 @admin.register(ConsultRequest)
 class ConsultRequestAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'topic', 'done', 'created_at')
+
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('title', 'active', 'sort')
+
+
+@admin.register(Pack)
+class PackAdmin(admin.ModelAdmin):
+    list_display = ('name', 'now_price', 'cycle_hours', 'active', 'sort')
+
+
+@admin.register(TrustItem)
+class TrustItemAdmin(admin.ModelAdmin):
+    list_display = ('day', 'name', 'price', 'active')
+
+
+@admin.register(MediaFile)
+class MediaFileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'original', 'size', 'created_at')
 
 
 @admin.register(SiteSetting)

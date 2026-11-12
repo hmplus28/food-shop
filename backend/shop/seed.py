@@ -73,17 +73,46 @@ def ensure_admin():
     return user, created
 
 
+def ensure_home():
+    """محتوای اولیهٔ صفحهٔ اصلی (بنر، پک‌ها، خرید اطمینان، تنظیم بخش‌ها) — فقط یک‌بار؛ بعد از آن مدیر مدیریت می‌کند"""
+    from django.db import transaction
+    from .bundles import sync_virtual
+    from .defaults import BANNERS, HOME, PACKS, TRUST
+    from .models import Banner, Pack, SiteSetting, TrustItem
+    if SiteSetting.objects.filter(key='homeSeeded').exists() or not Product.objects.exists():
+        return False
+    base = {p['id']: p for p in BASE}
+    rel = lambda u: ('img/' + u[len(IMG):]) if u.startswith(IMG) else u
+    with transaction.atomic():
+        for i, (img, tag, title, em, text, c1, c2) in enumerate(BANNERS):
+            Banner.objects.create(image=img, tag=tag, title=title, title_em=em, text=text, cta1_label=c1[0], cta1_link=c1[1],
+                                  cta2_label=c2[0], cta2_link=c2[1], sort=i)
+        for i, (pid, name, sub, old, now, hours) in enumerate(PACKS):
+            img = rel(base.get(pid, {}).get('img', ''))
+            vid = sync_virtual(Product, None, name=name, image=img, price=now, stock=20, active=True, kind='پک تخفیفی')
+            Pack.objects.create(name=name, sub=sub, image=img, old_price=old, now_price=now, cycle_hours=hours,
+                                ends_at=timezone.now() + timezone.timedelta(hours=hours), product_id=vid, sort=i)
+        for day, name, img, old, price in TRUST:
+            vid = sync_virtual(Product, None, name=name, image='img/' + img, price=price, stock=8, active=True, kind='خرید اطمینان')
+            TrustItem.objects.create(day=day, name=name, image='img/' + img, old_price=old, price=price, product_id=vid)
+        SiteSetting.objects.update_or_create(key='home', defaults={'value': HOME})
+        SiteSetting.objects.create(key='homeSeeded', value={'at': timezone.now().isoformat()})
+    return True
+
+
 def ensure_seed():
     """ایمن برای صدا زدن در هر درخواست — فقط بار اول کاری می‌کند"""
     seeded = seed_products()
     if seeded:
         ensure_admin()
+    ensure_home()
     return seeded
 
 
 def seed_all():
     """دستور مدیریتی: محصول + مدیر + گزارش"""
     p = seed_products()
+    ensure_home()
     admin, created = ensure_admin()
     return {
         'products_seeded': p,

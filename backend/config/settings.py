@@ -153,6 +153,8 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
+            # تراکنش‌ها با قفل نوشتن شروع شوند و منتظر بمانند (پیامک پس‌زمینه هم‌زمان می‌نویسد؛ بدون این «database is locked»)
+            'OPTIONS': {'timeout': 20, 'transaction_mode': 'IMMEDIATE'},
         }
     }
 
@@ -223,6 +225,7 @@ USE_TZ = True
 STATIC_URL = env('STATIC_URL', 'static/')
 FORCE_SCRIPT_NAME = env('FORCE_SCRIPT_NAME') or None
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'          # تصاویر آپلودشدهٔ مدیر (با /api/v1/media/<نام> سرو می‌شود)
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     # فشرده‌سازی بدون «manifest»: اگر collectstatic فراموش شود، پنل ادمین

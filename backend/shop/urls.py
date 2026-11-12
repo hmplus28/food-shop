@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('health', views.HealthView.as_view()),
 
+    # تصاویر آپلودشده (عمومی)
+    path('media/<str:name>', views.MediaServeView.as_view()),
+
     # محتوای سایت، مشاوره و کارت شانس (حساب‌محور)
     path('site', views.SiteView.as_view()),
     path('pages/<slug:slug>', views.PageDetailView.as_view()),
@@ -54,6 +57,15 @@ urlpatterns = [
     path('admin/lucky/prizes/<int:pk>', views.AdminLuckyPrizeView.as_view()),
     path('admin/consults', views.AdminConsultsView.as_view()),
     path('admin/consults/<int:pk>', views.AdminConsultDetailView.as_view()),
+    path('admin/media', views.AdminMediaView.as_view()),
+    path('admin/media/<int:pk>', views.AdminMediaDetailView.as_view()),
+    path('admin/home', views.AdminHomeView.as_view()),
+    path('admin/banners', views.AdminBannersView.as_view()),
+    path('admin/banners/<int:pk>', views.AdminBannerDetailView.as_view()),
+    path('admin/packs', views.AdminPacksView.as_view()),
+    path('admin/packs/<int:pk>', views.AdminPackDetailView.as_view()),
+    path('admin/trust', views.AdminTrustView.as_view()),
+    path('admin/trust/<int:pk>', views.AdminTrustDetailView.as_view()),
     path('admin/coupons', views.AdminCouponsView.as_view()),
     path('admin/coupons/<int:pk>', views.AdminCouponDetailView.as_view()),
     path('admin/sms', views.AdminSmsLogView.as_view()),
