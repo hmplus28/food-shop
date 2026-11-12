@@ -12,9 +12,9 @@
   --ink:#1e2b16; --ink-2:#57664d; --ink-3:#8a9681;
   --line:#e8e8de; --line-2:#d9dccb;
   --star:#cca000; /* طلایی رسمی برند */
-  --f-body:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
-  --f-display:'Lalezar','Vazirmatn',sans-serif;
-  --f-serif:'Amiri','Vazirmatn',serif;
+  --f-body:'Vazirmatn Variable','Vazirmatn',Tahoma,'Segoe UI',sans-serif;   /* @fontsource-variable نام «Vazirmatn Variable» را ثبت می‌کند */
+  --f-display:'Lalezar','Vazirmatn Variable','Vazirmatn',sans-serif;
+  --f-serif:'Amiri','Vazirmatn Variable','Vazirmatn',serif;
   --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:28px;
   --sh-sm:0 2px 10px rgba(30,43,22,.06);
   --sh-md:0 8px 28px rgba(30,43,22,.10);
