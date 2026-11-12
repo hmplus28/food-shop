@@ -214,6 +214,32 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ---------- لاگ خطاها ----------
+# خطاهای ۵۰۰ (traceback کامل) در backend/logs/django-error.log ثبت می‌شوند؛
+# زیر Passenger/cPanel این تنها راه ساده برای دیدن علت واقعی خطای ۵۰۰ است.
+LOG_DIR = BASE_DIR / 'logs'
+_handlers = {'console': {'class': 'logging.StreamHandler', 'level': 'ERROR'}}
+try:
+    LOG_DIR.mkdir(exist_ok=True)
+    _handlers['file'] = {
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': str(LOG_DIR / 'django-error.log'),
+        'maxBytes': 1_000_000, 'backupCount': 3, 'encoding': 'utf-8',
+        'level': 'ERROR',
+    }
+except OSError:
+    pass
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'std': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'}},
+    'handlers': {k: {**v, 'formatter': 'std'} for k, v in _handlers.items()},
+    'loggers': {
+        'django.request': {'handlers': list(_handlers), 'level': 'ERROR', 'propagate': False},   # فقط ۵xx (۴xx/۴۲۹ لاگ را شلوغ می‌کند)
+        'shop': {'handlers': list(_handlers), 'level': 'ERROR', 'propagate': False},
+    },
+}
+
 # ---------- امنیت در حالت تولید ----------
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True

@@ -19,7 +19,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Order, OtpCode, Product, ShopUser, SmsLog
 from .permissions import IsShopAdmin
-from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, line_unit_price
+from .pricing import STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
 from .seed import ensure_seed
 from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
                           OrderStatusPatchSerializer, OrderTrackSerializer, OtpRequestSerializer,
@@ -71,6 +71,79 @@ class HealthView(APIView):
         return ok({'name': 'khanom-gol-api', 'version': API_VERSION, 'api': True,
                    'time': int(timezone.now().timestamp() * 1000),
                    'shop': settings.SHOP_NAME, 'sms': provider_status()})
+
+
+# ---------------- فید ترب (Torob) ----------------
+
+CAT_NAMES = {
+    'ajil': 'آجیل و مغزها', 'pistachio': 'پسته', 'almond': 'بادام', 'walnut': 'گردو', 'hazelnut': 'فندق',
+    'seeds': 'تخمه و مغز تخمه', 'dryfruit': 'میوه خشک', 'raisin': 'کشمش و مویز', 'date': 'خرما و رطب',
+    'mulberryfig': 'توت خشک و انجیر', 'saffron': 'زعفران و ادویه', 'tea': 'دمنوش و محصولات طبیعی',
+    'giftbox': 'آجیل و پک‌های هدیه',
+}
+TOROB_PAGE_SIZE = 100
+
+
+def _weight_text(w):
+    return 'عدد' if w == 1 else (f'{w // 1000} کیلوگرم' if w % 1000 == 0 else f'{w} گرم')
+
+
+def torob_item(p):
+    """یک محصول در قالب API ترب — قیمت و وزنِ پیش‌فرض همان است که صفحهٔ محصول نشان می‌دهد
+    (وزن دوم فهرست)، تا قیمت فید و صفحه همیشه یکی باشد. قیمت‌ها به تومان."""
+    ws = p.weights or [1]
+    w = ws[min(1, len(ws) - 1)]
+    price = line_unit_price(p, w)
+    old = js_round(p.price * w / 1000) if p.disc else 0
+    base = settings.SHOP_URL.rstrip('/')
+    img = p.img or ''
+    return {
+        'title': f'{p.name} - {_weight_text(w)}',
+        'subtitle': p.grade or '',
+        'page_unique': str(p.id),
+        'current_price': price,
+        'old_price': old if old > price else 0,
+        'availability': 'instock' if p.stock > 0 else 'outofstock',
+        'category_name': CAT_NAMES.get(p.cat, p.cat),
+        'image_link': img,
+        'image_links': [img] if img else [],
+        'page_url': f'{base}/product/{p.id}/',
+        'short_desc': (p.desc or '')[:300],
+        'spec': {'وزن': _weight_text(w), 'درجه': p.grade or '', 'دسته': CAT_NAMES.get(p.cat, p.cat)},
+        'date_added': p.created_at.isoformat(),
+        'date_updated': p.updated_at.isoformat(),
+        'guarantee': 'مرجوعی رایگان تا ۷ روز',
+    }
+
+
+class TorobProductsView(APIView):
+    """فید محصولات برای ترب: GET|POST /api/v1/torob/products?page=1
+    خروجی: {count, max_pages, products:[...]} — فقط محصولات نمایان؛ بدون نیاز به ورود."""
+    permission_classes = [AllowAny]
+    throttle_classes = []        # خزندهٔ ترب نباید با سقف anon مسدود شود
+
+    def _page(self, request):
+        raw = request.query_params.get('page') or (request.data.get('page') if hasattr(request.data, 'get') else None)
+        try:
+            return max(1, int(raw))
+        except (TypeError, ValueError):
+            return 1
+
+    def _respond(self, request):
+        ensure_seed()
+        qs = Product.objects.filter(hide=False).order_by('id')
+        total = qs.count()
+        pages = max(1, -(-total // TOROB_PAGE_SIZE))
+        page = self._page(request)
+        start = (page - 1) * TOROB_PAGE_SIZE
+        return Response({'count': total, 'max_pages': pages,
+                         'products': [torob_item(p) for p in qs[start:start + TOROB_PAGE_SIZE]]})
+
+    def get(self, request):
+        return self._respond(request)
+
+    def post(self, request):
+        return self._respond(request)
 
 
 # ---------------- حساب کاربری ----------------

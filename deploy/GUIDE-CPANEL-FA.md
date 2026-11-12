@@ -306,3 +306,57 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 - **تست امنیتی بک‌اند** (۶۹ بررسی: تزریق، JWT، IDOR، throttle OTP، دستکاری مالی): `python scripts/test_backend_security.py` — همه سبز.
 - **تست ریسپانسیو موبایل** (۶ دستگاه از ۳۲۰px تا تبلت × ۷ صفحهٔ فروشگاه): ۰ سرریز افقی، ۰ خطای کنسول؛ برای بازبینی، در Chrome DevTools → Device Toolbar عرض‌های ۳۲۰/۳۶۰/۳۹۰/۴۱۴/۷۶۸/۱۰۲۴ را روی صفحات اصلی چک کنید.
 - پس از اتصال بک‌اند: `ADMIN_PASSWORD` را عوض کنید و `CORS_ORIGINS` فقط دامنهٔ فرانت باشد.
+
+
+## استقرار یک‌دستوری (فرانت + بک‌اند) — روش پیشنهادی
+
+روی هاست Node نیست، پس فرانت یک‌بار روی ماشین محلی ساخته و در `host-dist/` commit می‌شود (دامنه به‌صورت جانشین `__SITE_HOST__` است)؛ روی هاست فقط:
+```bash
+cd ~/public_html/food-shop
+git pull
+bash deploy.sh --domain دامنه-شما.ir
+```
+`deploy.sh` دامنه را در فرانت جایگزین می‌کند (canonical، sitemap، آدرس API)، فرانت را در `~/public_html` می‌گذارد، بک‌اند را مستقر می‌کند (pip، migrate، seed، static، Passenger) و در پایان سایت و API را **واقعاً** صدا می‌زند. اگر هر کدام ۵xx بدهد، خودش `diagnose.py` و آخرین خطوط لاگ‌ها را چاپ می‌کند.
+
+- فقط بررسی/عیب‌یابی: `bash deploy.sh --domain دامنه-شما.ir --check`
+- فقط یکی از دو بخش: `--skip-front` یا `--skip-back`
+- ساخت دوبارهٔ `host-dist` بعد از تغییر کد فرانت (ماشین محلی): `bash scripts/build_host.sh` سپس commit/push.
+
+## خطای ۵۰۰ روی بک‌اند — عیب‌یابی گام‌به‌گام
+
+خطای ۵۰۰ یعنی Django بالا آمده ولی هنگام پردازش درخواست استثنا رخ داده؛ علت واقعی در لاگ است، نه در خود صفحهٔ ۵۰۰.
+
+1. **اسکریپت عیب‌یابی** (در ترمینال cPanel، داخل پوشهٔ `backend`، با پایتون venv برنامه؛ هیچ رمزی چاپ نمی‌کند):
+   ```bash
+   ~/virtualenv/public_html/food-shop/3.11/bin/python deploy/diagnose.py
+   ```
+   پایتون/بسته‌ها، خواندن `.env`، اتصال و نسخهٔ دیتابیس، مایگریشن‌های معوق و یک درخواست آزمایشی به `/api/v1/health` و `/api/v1/products` را بررسی و **traceback واقعی** را چاپ می‌کند.
+2. **لاگ وب**: هر ۵۰۰ با traceback کامل در `backend/logs/django-error.log` ثبت می‌شود (`tail -50 backend/logs/django-error.log`).
+3. علت‌های رایج:
+
+| خطا در لاگ | راه‌حل |
+| --- | --- |
+| `no such table` / `Table 'khanomgo_foodshop.shop_product' doesn't exist` | مایگریشن اجرا نشده: `python manage.py migrate && python manage.py seed_shop` |
+| `MariaDB 10.x or later is required` / `MySQL 8.0.11 or later` | نسخهٔ دیتابیس هاست برای Django 5.2 قدیمی است: `pip install "Django>=5.0,<5.1"` (یا از هاست MariaDB جدیدتر بخواهید) |
+| `Access denied for user` (1045) / `Unknown database` (1049) | `DB_USER/DB_PASSWORD/DB_NAME` در `.env` را با cPanel → MySQL® Databases چک کنید و کاربر را به دیتابیس با «ALL PRIVILEGES» وصل کنید |
+| `Can't connect to MySQL server` (2002) | `DB_HOST=localhost` و `DB_PORT=3306`؛ اگر باز هم نشد `DB_HOST=127.0.0.1` |
+| `No module named 'pymysql'` / `RuntimeError: درایور MySQL` | `pip install -r deploy/requirements-cpanel.txt` با همان venv برنامه |
+| `Invalid HTTP_HOST header` (۴۰۰، نه ۵۰۰) | دامنه در `ALLOWED_HOSTS` نیست |
+| `Specified key was too long` هنگام migrate | دیتابیس را با collation `utf8mb4_unicode_ci` و موتور InnoDB بسازید |
+
+4. پس از هر تغییر `.env` یا کد: `touch tmp/restart.txt`.
+5. اگر `.env` ویرایش دستی شد: رمزهایی که کاراکتر `#` یا فاصله دارند را داخل کوتیشن بگذارید (`DB_PASSWORD="..."`) و فایل باید UTF-8 با پایان‌خط Unix باشد.
+
+## سئو و اتصال به ترب (Torob)
+
+**سئو:** هنگام بیلد (`npm run build`) برای هر صفحهٔ قابل‌ایندکس (خانه، فروشگاه، پیگیری و تک‌تک محصولات) یک `index.html` ایستا با عنوان، توضیح، canonical، Open Graph، توییتر، JSON-LD (Product/BreadcrumbList/ItemList) و متن واقعی ساخته می‌شود، به‌علاوهٔ `sitemap.xml` (با تصاویر) و `robots.txt`. صفحات سبد، تسویه، حساب، مدیریت و ورود `noindex` هستند.
+روی **دامنهٔ واقعی** بیلد را با آدرس سایت بگیرید تا canonical و sitemap درست باشند:
+```bash
+VITE_BASE=/ VITE_SITE_URL=https://shop.example.ir npm run build   # از پوشهٔ app
+```
+سپس `sitemap.xml` را در Google Search Console ثبت کنید.
+
+**ترب:** دو راه آماده است (آدرس‌ها را در پنل فروشندگان ترب ثبت کنید):
+1. **API (پیشنهادی):** `https://دامنه-بک‌اند/api/v1/torob/products?page=1` — خروجی `{count, max_pages, products:[…]}` با فیلدهای `title, page_unique, current_price (تومان), old_price, availability (instock/outofstock), category_name, image_link, page_url, short_desc, spec, date_updated`. هم GET و هم POST با `{"page": n}` پاسخ می‌دهد. `SHOP_URL` در `backend/.env` باید دامنهٔ **فرانت** باشد (برای ساخت `page_url`).
+2. **خزش صفحات:** هر صفحهٔ محصول بدون نیاز به JS قیمت (`product:price:amount`، تومان)، موجودی، عنوان و تصویر را در متاتگ‌ها و JSON-LD دارد.
+قیمت فید و صفحه همیشه یکی است (هر دو قیمت وزن پیش‌فرض را نشان می‌دهند). قالب دقیق فیلدها را در پنل ترب با نمونهٔ خروجی تأیید کنید.

@@ -112,3 +112,8 @@ bash deploy/deploy_cpanel.sh --build --api-base https://…/api/v1 --api-enabled
 ## 🧾 نکات دمو
 
 داده‌ها نمونه هستند؛ سبد، سفارش‌ها، حساب‌ها و کدهای تخفیف در `LocalStorage` مرورگر ذخیره می‌شوند. برای شروع تازه، حافظه مرورگر را پاک کنید.
+
+
+## 🔎 سئو و ترب
+
+بیلد (`cd app && npm run build`) علاوه بر اپ، صفحات ایستای سئو برای خانه، فروشگاه و تک‌تک محصولات، `sitemap.xml` و `robots.txt` می‌سازد. روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`. فید ترب: `/api/v1/torob/products?page=1` — جزئیات در `deploy/GUIDE-CPANEL-FA.md`.

@@ -71,6 +71,7 @@ import { useRoute } from 'vue-router';
 import { prod, catOf, visibleProducts } from '../data/catalog';
 import { toFa, money, weightLabel, priceOf } from '../data/site';
 import { useSeo, SITE_URL } from '../composables/useSeo';
+import { productSeo } from '../data/seoProduct';
 import { isFav, toggleFav } from '../stores/fav';
 import { addToCart } from '../stores/cart';
 import ProductCard from '../components/ProductCard.vue';
@@ -87,23 +88,7 @@ const related = computed(() => p.value
   ? visibleProducts().filter(x => x.cat === p.value.cat && x.id !== p.value.id).slice(0, 6)
   : []);
 
-watch(p, pp => {
-  if (!pp) return;
-  const price = priceOf(pp, pp.weights[1] ?? pp.weights[0]);
-  useSeo({
-    title: pp.name,
-    description: pp.desc,
-    path: '/product/' + pp.id,
-    ogType: 'product',
-    jsonld: {
-      '@context': 'https://schema.org', '@type': 'Product',
-      name: pp.name, image: pp.img, description: pp.desc,
-      category: catName.value, brand: { '@type': 'Brand', name: 'خانم گل' },
-      aggregateRating: { '@type': 'AggregateRating', ratingValue: pp.rate, reviewCount: Math.max(5, Math.round(pp.sold / 10)) },
-      offers: { '@type': 'Offer', url: SITE_URL + '/product/' + pp.id, priceCurrency: 'IRT', price, availability: pp.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' },
-    },
-  });
-}, { immediate: true });
+watch(p, pp => { if (pp) useSeo(productSeo(pp, SITE_URL)); }, { immediate: true });
 </script>
 
 <style scoped>
