@@ -30,10 +30,16 @@ upload/
 /public/
 /src/
 
-# ابزارها و فایل‌های محلی (نباید وارد مخزن شوند) — به‌جز تست رسمی بک‌اند
+# ابزارها و فایل‌های محلی (نباید وارد مخزن شوند) — به‌جز تست‌ها و اسکریپت‌های رسمی پروژه
 scripts/*
 !scripts/test_backend_api.py
 !scripts/test_backend_security.py
+!scripts/test_cart_ui.js
+!scripts/test_seo.js
+!scripts/test_ui_admin.js
+!scripts/test_ascii_locale.py
+!scripts/build_host.sh
+!scripts/fetch_assets.py
 tool-results/
 
 # ابزار نصب skill (محلی)
