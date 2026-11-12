@@ -22,10 +22,18 @@ python manage.py migrate && python manage.py seed_shop
 python manage.py runserver 8787
 
 # تست (سرور باید روشن باشد)
-python3 scripts/test_backend_api.py        # باید 60/60 سبز باشد
+python3 scripts/test_backend_api.py        # باید 67/67 سبز باشد (شامل فید ترب)
 python3 scripts/test_backend_security.py   # باید 69/69 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
+node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
+python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ روی هاست
 ```
+
+## سئو و ترب
+- `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.
+- داده‌های سئوی محصول فقط در `app/src/data/seoProduct.js` ساخته می‌شود (هم صفحهٔ محصول هم پیش‌رندر). JSON-LD امتیاز/نظر ساختگی نداشته باشد.
+- فید ترب: `GET|POST /api/v1/torob/products?page=N` (`backend/shop/views.py: TorobProductsView`)؛ قیمت باید با قیمت وزن پیش‌فرض صفحهٔ محصول یکی بماند.
+- لاگ ۵۰۰: `backend/logs/django-error.log`؛ راهنما: بخش «خطای ۵۰۰» در `deploy/GUIDE-CPANEL-FA.md`.
 
 ## قواعد مهم
 - **قیمت، تخفیف، ارسال و جمع سفارش همیشه سمت سرور محاسبه می‌شود** (`shop/pricing.py`)؛ مقدار مالی کلاینت هرگز اعتماد نمی‌شود.

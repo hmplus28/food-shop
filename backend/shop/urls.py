@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('health', views.HealthView.as_view()),
 
+    # فید ترب
+    path('torob/products', views.TorobProductsView.as_view()),
+
     # حساب کاربری
     path('auth/register', views.RegisterView.as_view()),
     path('auth/login', views.LoginView.as_view()),

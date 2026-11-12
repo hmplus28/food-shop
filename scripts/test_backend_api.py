@@ -92,6 +92,25 @@ pid2 = next((p['id'] for p in prods if 1000 in p['weights'] and p['id'] != pid1)
 st, pd = req('GET', f'/products/{pid1}')
 check('products/{id}: جزئیات درست', st == 200 and pd.get('id') == pid1, st)
 
+# ---------------- ۲-ب) فید ترب ----------------
+st, tb = req('GET', '/torob/products?page=1')
+check('torob: کد ۲۰۰ و ساختار count/max_pages/products',
+      st == 200 and isinstance(tb, dict) and all(k in tb for k in ('count', 'max_pages', 'products')), st)
+tp = tb.get('products', []) if isinstance(tb, dict) else []
+check('torob: تعداد = محصولات نمایان', len(tp) == len(prods) and tb.get('count') == len(prods), (len(tp), len(prods)))
+need = ('title', 'page_unique', 'current_price', 'availability', 'category_name', 'image_link', 'page_url')
+check('torob: فیلدهای ضروری هر محصول', all(all(k in x for k in need) for x in tp))
+check('torob: قیمت فید = قیمت وزن پیش‌فرض صفحهٔ محصول (وزن دوم)',
+      all(x['current_price'] == unit_price(pmap[int(x['page_unique'])],
+          pmap[int(x['page_unique'])]['weights'][min(1, len(pmap[int(x['page_unique'])]['weights']) - 1)]) for x in tp))
+check('torob: availability فقط instock/outofstock', all(x['availability'] in ('instock', 'outofstock') for x in tp))
+check('torob: آدرس صفحه https و شناسهٔ یکتا',
+      all(x['page_url'].startswith('http') and '/product/' in x['page_url'] for x in tp)
+      and len({x['page_unique'] for x in tp}) == len(tp))
+st, tb2 = req('POST', '/torob/products', {'page': 2})
+check('torob: صفحهٔ خارج از محدوده → لیست خالی (POST)', st == 200 and tb2.get('products') == [], st)
+
+
 # ---------------- ۳) ثبت‌نام و ورود با رمز ----------------
 PASSW = 't3st-' + suffix[-4:]
 st, r = req('POST', '/auth/register', {'name': 'کاربر تستی', 'phone': PH_USER, 'password': PASSW})
