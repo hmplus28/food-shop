@@ -123,34 +123,10 @@ def _send_kavenegar(to, text):
     return ok, detail[:300]
 
 
-def _otp_kavenegar(to, code):
-    base = f'https://api.kavenegar.com/v1/{settings.KAVENEGAR_API_KEY}'
-    params = {'receptor': to, 'token': code}
-    if settings.KAVENEGAR_OTP_TEMPLATE:
-        params['template'] = settings.KAVENEGAR_OTP_TEMPLATE
-        ok, detail = _http_json(base + '/verify/lookup.json', params=params)
-        if ok:
-            return True, detail[:300]
-        if '537' in detail:      # ۵۳۷ = قالب پیدا نشد → رجوع به ارسال ساده
-            return _send_kavenegar(to, _otp_text(code))
-        return False, detail[:300]
-    return _send_kavenegar(to, _otp_text(code))
-
-
 def _send_smsir(to, text):
     return _http_json('https://api.sms.ir/v1/send/bulk', method='POST',
                       headers={'x-api-key': settings.SMSIR_API_KEY},
                       body={'lineNumber': settings.SMSIR_LINE, 'messageText': text, 'mobiles': [to]})
-
-
-def _otp_smsir(to, code):
-    if settings.SMSIR_OTP_TEMPLATE_ID:
-        ok, detail = _http_json('https://api.sms.ir/v1/send/verify', method='POST',
-                                headers={'x-api-key': settings.SMSIR_API_KEY},
-                                body={'mobile': to, 'templateId': int(settings.SMSIR_OTP_TEMPLATE_ID),
-                                      'parameters': [{'name': 'CODE', 'value': code}]})
-        return ok, detail[:300]
-    return _send_smsir(to, _otp_text(code))
 
 
 def _send_ghasedak(to, text):
@@ -159,31 +135,18 @@ def _send_ghasedak(to, text):
                       fields={'message': text, 'receptor': to, **({'linenumber': settings.GHASEDAK_LINE} if settings.GHASEDAK_LINE else {})})
 
 
-def _otp_ghasedak(to, code):
-    if settings.GHASEDAK_OTP_TEMPLATE:
-        ok, detail = _http_form('https://api.ghasedak.me/v2/verification/send/simple',
-                                headers={'apikey': settings.GHASEDAK_API_KEY},
-                                fields={'receptor': to, 'type': '1', 'template': settings.GHASEDAK_OTP_TEMPLATE, 'param1': code})
-        return ok, detail[:300]
-    return _send_ghasedak(to, _otp_text(code))
-
-
 def _send_melipayamak(to, text):
     return _http_json('https://rest.payamak-panel.com/api/SendSMS/SendSMS', method='POST',
                       body={'username': settings.MELIPAYAMAK_USERNAME, 'password': settings.MELIPAYAMAK_PASSWORD,
                             'to': to, 'from': settings.MELIPAYAMAK_FROM, 'text': text, 'isflash': False})
 
 
-def _otp_text(code):
-    return f'کد ورود شما به فروشگاه خانم گل: {code}'
-
-
 SENDERS = {
-    'kavenegar':   {'send': _send_kavenegar,   'otp': _otp_kavenegar},
-    'smsir':       {'send': _send_smsir,       'otp': _otp_smsir},
-    'ghasedak':    {'send': _send_ghasedak,    'otp': _otp_ghasedak},
-    'melipayamak': {'send': _send_melipayamak, 'otp': lambda to, c: _send_melipayamak(to, _otp_text(c))},
-    'console':     {'send': lambda to, t: (True, 'console'), 'otp': lambda to, c: (True, 'console')},
+    'kavenegar':   {'send': _send_kavenegar},
+    'smsir':       {'send': _send_smsir},
+    'ghasedak':    {'send': _send_ghasedak},
+    'melipayamak': {'send': _send_melipayamak},
+    'console':     {'send': lambda to, t: (True, 'console')},
 }
 
 
@@ -204,24 +167,6 @@ def send_sms(to, text, tag=''):
     if provider == 'console':
         log.info('[پیامک به %s] %s', to, text)
     SmsLog.objects.create(provider=provider, to=to, text=text, tag=tag or 'send', ok=ok,
-                          detail=str(detail)[:500])
-    return ok, detail
-
-
-def send_otp(to, code):
-    """ارسال کد یکبار مصرف (قالب‌دار اگر پیکربندی شده باشد). خروجی (ok, detail)"""
-    to = normalize_phone(to)
-    provider = settings.SMS_PROVIDER
-    sender = SENDERS.get(provider)
-    if not sender:
-        return False, f'سرویس‌دهندهٔ ناشناخته: {provider}'
-    try:
-        ok, detail = sender['otp'](to, code)
-    except Exception as e:                          # noqa: BLE001
-        ok, detail = False, f'{type(e).__name__}: {e}'
-    if provider == 'console':
-        log.info('[کد ورود به %s] %s (حالت توسعه — پیامکی ارسال نمی‌شود)', to, code)
-    SmsLog.objects.create(provider=provider, to=to, text=_otp_text(code), tag='otp', ok=ok,
                           detail=str(detail)[:500])
     return ok, detail
 

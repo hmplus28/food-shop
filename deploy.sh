@@ -139,6 +139,13 @@ if [ "$DO_BACK" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then
         warn "ALLOWED_HOSTS شامل $API_HOST نیست؛ API ۴۰۰ می‌دهد. بگذارید: ALLOWED_HOSTS=$API_HOST,$DOMAIN,www.$DOMAIN"
       fi
     fi
+    # تصاویر محلی روی هاست؟ → فید ترب و SEO از همان‌جا (در غیر این صورت منبع اصلی)
+    NIMG="$(ls "$WEBROOT/img" 2>/dev/null | wc -l | tr -d ' ')"
+    if [ "${NIMG:-0}" -ge 30 ]; then
+      [ "$(env_get LOCAL_IMAGES)" = "true" ] || { env_set LOCAL_IMAGES true; say "LOCAL_IMAGES=true شد ($NIMG تصویر روی هاست)."; }
+    else
+      warn "تصاویر محصولات روی هاست نیست ($NIMG فایل در $WEBROOT/img) — سایت هنوز به CDN خارجی وابسته است. روی سیستمی که دسترسی دارد: python3 scripts/fetch_assets.py && bash scripts/build_host.sh و commit/push."
+    fi
     grep -qE '^SHOP_URL=.*github\.io' "$ENVF" && warn "SHOP_URL در backend/.env هنوز GitHub Pages است؛ برای فید ترب و پیامک‌ها بگذارید: SHOP_URL=$SCHEME://$DOMAIN/"
     [ "$(env_get ALLOWED_HOSTS)" = "*" ] && warn "ALLOWED_HOSTS=* است؛ در تولید بگذارید: ALLOWED_HOSTS=$API_HOST,$DOMAIN,www.$DOMAIN"
   fi

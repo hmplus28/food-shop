@@ -2,17 +2,14 @@
    اولویت با بک‌اند REST است (services/api.js): اگر VITE_API_ENABLED=true باشد
    ثبت‌نام/ورود به سرور می‌رود و توکن ذخیره می‌شود؛ در خطای شبکه یا غیاب
    بک‌اند، بی‌صدا به نسخهٔ آزمایشی LocalStorage برمی‌گردد تا فروشگاه همیشه
-   کار کند. ورود با «کد پیامکی» فقط سمت بک‌اند انجام می‌شود (پنل پیامک). */
+   کار کند. نقش مدیر (سوپریوزر) فقط از سرور می‌آید (role=admin)، نه از مقدار قابل‌دستکاریِ مرورگر. */
 import { reactive } from 'vue';
 import { LS, toEn } from '../data/site';
-import { apiState, authRegisterApi, authLoginApi, apiLogout, authOtpRequestApi, authOtpVerifyApi, adminLoginApi } from '../services/api';
-
-export const ADMIN_USER = 'admin';
-export const ADMIN_PASS = 'admin1234';
+import { apiState, authRegisterApi, authLoginApi, apiLogout, adminLoginApi, meApi } from '../services/api';
 
 export const auth = reactive({
   user: LS.get('user', null),          // {name, phone}
-  isAdmin: LS.get('admin', false),
+  isAdmin: false,                      // فقط پس از تأیید سرور true می‌شود (refreshSession / ورود)
 });
 
 const users = () => LS.get('users', []);
@@ -23,17 +20,17 @@ export async function register(name, phone, pass) {
   if (!name.trim()) return { ok: false, msg: 'نام و نام خانوادگی را وارد کنید' };
   if (!/^09\d{9}$/.test(p)) return { ok: false, msg: 'شماره موبایل معتبر وارد کنید (۰۹…)' };
   if ((pass || '').length < 4) return { ok: false, msg: 'رمز عبور حداقل ۴ کاراکتر باشد' };
-  /* اول بک‌اند (اگر فعال است) — خطای شبکه → نسخهٔ محلی */
+  /* با بک‌اند فعال، فقط سرور تصمیم می‌گیرد؛ نسخهٔ محلی فقط برای دموی بدون سرور است */
   if (apiState.enabled) {
     const r = await authRegisterApi(name.trim(), p, pass);
     if (r) {
       if (!r.ok) return { ok: false, msg: r.msg || 'ثبت‌نام در سرور انجام نشد' };
       const user = r.user || { name: name.trim(), phone: p };
-      mirrorLocalUser(user.name, user.phone, pass);   // برای ورود آفلاین بعدی
       auth.user = user;
       LS.set('user', auth.user);
       return { ok: true };
     }
+    return { ok: false, msg: 'اتصال به سرور برقرار نشد؛ لطفاً دوباره تلاش کنید' };   // حساب «فقط‌محلی» ساخته نمی‌شود
   }
   const list = users();
   if (list.some(u => u.phone === p)) return { ok: false, msg: 'این شماره قبلاً ثبت‌نام کرده است؛ وارد شوید' };
@@ -44,25 +41,20 @@ export async function register(name, phone, pass) {
   return { ok: true };
 }
 
-/* نگه‌داشتن نسخهٔ محلی حساب، تا در نبود بک‌اند هم ورود کار کند */
-function mirrorLocalUser(name, phone, pass) {
-  const list = users();
-  if (!list.some(u => u.phone === phone)) { list.push({ name, phone, pass }); saveUsers(list); }
-}
-
 export async function login(phone, pass) {
   const p = toEn(phone).replace(/\D/g, '');
-  /* اول بک‌اند (اگر فعال است) — خطای شبکه → نسخهٔ محلی */
+  /* با بک‌اند فعال، فقط سرور تصمیم می‌گیرد؛ نسخهٔ محلی فقط برای دموی بدون سرور است */
   if (apiState.enabled) {
     const r = await authLoginApi(p, pass);
     if (r) {
       if (!r.ok) return { ok: false, msg: r.msg || 'شماره یا رمز عبور اشتباه است' };
       const user = r.user || (() => { const u = users().find(x => x.phone === p); return u ? { name: u.name, phone: p } : { name: 'کاربر', phone: p }; })();
-      mirrorLocalUser(user.name, p, pass);
       auth.user = user;
+      auth.isAdmin = user.role === 'admin';
       LS.set('user', auth.user);
       return { ok: true };
     }
+    return { ok: false, msg: 'اتصال به سرور برقرار نشد؛ لطفاً دوباره تلاش کنید' };
   }
   const u = users().find(x => x.phone === p);
   if (!u || u.pass !== pass) return { ok: false, msg: 'شماره یا رمز عبور اشتباه است' };
@@ -73,6 +65,7 @@ export async function login(phone, pass) {
 
 export function logout() {
   auth.user = null;
+  auth.isAdmin = false;
   LS.set('user', null);
   apiLogout();          // توکن بک‌اند هم پاک شود
 }
@@ -88,53 +81,35 @@ export function updateProfile(name, phone) {
   return { ok: true };
 }
 
-/* درخواست کد ورود پیامکی — فقط با بک‌اند (پنل پیامک سمت سرور است) */
-export async function otpRequest(phone) {
-  const p = toEn(phone).replace(/\D/g, '');
-  if (!/^09\d{9}$/.test(p)) return { ok: false, msg: 'شماره موبایل معتبر وارد کنید (۰۹…)' };
-  const r = await authOtpRequestApi(p);
-  if (!r) return { ok: false, msg: 'اتصال به سرور برقرار نشد؛ دوباره تلاش کنید' };
-  return r;                     // {ok, msg?, expiresIn?, cooldown?, devCode?}
-}
-
-/* بررسی کد پیامکی و ورود/ثبت‌نام خودکار */
-export async function otpVerify(phone, code) {
-  const p = toEn(phone).replace(/\D/g, '');
-  const c = toEn(code).replace(/\D/g, '');
-  if (!/^09\d{9}$/.test(p)) return { ok: false, msg: 'شماره موبایل معتبر نیست' };
-  if (!/^\d{4,6}$/.test(c)) return { ok: false, msg: 'کد ۴ تا ۶ رقمی پیامک‌شده را وارد کنید' };
-  const r = await authOtpVerifyApi(p, c);
-  if (!r) return { ok: false, msg: 'اتصال به سرور برقرار نشد؛ دوباره تلاش کنید' };
-  if (!r.ok) return r;
-  auth.user = r.user;
-  LS.set('user', auth.user);
-  return { ok: true, created: r.created };
-}
-
 export function adminLogin(u, p) {
   return _adminLoginInner(u, p);
 }
 
-/* ورود مدیر: اول بک‌اند (توکن نقش admin)؛ در غیاب/خطای شبکه فالبک محلی دمو */
+/* ورود مدیر (نام کاربری یا موبایل + رمز) — فقط با تأیید سرور؛ بدون حساب محلی/پیش‌فرض */
 async function _adminLoginInner(u, p) {
-  if (apiState.enabled) {
-    const r = await adminLoginApi(u.trim(), p);
-    if (r) {
-      if (!r.ok) return { ok: false, msg: r.msg || 'نام کاربری یا رمز مدیر اشتباه است' };
-      auth.isAdmin = true;
-      LS.set('admin', true);
-      return { ok: true, server: true };
-    }
-  }
-  if (u.trim() === ADMIN_USER && p === ADMIN_PASS) {
-    auth.isAdmin = true;
-    LS.set('admin', true);
-    return { ok: true };
-  }
-  return { ok: false, msg: 'نام کاربری یا رمز مدیر اشتباه است' };
+  if (!apiState.enabled) return { ok: false, msg: 'پنل مدیریت به اتصال سرور نیاز دارد' };
+  const r = await adminLoginApi(u.trim(), p);
+  if (!r) return { ok: false, msg: 'اتصال به سرور برقرار نشد؛ دوباره تلاش کنید' };
+  if (!r.ok) return { ok: false, msg: r.msg || 'نام کاربری یا رمز مدیر اشتباه است' };
+  auth.isAdmin = true;
+  return { ok: true, server: true };
 }
 
 export function adminLogout() {
   auth.isAdmin = false;
-  LS.set('admin', false);
+  apiLogout();
+  auth.user = null;
+  LS.set('user', null);
+}
+
+/* بررسی نشست با سرور هنگام بارگذاری: نقش واقعی را می‌گیرد؛ توکن باطل → خروج */
+export async function refreshSession() {
+  LS.del('admin');                       // پرچم قدیمیِ قابل‌دستکاری
+  if (!apiState.enabled) return;
+  const me = await meApi();
+  if (!me) return;                       // بدون توکن/شبکه: وضعیت فعلی
+  if (me.expired) { auth.user = null; auth.isAdmin = false; LS.set('user', null); return; }
+  auth.user = { name: me.name, phone: me.phone, role: me.role };
+  auth.isAdmin = me.role === 'admin';
+  LS.set('user', auth.user);
 }

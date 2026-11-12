@@ -15,7 +15,7 @@ def api_root(request):
         'docs': 'README در پوشهٔ backend',
         'endpoints': [
             'api/v1/health', 'api/v1/auth/register', 'api/v1/auth/login',
-            'api/v1/auth/otp/request', 'api/v1/auth/otp/verify', 'api/v1/auth/me',
+            'api/v1/auth/me', 'api/v1/settings',
             'api/v1/products', 'api/v1/orders', 'api/v1/orders/<code>',
             'api/v1/admin/login', 'api/v1/admin/stats', 'api/v1/admin/sms',
         ],

@@ -180,7 +180,6 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '300/hour',
         'auth': '60/hour',
-        'otp': '20/hour',
     },
 }
 
@@ -281,6 +280,8 @@ if _csrf:
 SHOP_NAME = env('SHOP_NAME', 'فروشگاه خانم گل')
 SHOP_URL = env('SHOP_URL', 'https://hmplus28.github.io/food-shop/')
 SHOP_NOTIFY_PHONE = env('SHOP_NOTIFY_PHONE')
+# تصاویر محصولات روی خود هاست در {SHOP_URL}img/ هستند؟ (deploy.sh بعد از دانلود تصاویر true می‌کند)
+LOCAL_IMAGES = env_bool('LOCAL_IMAGES', False)
 SMS_ORDER_TO_CUSTOMER = env_bool('SMS_ORDER_TO_CUSTOMER', True)
 SMS_STATUS_TO_CUSTOMER = env_bool('SMS_STATUS_TO_CUSTOMER', True)
 
@@ -288,12 +289,9 @@ SMS_STATUS_TO_CUSTOMER = env_bool('SMS_STATUS_TO_CUSTOMER', True)
 SMS_PROVIDER = env('SMS_PROVIDER', 'console').strip().lower()
 SMS_SENDER = env('SMS_SENDER')
 KAVENEGAR_API_KEY = env('KAVENEGAR_API_KEY')
-KAVENEGAR_OTP_TEMPLATE = env('KAVENEGAR_OTP_TEMPLATE')
 SMSIR_API_KEY = env('SMSIR_API_KEY')
-SMSIR_OTP_TEMPLATE_ID = env('SMSIR_OTP_TEMPLATE_ID')
 SMSIR_LINE = env('SMSIR_LINE')
 GHASEDAK_API_KEY = env('GHASEDAK_API_KEY')
-GHASEDAK_OTP_TEMPLATE = env('GHASEDAK_OTP_TEMPLATE')
 GHASEDAK_LINE = env('GHASEDAK_LINE')
 MELIPAYAMAK_USERNAME = env('MELIPAYAMAK_USERNAME')
 MELIPAYAMAK_PASSWORD = env('MELIPAYAMAK_PASSWORD')
@@ -303,7 +301,3 @@ ADMIN_USERNAME = env('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = env('ADMIN_PASSWORD', 'admin1234')
 ADMIN_PHONE = env('ADMIN_PHONE', '09120000000')
 
-OTP_TTL = env_int('OTP_TTL', 120)
-OTP_COOLDOWN = env_int('OTP_COOLDOWN', 90)
-OTP_HOURLY = env_int('OTP_HOURLY', 5)
-OTP_MAX_ATTEMPTS = env_int('OTP_MAX_ATTEMPTS', 5)

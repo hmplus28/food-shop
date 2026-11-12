@@ -6,14 +6,16 @@ from . import views
 urlpatterns = [
     path('health', views.HealthView.as_view()),
 
+    # ظاهر سایت (تم/رنگ)
+    path('settings', views.SiteSettingsView.as_view()),
+    path('admin/settings', views.AdminSiteSettingsView.as_view()),
+
     # فید ترب
     path('torob/products', views.TorobProductsView.as_view()),
 
     # حساب کاربری
     path('auth/register', views.RegisterView.as_view()),
     path('auth/login', views.LoginView.as_view()),
-    path('auth/otp/request', views.OtpRequestView.as_view()),
-    path('auth/otp/verify', views.OtpVerifyView.as_view()),
     path('auth/me', views.MeView.as_view()),
 
     # محصولات
@@ -28,6 +30,7 @@ urlpatterns = [
     # مدیر فروشگاه
     path('admin/login', views.AdminLoginView.as_view()),
     path('admin/stats', views.AdminStatsView.as_view()),
+    path('admin/users', views.AdminUsersView.as_view()),
     path('admin/sms', views.AdminSmsLogView.as_view()),
     path('admin/sms/test', views.AdminSmsTestView.as_view()),
 ]

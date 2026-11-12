@@ -3,7 +3,7 @@
 طراحی بر اساس قرارداد فرانت (app/src/services/api.js):
 - شناسهٔ محصولات عددی است تا فرانت مستقیم همان id را بخواند.
 - سفارش کد یکتا دارد (KG-xxxxx) و «کد سمت مرورگر» هم برای همگام‌سازی نگه داشته می‌شود.
-- کد یکبار مصرف (OTP) با سابقهٔ ارسال ذخیره می‌شود تا سقف ساعتی و فاصلهٔ ارسال قابل چک باشد.
+- تنظیمات ظاهری سایت (تم/رنگ) در SiteSetting ذخیره می‌شود تا برای همهٔ بازدیدکنندگان یکسان باشد.
 """
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -30,7 +30,7 @@ class ShopUserManager(BaseUserManager):
 
 
 class ShopUser(AbstractBaseUser, PermissionsMixin):
-    """کاربر فروشگاه — ورود با شماره موبایل (رمز یا کد پیامکی)"""
+    """کاربر فروشگاه — ثبت‌نام و ورود با شماره موبایل و رمز عبور"""
     ROLE = [('user', 'کاربر'), ('admin', 'مدیر')]
 
     phone = models.CharField('موبایل', max_length=15, unique=True, db_index=True)
@@ -54,7 +54,7 @@ class ShopUser(AbstractBaseUser, PermissionsMixin):
 
     @property
     def public(self):
-        return {'name': self.name, 'phone': self.phone}
+        return {'name': self.name, 'phone': self.phone, 'role': self.role}
 
 
 class Product(models.Model):
@@ -134,23 +134,18 @@ class OrderItem(models.Model):
         verbose_name_plural = 'اقلام سفارش‌ها'
 
 
-class OtpCode(models.Model):
-    """کد یکبار مصرف ورود — هر ارسال یک رکورد (برای سقف ساعتی و فاصلهٔ ارسال)"""
-    phone = models.CharField('موبایل', max_length=15, db_index=True)
-    code = models.CharField('کد', max_length=6)
-    attempts = models.PositiveSmallIntegerField('تلاش‌ها', default=0)
-    used = models.BooleanField('استفاده‌شده', default=False)
-    expires_at = models.DateTimeField('انقضا')
-    last_sent = models.DateTimeField('آخرین ارسال', auto_now=True)
+class SiteSetting(models.Model):
+    """تنظیمات سراسری سایت (کلید/مقدار JSON) — مثلاً key='look' برای تم و رنگ برند؛ فقط مدیر ویرایش می‌کند"""
+    key = models.CharField('کلید', max_length=40, unique=True)
+    value = models.JSONField('مقدار', default=dict)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'کد یکبار مصرف'
-        verbose_name_plural = 'کدهای یکبار مصرف'
-        ordering = ['-last_sent']
+        verbose_name = 'تنظیم سایت'
+        verbose_name_plural = 'تنظیمات سایت'
 
-    @property
-    def is_expired(self):
-        return timezone.now() >= self.expires_at
+    def __str__(self):
+        return self.key
 
 
 class SmsLog(models.Model):

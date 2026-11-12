@@ -4,6 +4,9 @@ import { catOf } from './catalog';
 
 export const defaultWeight = p => p.weights[Math.min(1, p.weights.length - 1)];
 
+/* تصویر محلی (/food-shop/img/x.jpg) → آدرس مطلق؛ آدرس‌های بیرونی دست‌نخورده */
+const absImg = (u, siteUrl) => (u && u.startsWith('/')) ? siteUrl.replace(/^(https?:\/\/[^/]+).*$/, '$1') + u : u;
+
 export function productSeo(p, siteUrl) {
   const w = defaultWeight(p);
   const price = priceOf(p, w);                                    // تومان
@@ -21,12 +24,12 @@ export function productSeo(p, siteUrl) {
     description,
     path,
     ogType: 'product',
-    image: p.img,
+    image: absImg(p.img, siteUrl),
     product: { price, oldPrice: base > price ? base : 0, inStock },
     meta: { w, wLabel: weightLabel(w), catName },
     jsonld: [{
       '@context': 'https://schema.org', '@type': 'Product',
-      name: p.name, image: [p.img], description: desc,
+      name: p.name, image: [absImg(p.img, siteUrl)], description: desc,
       sku: String(p.id), category: catName,
       brand: { '@type': 'Brand', name: 'خانم گل' },
       offers: {

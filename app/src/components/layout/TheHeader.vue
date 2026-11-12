@@ -25,18 +25,6 @@
           </div>
         </div>
         <div class="hd-actions">
-          <div style="position:relative">
-            <button class="icon-btn theme-btn" aria-label="تغییر تم رنگی" aria-haspopup="true" @click.stop="themePop = !themePop">
-              <svg class="icon"><use href="#i-palette" /></svg><span class="lb">تم رنگی</span>
-            </button>
-            <div class="theme-pop" :class="{ open: themePop }" role="menu">
-              <h4><svg class="icon"><use href="#i-palette" /></svg> تغییر تم رنگی</h4>
-              <div class="theme-dots">
-                <button v-for="t in THEMES" :key="t.id" class="t-dot" :class="{ on: ui.theme === t.id }" :title="t.name"
-                  :aria-label="t.name" @click="setTheme(t.id); themePop = false"><i :style="{ background: t.color }"></i></button>
-              </div>
-            </div>
-          </div>
           <button class="icon-btn" aria-label="علاقه‌مندی‌ها" @click="openModal('fav')">
             <svg class="icon"><use href="#i-heart" /></svg>
             <span class="dot-pulse fav-count" :class="{ hidden: favCount === 0 }">{{ toFa(favCount) }}</span>
@@ -108,9 +96,9 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { CATS, THEMES, visibleProducts } from '../../data/catalog';
+import { CATS, visibleProducts } from '../../data/catalog';
 import { priceOf, money, toFa } from '../../data/site';
-import { ui, openNav, openCart, openModal, setTheme, toast } from '../../stores/ui';
+import { ui, openNav, openCart, openModal, toast } from '../../stores/ui';
 import { cartCount } from '../../stores/cart';
 import { favCount } from '../../stores/fav';
 import { auth } from '../../stores/auth';
@@ -119,7 +107,6 @@ import { addToCart } from '../../stores/cart';
 const router = useRouter();
 const q = ref(''), qM = ref('');
 const searchDD = ref(false), searchDDM = ref(false);
-const themePop = ref(false);
 
 const searchProducts = s => {
   s = s.trim();
@@ -136,6 +123,5 @@ function quickAdd(p) { addToCart(p.id, p.weights[1] ?? p.weights[0], 1, true); s
 
 document.addEventListener('click', e => {
   if (!e.target.closest('.search-wrap') && !e.target.closest('.m-search')) { searchDD.value = false; searchDDM.value = false; }
-  if (!e.target.closest('.theme-pop') && !e.target.closest('.theme-btn')) themePop.value = false;
 });
 </script>

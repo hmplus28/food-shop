@@ -1,10 +1,10 @@
 User-agent: *
 Allow: /
-Disallow: /food-shop/cart
-Disallow: /food-shop/checkout
-Disallow: /food-shop/account
-Disallow: /food-shop/admin
-Disallow: /food-shop/auth
-Disallow: /food-shop/dj-admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /admin
+Disallow: /auth
+Disallow: /dj-admin
 
-Sitemap: https://hmplus28.github.io/food-shop/sitemap.xml
+Sitemap: https://__SITE_HOST__/sitemap.xml

@@ -86,6 +86,13 @@ function write(route, html) {
   fs.writeFileSync(path.join(dir, 'index.html'), html);
 }
 
+const CDN = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/';
+const imgOk = u => {   // تصویر محلی فقط وقتی واقعاً در dist/img هست
+  const m = u && u.match(/\/img\/([^/?#]+)$/);
+  return !m || fs.existsSync(path.join(DIST, 'img', m[1]));
+};
+const seoImg = u => (imgOk(u) ? u : CDN + u.split('/img/').pop());
+
 const pages = [];   // برای sitemap
 
 /* صفحهٔ اصلی */
@@ -122,6 +129,8 @@ pages.push({ route: '/track', pr: '0.3', cf: 'monthly' });
 /* محصولات */
 for (const p of list) {
   const s = productSeo(p, SITE);
+  s.image = seoImg(s.image);
+  s.jsonld[0].image = [s.image];
   const route = '/product/' + p.id;
   write(route, render({
     route, title: s.title, description: s.description, ogType: 'product', image: s.image, product: s.product, jsonld: s.jsonld,
@@ -130,7 +139,7 @@ for (const p of list) {
 <p>قیمت: ${money(s.product.price)} تومان${s.product.oldPrice ? ` (قبل از تخفیف ${money(s.product.oldPrice)} تومان)` : ''} — ${s.product.inStock ? 'موجود' : 'ناموجود'}</p>
 <p>${esc(s.description)}</p></article>`,
   }));
-  pages.push({ route, pr: '0.8', cf: 'weekly', img: p.img, name: p.name });
+  pages.push({ route, pr: '0.8', cf: 'weekly', img: s.image, name: p.name });
 }
 
 /* ---------- sitemap.xml ---------- */

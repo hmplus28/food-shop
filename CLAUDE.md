@@ -22,8 +22,8 @@ python manage.py migrate && python manage.py seed_shop
 python manage.py runserver 8787
 
 # تست (سرور باید روشن باشد)
-python3 scripts/test_backend_api.py        # باید 67/67 سبز باشد (شامل فید ترب)
-python3 scripts/test_backend_security.py   # باید 69/69 سبز باشد
+python3 scripts/test_backend_api.py        # باید 73/73 سبز باشد (شامل فید ترب، تنظیمات سایت، مشتریان)
+python3 scripts/test_backend_security.py   # باید 71/71 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
 python3 scripts/test_ascii_locale.py         # رگرسیون ۵۰۰ هاست (locale ASCII + .env فارسی)
@@ -34,6 +34,14 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - هاست Node ندارد. فرانت با `bash scripts/build_host.sh` (ماشین محلی) در `host-dist/` ساخته و commit می‌شود (جانشین‌ها: `__SITE_HOST__` و `__API_BASE__`؛ فرانت روی `/`؛ API معمولاً روی ساب‌دامین `api.دامنه` که deploy.sh از Setup Python App تشخیص می‌دهد).
 - روی هاست: `git pull && bash deploy.sh --domain دامنه` (فرانت + بک‌اند + بررسی نهایی + عیب‌یابی خودکار). `--check` فقط عیب‌یابی.
 - بعد از هر تغییر در `app/`، هم `host-dist/` و هم (برای GitHub Pages) خروجی ریشه را دوباره بسازید.
+
+## احراز هویت، مدیر و ظاهر سایت
+- ثبت‌نام و ورود فقط با موبایل + رمز؛ ورود با کد پیامکی (OTP) کاملاً حذف شده است (پنل پیامک فقط برای اطلاع‌رسانی سفارش).
+- مدیر = کاربر با `role=admin` (ساخت: `manage.py createsuperuser` یا `ADMIN_*` در `.env`). نقش فقط از سرور می‌آید (`/auth/me`)؛ پرچم‌های LocalStorage اعتبار ندارند.
+- تم و رنگ برند سراسری است: `GET /settings` (عمومی) و `PUT /admin/settings` (فقط مدیر)؛ UI آن `components/SiteStudio.vue` فقط برای مدیر (و تب «ظاهر سایت» در پنل). بازدیدکننده تم شخصی ندارد.
+- پنل مدیر کاملاً سرور-محور است: محصولات (با پنهان‌ها)، سفارش‌ها (فیلتر/جزئیات/وضعیت)، مشتریان (`/admin/users`)، پیامک، ظاهر سایت.
+- آفلاین: فونت‌ها با `@fontsource` داخل بیلد؛ تصاویر در `app/public/img/` (دانلود با `scripts/fetch_assets.py`) با fallback خودکار به منبع اصلی تا زمان دانلود.
+- تست‌ها: `scripts/test_ui_admin.js` (نیاز به بک‌اند 8787 و بیلد API-روشن روی 4174، راهنما در سرفایل).
 
 ## سئو و ترب
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.

@@ -200,7 +200,7 @@ check('C4: توکن امضای آشغال → ۴۰۱', st == 401, st)
 st, _, r = req('POST', '/auth/register', {'name': 'کاربر امنیتی', 'phone': PH, 'password': PW,
                                           'role': 'admin', 'is_staff': True, 'is_superuser': True})
 check('C5: ثبت‌نام با فیلدهای نقش‌محور پذیرفته شد ولی نقش‌ها نادیده گرفته می‌شوند',
-      st == 200 and r.get('ok') and set((r.get('user') or {}).keys()) == {'name', 'phone'}, f'{st} {r}')
+      st == 200 and r.get('ok') and set((r.get('user') or {}).keys()) == {'name', 'phone', 'role'} and r['user']['role'] == 'user', f'{st} {r}')
 USER = r.get('token')
 st, _, r = req('GET', '/admin/stats', token=USER)
 check('C6: کاربر عادی با توکنش → /admin/stats ممنوع (۴۰۳)', st == 403, st)
@@ -274,19 +274,23 @@ st, _, r = req('POST', '/auth/register', {'name': 'کاربر فارسی ۹', 'p
 check('C21: رقم «۹» فارسی (U+06F9) هم نرمال می‌شود', st == 200 and r.get('ok')
       and r.get('user', {}).get('phone') == '0939' + sfx[:7], f'{st} {r}')
 
-# ───────────────────── D) امنیت OTP ─────────────────────
-print('\nD) امنیت کد یکبار مصرف')
-st, _, rA = req('POST', '/auth/otp/request', {'phone': PHX})
-code_x = (rA.get('dev') or {}).get('code') if isinstance(rA.get('dev'), dict) else None
-check('D1: درخواست کد برای شمارهٔ X', rA.get('ok') is True and bool(code_x), rA)
-st, _, r = req('POST', '/auth/otp/verify', {'phone': PH2, 'code': code_x or ''})
-check('D2: کدِ شمارهٔ X با شمارهٔ دیگر (دومین) → رد', r.get('ok') is False, r)
-st, _, r = req('POST', '/auth/otp/verify', {'phone': PHX, 'code': code_x or ''})
-check('D3: تأیید درست کد → توکن', r.get('ok') is True and r.get('token'), r)
-st, _, r = req('POST', '/auth/otp/verify', {'phone': PHX, 'code': code_x or ''})
-check('D4: استفادهٔ دوباره از همان کد (replay) → رد', r.get('ok') is False, r)
-st, _, r = req('POST', '/auth/otp/verify', {'phone': PHX, 'code': '٤٤٤٤٤٤'})
-check('D5: کد با ارقام فارسی/نامعتبر → رد بدون ۵۰۰', st in (200, 400) and r.get('ok') is False, f'{st} {r}')
+# ───────────────────── D) تنظیمات سراسری سایت و حذف OTP ─────────────────────
+print('\nD) تنظیمات سراسری (تم) فقط مدیر؛ ورود با کد حذف شده')
+for ep in ('/auth/otp/request', '/auth/otp/verify'):
+    st, _, r = req('POST', ep, {'phone': PHX, 'code': '123456'})
+    check(f'D1: {ep} حذف شده', st == 404, st)
+st, _, r = req('PUT', '/admin/settings', {'theme': 'abi', 'tune': None})
+check('D2: تغییر تم بدون توکن → ممنوع', st in (401, 403), st)
+st, _, r = req('PUT', '/admin/settings', {'theme': 'abi', 'tune': None}, token=USER)
+check('D3: تغییر تم با کاربر عادی → ۴۰۳', st == 403, st)
+st, _, r = req('PUT', '/admin/settings', {'theme': 'abi', 'tune': ['#000000', '#000000', '#000000', 'url(javascript:alert(1))']}, token=ADMIN)
+check('D4: تزریق CSS/JS در رنگ برند → ۴۰۰', st == 400, f'{st} {r}')
+st, _, r = req('PUT', '/admin/settings', {'theme': '../../etc/passwd'}, token=ADMIN)
+check('D5: شناسه تم نامعتبر → ۴۰۰', st == 400, f'{st} {r}')
+st, _, r = req('GET', '/settings')
+check('D6: GET /settings عمومی است و فقط theme/tune می‌دهد', st == 200 and set(r.keys()) <= {'ok', 'theme', 'tune'}, r)
+st, _, r = req('POST', '/auth/register', {'name': 'کاربر امنیتی', 'phone': '0936' + sfx[:7], 'password': 'abcd', 'role': 'admin', 'is_staff': True})
+check('D7: ثبت‌نام با role=admin تزریقی → نقش user می‌ماند', r.get('ok') and (r.get('user') or {}).get('role') == 'user', r)
 
 # ───────────────────── E) منطق مالی ─────────────────────
 print('\nE) دستکاری قیمت، کد تخفیف و سقف‌ها')
@@ -354,13 +358,6 @@ check('F4: q تزریقی بدون توکن مدیر → ممنوع', st in (401
 
 # ───────────────────── G) محدودسازی نرخ (Brute-force) ─────────────────────
 print('\nG) محدودسازی نرخ — انتهای تست (شمارنده‌ها را مصرف می‌کند)')
-seen429 = 0
-for i in range(24):
-    st, _, _r = req('POST', '/auth/otp/request', {'phone': f'0936{sfx[:2]}{i:02d}{sfx[4:]}'[:11].ljust(11, '0')})
-    if st == 429:
-        seen429 += 1
-check('G1: انفجار درخواست OTP → پس از سقف، ۴۲۹ می‌دهد (سقف ۲۰/ساعت)', seen429 >= 1, f'429s={seen429}')
-
 seen429 = 0
 for i in range(55):
     st, _, _r = req('POST', '/auth/login', {'phone': PH, 'password': 'wrong-guess-' + str(i)})

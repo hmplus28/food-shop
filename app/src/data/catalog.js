@@ -2,7 +2,8 @@
 import { reactive } from 'vue';
 import { LS } from './site';
 
-export const IMG = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/';
+/* تصاویر روی خود هاست در /img/ (دانلود با scripts/fetch_assets.py)؛ در نبود فایل، fallback خودکار به منبع اصلی (main.js) */
+export const IMG = (import.meta.env.BASE_URL || '/') + 'img/';
 
 /* دسته‌بندی‌ها (۱۳ دسته) */
 export const CATS = [
@@ -61,7 +62,7 @@ export const PACKS = [
   { pid: 27, w: 250, old: 520000, now: 416000, hours: 48, name: 'پک دمنوش آرامش', sub: 'دو دمنوش گیاهی منتخب' },
 ];
 
-/* خرید اطمینان (کالای هر روز، غیرخوراکی) */
+/* خرید اطمینان (کالای هر روز) */
 export const TRUST = [
   { day: 6, name: 'کاسه سرو چوبی دست‌ساز با دو قاشق', img: IMG + 'c7db525d1daf.jpg', old: 850000, price: 637000, off: 25 },
   { day: 0, name: 'کاسه سرامیک لعاب‌دار نارنجی (دست‌ساز لالجین)', img: IMG + '05508d4b4470.jpg', old: 690000, price: 586000, off: 15 },
@@ -71,7 +72,7 @@ export const TRUST = [
   { day: 4, name: 'سینی مسی قلم‌زنی‌شده اصفهان', img: IMG + 'e569cfd83324.jpg', old: 2150000, price: 1612000, off: 25 },
   { day: 5, name: 'کاسه سرامیک سبز مات دست‌ساز', img: IMG + '7f5b9c96c99e.jpg', old: 640000, price: 512000, off: 20 },
 ];
-export const TRUST_WHY = 'اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب «غیرخوراکی» — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به خانم گل اعتماد دارید، به ما مطمئنید.';
+export const TRUST_WHY = 'اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به خانم گل اعتماد دارید، به ما مطمئنید.';
 export const TRUST_VPIDS = {};
 TRUST.forEach((t, i) => { TRUST_VPIDS[t.day] = 90 + i; });
 
@@ -112,7 +113,7 @@ function buildBase() {
   const list = BASE.map(p => ({ ...p, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights] }));
   /* محصولات مجازی بخش خرید اطمینان (قابل افزودن به سبد؛ در فروشگاه نمایش داده نمی‌شوند) */
   TRUST.forEach((t, i) => {
-    list.push({ id: 90 + i, name: t.name, cat: 'giftbox', img: t.img, price: t.price * 1000, weights: [1], stock: 8, disc: 0, grade: 'دست‌ساز', rate: 4.9, sold: 88, tags: ['خرید اطمینان'], sec: [], hide: true, desc: 'کالای منتخب غیرخوراکی بخش «خرید اطمینان»؛ هر روز با قیمت ویژه.' });
+    list.push({ id: 90 + i, name: t.name, cat: 'giftbox', img: t.img, price: t.price * 1000, weights: [1], stock: 8, disc: 0, grade: 'دست‌ساز', rate: 4.9, sold: 88, tags: ['خرید اطمینان'], sec: [], hide: true, desc: 'کالای منتخب بخش «خرید اطمینان»؛ هر روز با قیمت ویژه.' });
   });
   return list;
 }
@@ -122,6 +123,7 @@ export const products = reactive(buildBase());
 /* اعمال ویرایش‌های آزمایشی پنل مدیر (LocalStorage) روی فهرست فعلی —
    بعد از همگام‌سازی بک‌اند هم دوباره صدا زده می‌شود تا ویرایش‌ها حفظ شوند. */
 export function applyAdminOverrides() {
+  if (String(import.meta.env.VITE_API_ENABLED).toLowerCase() === 'true') return;   // با سرور فعال، سرور مرجع است
   const saved = LS.get('adminProducts', null);
   if (Array.isArray(saved) && saved.length) products.splice(0, products.length, ...saved);
 }
