@@ -134,6 +134,7 @@ merge_app_keys() {
     local key val merged=0
     while IFS='|' read -r key val; do
         [ -n "$key" ] || continue
+        case "$key" in \#*) continue ;; esac   # خطوط کامنت داخل فهرست نادیده گرفته شوند
         if ! grep -Eq "^[[:space:]]*(export[[:space:]]+)?${key}=" "$ENV_FILE"; then
             if [ "$merged" -eq 0 ]; then
                 printf '\n# کلیدهای خودکار افزوده‌شده توسط deploy/deploy_cpanel.sh\n' >> "$ENV_FILE"
@@ -156,6 +157,8 @@ DB_PORT|3306
 SECURE_SSL_REDIRECT|False
 SECURE_HSTS_SECONDS|0
 SECURE_PROXY_SSL_HEADER|False
+FORCE_SCRIPT_NAME|/food-shop
+STATIC_URL|/food-shop/static/
 ADMIN_USERNAME|admin
 ADMIN_PHONE|09120000000
 SHOP_NAME|فروشگاه خانم گل
@@ -272,6 +275,12 @@ OTP_COOLDOWN=90
 OTP_HOURLY=5
 OTP_MAX_ATTEMPTS=5
 
+# ---------- زیرمسیر Passenger (Application URL = /food-shop) ----------
+# اگر برنامه را در Setup Python App روی مسیر دیگری سرو می‌کنید، هر دو را
+# با همان مسیر هم‌اهنگ کنید؛ در غیر این صورت CSS پنل ادمین از دست می‌رود.
+FORCE_SCRIPT_NAME=/food-shop
+STATIC_URL=/food-shop/static/
+
 # ---------- امنیت TLS (بعد از فعال‌شدن https روی هاست) ----------
 SECURE_SSL_REDIRECT=False
 SECURE_HSTS_SECONDS=0
@@ -360,9 +369,11 @@ find_python() {
         python3
     )
     # اسکن عمومی پایتون‌های کلودلینوکس — جدیدترین اول
-    while IFS= read -r candidate; do
+    # (در شل jailed برخی هاست‌های cPanel به‌دلیل نبود /dev/fd، process substitution
+    #  با خطای «/dev/fd/62: No such file or directory» شکست می‌خورد؛ از حلقهٔ ساده استفاده می‌کنیم)
+    for candidate in $(ls /opt/alt/python3*/bin/python3 2>/dev/null | sort -rV || true); do
         candidates+=("$candidate")
-    done < <(ls /opt/alt/python3*/bin/python3 2>/dev/null | sort -rV || true)
+    done
 
     for candidate in "${candidates[@]}"; do
         [ -n "$candidate" ] || continue
@@ -385,6 +396,14 @@ if [ -z "$VENV_DIR" ] && [ -d "$HOME/virtualenv" ]; then
             rel="${PROJECT_DIR#${HOME}/}"
             if [ -n "$rel" ] && [ "$rel" != "$PROJECT_DIR" ]; then
                 cpanel_roots+=( "$HOME/virtualenv/$rel" )
+                # الگوی رایج: ریپو در ‎~/public_html/food-shop‎ و کد Django در
+                # زیرپوشهٔ backend؛ در cPanel → Setup Python App، Application root
+                # همان پوشهٔ والد (public_html/food-shop) است و venv در
+                # ‎~/virtualenv/public_html/food-shop/<نسخه>‎ ساخته می‌شود؛ پس
+                # والدِ backend هم امتحان می‌شود.
+                case "$rel" in
+                    */backend) cpanel_roots+=( "$HOME/virtualenv/${rel%/backend}" ) ;;
+                esac
             fi
             ;;
     esac
@@ -553,6 +572,83 @@ KGWSGI
     say "passenger_wsgi.py آماده شد (اجرای برنامه با: $VENV_DIR/bin/python)."
 fi
 
+# ------------------------------------ passenger_wsgi در ریشهٔ برنامهٔ سی‌پنل ----
+# اگر کد Django داخل زیرپوشهٔ backend باشد ولی Application root سی‌پنل پوشهٔ والد
+# باشد (الگوی همین استقرار: ‎~/public_html/food-shop‎ + backend/)، Passenger فایل
+# Startup را در «والد» جست‌وجو می‌کند؛ اگر نباشد صفحهٔ پیش‌فرض «It works! Python»
+# نشان داده می‌شود. پس همان‌جا هم نسخهٔ درست نوشته می‌شود.
+PARENT_DIR="$(dirname "$PROJECT_DIR")"
+# پوشهٔ «برنامهٔ سی‌پنل» (Application Root در Setup Python App):
+#   ۱) اگر با KHANOMGOL_APP_ROOT صریحاً داده شده، همان ملاک است — حتی اگر
+#      اسکریپت از کلونِ ریپو (مثل ~/food-shop-repo/backend) اجرا شود؛
+#   ۲) در الگوی رایج، والدِ backend (مثل ~/public_html/food-shop)؛
+#   ۳) اگر backend زیر public_html نیست و flag هم داده نشده، بی‌اثر.
+if [ -n "${KHANOMGOL_APP_ROOT:-}" ]; then
+    ROOT_APP_DIR="${KHANOMGOL_APP_ROOT/#\~/$HOME}"
+elif [ "$(basename "$PROJECT_DIR")" = "backend" ] && [ -d "$PARENT_DIR" ]; then
+    ROOT_APP_DIR="$PARENT_DIR"
+else
+    ROOT_APP_DIR=""
+fi
+if [ -n "$ROOT_APP_DIR" ] && [ -d "$ROOT_APP_DIR" ] && [ "$(cd "$ROOT_APP_DIR" && pwd)" != "$(cd "$PROJECT_DIR" && pwd)" ]; then
+    ROOT_WSGI_FILE="$ROOT_APP_DIR/passenger_wsgi.py"
+    mkdir -p "$ROOT_APP_DIR/tmp"
+    # اگر نسخهٔ موجود فایل ما نبود (مثل passenger_wsgi.py نمایشی سی‌پنل) پشتیبان بگیر
+    if [ -f "$ROOT_WSGI_FILE" ] && ! grep -q "KHANOMGOL-PASSENGER-WSGI-ROOT" "$ROOT_WSGI_FILE" 2>/dev/null; then
+        if [ ! -f "$ROOT_WSGI_FILE.kg-backup" ]; then
+            cp "$ROOT_WSGI_FILE" "$ROOT_WSGI_FILE.kg-backup"
+            info "نسخهٔ قبلی ‎$ROOT_WSGI_FILE‎ در ‎passenger_wsgi.py.kg-backup‎ نگه داشته شد."
+        fi
+    fi
+    if [ "$IS_SELECTOR_VENV" -eq 1 ]; then
+        cat > "$ROOT_WSGI_FILE" << 'KGROOTWSGI'
+# KHANOMGOL-PASSENGER-WSGI-ROOT — Startup File برنامهٔ cPanel
+# (Application root = والدِ backend) — توسط backend/deploy/deploy_cpanel.sh ساخته می‌شود؛ دستی ویرایش نکنید.
+
+import os
+import sys
+
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend")
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
+KGROOTWSGI
+        say "passenger_wsgi.py در ریشهٔ برنامهٔ سی‌پنل ساخته شد: $ROOT_WSGI_FILE"
+    else
+        cat > "$ROOT_WSGI_FILE" << KGROOTWSGI
+# KHANOMGOL-PASSENGER-WSGI-ROOT — Startup File برنامهٔ cPanel
+# (Application root = والدِ backend) — توسط backend/deploy/deploy_cpanel.sh ساخته می‌شود؛ دستی ویرایش نکنید.
+# venv خودمان (.venv-host) است؛ Passenger با پایتون venv سی‌پنل اجرا می‌کند که
+# وابستگی‌ها را ندارد، پس با پایتونِ .venv-host دوباره اجرا می‌شویم.
+
+import os
+import sys
+
+INTERP = r"$VENV_DIR/bin/python"
+if os.path.realpath(os.path.dirname(sys.executable)) != os.path.realpath(os.path.dirname(INTERP)):
+    os.execl(INTERP, INTERP, *sys.argv)
+
+BACKEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "backend")
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
+KGROOTWSGI
+        warn "passenger_wsgi.py ریشه با re-exec ساخته شد؛ برای پایداری بیشتر در cPanel → Setup Python App نسخهٔ Python همان ۳.۱۱ را نگه دارید و وابستگی‌ها را در venv سی‌پنل هم نصب کنید (اجرای دوبارهٔ همین اسکریپت پس از پیدا شدن venv سی‌پنل، خودش این کار را می‌کند)."
+    fi
+    touch "$ROOT_APP_DIR/tmp/restart.txt"
+    say "Startup File ریشهٔ برنامهٔ سی‌پنل نوشته شد: $ROOT_WSGI_FILE"
+fi
+
 # ------------------------------------------------- قواعد امنیتی .htaccess ----
 # اگر پروژه داخل public_html است، بدون این قواعد فایل‌های حساس (.env،
 # db.sqlite3، سورس‌ها) از وب قابل دانلود هستند. سرو ‎/static/‎ هم مستقیم
@@ -615,10 +711,19 @@ if [ -f "$PROJECT_DIR/db.sqlite3" ]; then
         say "پشتیبان اولیهٔ دیتابیس SQLite: backups/db-first-deploy.sqlite3"
     fi
 fi
-if [ -z "${KHANOMGOL_DB_SKIP:-}" ] && command -v mysqldump >/dev/null 2>&1; then
+DUMP_BIN=""
+if [ -z "${KHANOMGOL_DB_SKIP:-}" ]; then
+    # روی برخی هاست‌ها فقط mariadb-dump هست (mysqldump حذف شده)
+    if command -v mysqldump >/dev/null 2>&1; then DUMP_BIN="$(command -v mysqldump)"
+    elif command -v mariadb-dump >/dev/null 2>&1; then DUMP_BIN="$(command -v mariadb-dump)"
+    fi
+fi
+if [ -n "$DUMP_BIN" ]; then
     mkdir -p "$BACKUPS_DIR"
     if [ ! -s "$BACKUPS_DIR/db-first-deploy.sql.gz" ]; then
-        if MYSQL_PWD="$DB_PASS_VAL" mysqldump -h "$DB_HOST_VAL" -P "$DB_PORT_VAL" \
+        # --no-defaults: فایل‌های پیش‌فرضِ ناقص (مثل /etc/mysql/releem.conf.d)
+        # باعث «Fatal error in defaults handling» می‌شوند؛ با این گزینه خوانده نمی‌شوند
+        if MYSQL_PWD="$DB_PASS_VAL" "$DUMP_BIN" --no-defaults -h "$DB_HOST_VAL" -P "$DB_PORT_VAL" \
             -u "$DB_USER_VAL" "$DB_NAME_VAL" | gzip > "$BACKUPS_DIR/db-first-deploy.sql.gz"; then
             say "پشتیبان اولیهٔ دیتابیس MySQL: backups/db-first-deploy.sql.gz"
         else
@@ -652,6 +757,8 @@ echo "     • Application URL: /food-shop (برنامه زیر دامنهٔ ا�
 echo "     • Startup File: passenger_wsgi.py (خودکار شناسایی می‌شود)"
 echo -e "     • اگر venv را سی‌پنل ساخته، اسکریپت در اجرای بعدی خودش آن را پیدا می‌کند؛"
 echo -e "       در همین استقرار venv سی‌پنل خودکار پیدا می‌شود: ${C_YELLOW}~/virtualenv/public_html/food-shop/3.11${C_OFF}"
+echo -e "     • ${C_YELLOW}Application URL حتماً /food-shop باشد (نه /)${C_OFF} — اگر «/» است در پنل ویرایش و"
+echo "       بعد از هر تغییر، دکمهٔ Restart پنل را بزنید؛ وگرنه صفحهٔ «It works! Python» می‌بینید."
 echo ""
 echo "  ۲. فایل ‎.env‎ را ویرایش کنید:"
 echo "     • ALLOWED_HOSTS=دامنه-شما.ir"
@@ -678,7 +785,7 @@ echo "       [client]"
 echo "       user=${DB_USER_VAL:-DB_USER}"
 echo "       password=رمز-دیتابیس"
 echo "     سپس در cPanel → Cron Jobs (روزانه ساعت ۳ صبح، نگهداری ۳۰ روز):"
-echo "     0 3 * * * mysqldump -h $DB_HOST_VAL $DB_NAME_VAL | gzip > $BACKUPS_DIR/db-\$(date +\\%F).sql.gz && find $BACKUPS_DIR -name 'db-*.sql.gz' -mtime +30 -delete"
+echo "     0 3 * * * mysqldump --no-defaults -h $DB_HOST_VAL $DB_NAME_VAL | gzip > $BACKUPS_DIR/db-\$(date +\\%F).sql.gz && find $BACKUPS_DIR -name 'db-*.sql.gz' -mtime +30 -delete"
 echo ""
 echo "  ۷. راهنمای کامل گام‌به‌گام: backend/README.md و deploy/GUIDE-CPANEL-FA.md"
 echo ""

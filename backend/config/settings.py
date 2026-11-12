@@ -195,7 +195,15 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------- استاتیک (برای پنل ادمین جنگو) ----------
-STATIC_URL = 'static/'
+# زیر Passenger وقتی برنامه روی زیرمسیر سرو می‌شود (الگوی همین پروژه:
+# Application URL = /food-shop)، این دو مقدار در .env لازم است تا لینک‌های
+# پنل ادمین و CSS آن درست کار کنند:
+#   FORCE_SCRIPT_NAME=/food-shop
+#   STATIC_URL=/food-shop/static/
+# (Whitenoise خودش بخش مسیرِ اسکریپت را از STATIC_URL جدا می‌کند و به
+#  path_info — که Passenger بدون پیشوند /food-shop می‌دهد — تطبیق می‌دهد.)
+STATIC_URL = env('STATIC_URL', 'static/')
+FORCE_SCRIPT_NAME = env('FORCE_SCRIPT_NAME') or None
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},

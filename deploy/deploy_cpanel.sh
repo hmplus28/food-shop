@@ -256,9 +256,11 @@ find_node() {
         /usr/local/bin/node
         /usr/bin/node
     )
-    while IFS= read -r candidate; do
+    # در شل jailed برخی هاست‌های cPanel به‌دلیل نبود /dev/fd، process substitution
+    # با خطای «/dev/fd/62: No such file or directory» شکست می‌خورد؛ از حلقهٔ ساده استفاده می‌کنیم
+    for candidate in $(ls /opt/alt/alt-nodejs*/bin/node 2>/dev/null | sort -rV || true); do
         candidates+=("$candidate")
-    done < <(ls /opt/alt/alt-nodejs*/bin/node 2>/dev/null | sort -rV || true)
+    done
 
     for candidate in "${candidates[@]}"; do
         [ -n "$candidate" ] || continue

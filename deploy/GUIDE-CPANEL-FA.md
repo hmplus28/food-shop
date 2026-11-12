@@ -105,8 +105,60 @@ bash deploy/deploy_cpanel.sh
 
 | آدرس | پاسخ مورد انتظار |
 | --- | --- |
+| `https://دامنه-شما/` | صفحهٔ فروشگاه (اگر فرانت روی خود هاست منتشر شده باشد — **نه** «It works! Python») |
 | `https://دامنه-شما/food-shop/api/v1/health` | `{"ok":true,"sms":{...}}` |
-| `https://دامنه-شما/food-shop/dj-admin/` | صفحهٔ ورود ادمین جنگو |
+| `https://دامنه-شما/food-shop/dj-admin/` | صفحهٔ ورود ادمین جنگو (با CSS) |
+
+### اگر صفحهٔ «It works! Python 3.11.18» به‌جای فروشگاه دیدید
+
+این صفحهٔ نمایشیِ خودِ «Setup Python App» است — نه خطای بک‌اند. وقتی برنامهٔ
+پایتون با **Application URL = `/`** ساخته شود، Passenger **همهٔ درخواست‌های
+دامنه را می‌رباید** و به همان اپ نمایشی می‌دهد؛ یعنی فروشگاه استاتیکِ
+`public_html` هم زیر این صفحه پنهان می‌شود. (`passenger_wsgi.py` واقعی هم
+اگر داخل `backend/` باشد اصلاً خوانده نمی‌شود، چون Passenger فقط ریشهٔ
+Application Root را نگاه می‌کند و آنجا نسخهٔ demo سی‌پنل نشسته است.)
+
+رفع در ۳ قدم:
+
+**۱) Application URL را از `/` به `/food-shop` تغییر دهید** — در cPanel →
+Setup Python App → روی برنامه **Edit** بزنید → «Application URL» →
+`/food-shop` → **Save**. از این پس فقط مسیرهای `/food-shop/…` (بک‌اند) به
+Passenger می‌روند و ریشهٔ دامنه به فایل‌های استاتیک فروشگاه.
+
+**۲) فایل `passenger_wsgi.py` درست را در ریشهٔ برنامه بگذارید و وابستگی‌ها را داخل venv سی‌پنل نصب کنید** — هر دو را یک‌جا این‌طور انجام دهید (کد به‌روز + اجرای دوبارهٔ اسکریپت که حالا venv سی‌پنل را خودکار می‌شناسد و Startup File ریشه را خودش می‌نویسد):
+
+```bash
+source /home/khanomgo/virtualenv/public_html/food-shop/3.11/bin/activate
+# کد به‌روز را بگیرید (یا اگر کلون ندارید بسازید)
+if [ -d ~/food-shop-repo/.git ]; then (cd ~/food-shop-repo && git pull); else
+  git clone https://github.com/hmplus28/food-shop.git ~/food-shop-repo; fi
+# بک‌اند به‌روز را در پوشهٔ برنامهٔ سی‌پنل همگام کنید (بدون دست زدن به .env و استاتیک‌ها)
+mkdir -p ~/public_html/food-shop/backend
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --exclude '.env' --exclude '.env.*' --exclude '.venv-host' \
+    --exclude 'staticfiles' --exclude 'backups' --exclude 'logs' --exclude 'tmp' \
+    ~/food-shop-repo/backend/ ~/public_html/food-shop/backend/
+else
+  cp -r ~/food-shop-repo/backend/. ~/public_html/food-shop/backend/
+fi
+# اگر .env فقط داخل کلون بود، یک‌بار به پوشهٔ برنامه بیاورید
+[ -f ~/public_html/food-shop/backend/.env ] || \
+  cp ~/food-shop-repo/backend/.env ~/public_html/food-shop/backend/.env 2>/dev/null || true
+cd ~/public_html/food-shop/backend
+KHANOMGOL_APP_ROOT=/home/khanomgo/public_html/food-shop bash deploy/deploy_cpanel.sh
+touch ~/public_html/food-shop/tmp/restart.txt
+```
+
+اگر اسکریپت برای «پیکربندی دیتابیس MySQL ناقص» توقف کرد، یعنی `.env` این پوشه
+رمز دیتابیس را ندارد — همان رمز گام ۰ را در `DB_PASSWORD` بگذارید و دوباره اجرا کنید.
+
+`KHANOMGOL_APP_ROOT` می‌گوید Application Root واقعی سی‌پنل کجاست تا
+`passenger_wsgi.py` حتی اگر اسکریپت را از جای دیگری اجرا کنید، دقیقاً در
+همان پوشه نوشته شود (نسخهٔ نمایشی سی‌پنل هم خودکار در `passenger_wsgi.py.kg-backup` پشتیبان می‌شود).
+
+**۳) تست:** رفرش `https://دامنه-شما/` باید فروشگاه را نشان دهد و
+`/food-shop/api/v1/health` باید JSON بدهد. بعد از هر تغییر در پنل، دکمهٔ
+**Restart** را بزنید یا `touch ~/public_html/food-shop/tmp/restart.txt`.
 
 اگر ۵۰۳ گرفتید: cPanel → Setup Python App → دکمهٔ **Restart**؛ و مطمئن شوید
 Startup File همان `passenger_wsgi.py` است. پس از هر تغییر `.env`:
@@ -174,7 +226,7 @@ password=رمز-دیتابیس
 سطح دسترسی: `chmod 600 ~/.my.cnf` — سپس در cPanel → **Cron Jobs**:
 
 ```cron
-0 3 * * * mysqldump -h localhost khanomgo_foodshop | gzip > ~/public_html/food-shop/backups/db-$(date +\%F).sql.gz && find ~/public_html/food-shop/backups -name 'db-*.sql.gz' -mtime +30 -delete
+0 3 * * * mysqldump --no-defaults -h localhost khanomgo_foodshop | gzip > ~/public_html/food-shop/backups/db-$(date +\%F).sql.gz && find ~/public_html/food-shop/backups -name 'db-*.sql.gz' -mtime +30 -delete
 ```
 
 (هر شب ساعت ۳ صبح، پشتیبان فشردهٔ روزانه، نگهداری ۳۰ روز.)
@@ -214,6 +266,7 @@ bash deploy/deploy_cpanel.sh --build --api-base https://دامنه-شما/food-s
 bash deploy/deploy_cpanel.sh --venv ~/virtualenv/public_html/food-shop/3.11   # venv مشخص
 bash deploy/deploy_cpanel.sh --python /opt/alt/python311/bin/python3.11      # پایتون مشخص
 KHANOMGOL_ALLOW_SQLITE=1 bash deploy/deploy_cpanel.sh                        # تست محلی بدون MySQL
+KHANOMGOL_APP_ROOT=~/public_html/food-shop bash deploy/deploy_cpanel.sh      # نوشتن Startup File در ریشهٔ برنامهٔ سی‌پنل
 ```
 
 ## راه‌اندازی روی سرور مجازی (VPS)
@@ -240,6 +293,8 @@ gunicorn config.wsgi:application --bind 0.0.0.0:8787 --workers 3
 | تغییرات دیده نمی‌شود | کش مرورگر — `index.html` بدون کش منتشر می‌شود؛ با Ctrl+F5 بگیرید |
 | خطای ۵۰۰ | مالکیت/سطح دسترسی فایل‌ها را در File Manager چک کنید (۶۴۴ برای فایل‌ها) |
 | بک‌اند خطای ۵۰۳ می‌دهد (Passenger) | پس از هر تغییر venv/passenger_wsgi.py ری‌استارت لازم است: `touch tmp/restart.txt` یا دکمهٔ Restart در Setup Python App؛ Startup File باید `passenger_wsgi.py` باشد |
+| صفحهٔ «It works! Python 3.11.18» به‌جای فروشگاه | Application URL در Setup Python App روی `/` است → ویرایش به `/food-shop` + Restart (بخش «اگر صفحهٔ It works دیدید» در گام ۴) |
+| پنل `dj-admin` بدون CSS است | `FORCE_SCRIPT_NAME` و `STATIC_URL` در `.env` هم‌اهنگ با Application URL نیستند → `FORCE_SCRIPT_NAME=/food-shop` و `STATIC_URL=/food-shop/static/` + `touch tmp/restart.txt` |
 | «پایتون ≥3.10 پیدا نشد» در اسکریپت بک‌اند | در cPanel → Setup Python App برنامه با Python 3.11 بسازید (Application root = `public_html/food-shop`) و دوباره اجرا کنید؛ یا مسیر بدهید: `--python /opt/alt/python311/bin/python3.11` |
 | `api/v1/health` پاسخ نمی‌دهد | `ALLOWED_HOSTS` در `backend/.env` دامنه را ندارد → ویرایش و `touch tmp/restart.txt`؛ لاگ‌ها در `backend/logs/` |
 | فرانت به بک‌اند وصل نمی‌شود (CORS) | `CORS_ORIGINS` در `backend/.env` باید دقیقاً دامنهٔ فرانت باشد (با https و بدون اسلش آخر) |
