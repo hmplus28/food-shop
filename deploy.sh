@@ -51,6 +51,12 @@ echo -e "\n${B}═════════════════════�
 echo -e "${B}  فروشگاه خانم گل — استقرار یکپارچه (فرانت + بک‌اند)${O}"
 echo -e "${B}═══════════════════════════════════════════════════════════════${O}"
 
+# موقعیت فعلی لاگ‌ها؛ در عیب‌یابی فقط خطوط «بعد از این استقرار» نشان داده می‌شود (نه traceback های قدیمی)
+declare -A LOGPOS
+for lf in "$ROOT/backend/logs/django-error.log" "$ROOT/stderr.log" "$ROOT/backend/stderr.log" "$HOME/logs/error_log"; do
+  [ -f "$lf" ] && LOGPOS["$lf"]="$(stat -c %s "$lf" 2>/dev/null || echo 0)"
+done
+
 # ── دامنه ──
 ENVF="$ROOT/backend/.env"
 if [ -z "$DOMAIN" ] && [ -f "$ENVF" ]; then
@@ -58,7 +64,7 @@ if [ -z "$DOMAIN" ] && [ -f "$ENVF" ]; then
 fi
 DOMAIN="${DOMAIN#http://}"; DOMAIN="${DOMAIN#https://}"; DOMAIN="${DOMAIN%%/*}"
 [ -n "$DOMAIN" ] || die "دامنه مشخص نیست. اجرا کنید:  bash deploy.sh --domain دامنه-شما.ir"
-case "$DOMAIN" in *[!a-zA-Z0-9.-]*) die "دامنهٔ نامعتبر: $DOMAIN" ;; esac
+case "$DOMAIN" in *[!a-zA-Z0-9.:-]*) die "دامنهٔ نامعتبر: $DOMAIN" ;; esac
 info "دامنه: $DOMAIN | ریشهٔ وب: $WEBROOT | ریپو: $ROOT"
 
 # ── ۱) فرانت ──
@@ -97,19 +103,23 @@ fi
 # ── ۳) بررسی نهایی ──
 echo ""; info "بررسی نهایی سایت ..."
 BAD=0
-probe() {  # probe <مسیر> <توضیح>
-  local url="$SCHEME://$DOMAIN$1" out code
+probe() {  # probe <مسیر> <توضیح> <متن-مورد-انتظار-در-پاسخ>
+  local url="$SCHEME://$DOMAIN$1" out code want="${3:-}"
   out="$(mktemp)"; code="$(curl -sS -L -m 25 -o "$out" -w '%{http_code}' "$url" 2>"$out.err" || echo 000)"
-  if [ "${code:0:1}" = "2" ]; then say "$2  [$code]  $url"
-  else BAD=1; warn "$2  [$code]  $url"; head -c 300 "$out" | tr '\n' ' ' >&2; echo >&2; head -c 200 "$out.err" >&2; fi
+  if [ "${code:0:1}" != "2" ]; then
+    BAD=1; warn "$2  [$code]  $url"; head -c 200 "$out" | tr '\n' ' ' >&2; echo >&2; head -c 200 "$out.err" >&2
+    grep -q "The requested resource was not found" "$out" 2>/dev/null && warn "   ↑ این صفحهٔ ۴۰۴ خودِ Django است: Passenger این مسیر را گرفته (Application URL پایتون‌اپ باید /food-shop باشد، نه /)"
+  elif [ -n "$want" ] && ! grep -qF -- "$want" "$out"; then
+    BAD=1; warn "$2  [$code]  $url — پاسخ همان چیزی که انتظار می‌رفت نیست (انتظار: «$want»)"; head -c 160 "$out" | tr '\n' ' ' >&2; echo >&2
+  else say "$2  [$code]  $url"; fi
   rm -f "$out" "$out.err"
 }
-probe "/" "صفحهٔ اصلی فرانت"
-probe "/product/1/" "صفحهٔ محصول (پیش‌رندر)"
+probe "/" "صفحهٔ اصلی فرانت" 'id="app"'
+probe "/product/1/" "صفحهٔ محصول (پیش‌رندر)" 'application/ld+json'
 probe "/sitemap.xml" "sitemap"
-probe "/food-shop/api/v1/health" "سلامت API"
-probe "/food-shop/api/v1/products" "محصولات API"
-probe "/food-shop/api/v1/torob/products?page=1" "فید ترب"
+probe "/food-shop/api/v1/health" "سلامت API" '"ok"'
+probe "/food-shop/api/v1/products" "محصولات API" '"name"'
+probe "/food-shop/api/v1/torob/products?page=1" "فید ترب" '"products"'
 
 if [ "$BAD" -ne 0 ]; then
   echo ""; warn "مشکل پیدا شد — عیب‌یابی خودکار:"
@@ -120,7 +130,10 @@ if [ "$BAD" -ne 0 ]; then
   echo "── diagnose.py ($VPY) ──"
   ( cd "$ROOT/backend" && "$VPY" deploy/diagnose.py "$DOMAIN" 2>&1 | tail -60 )
   for lf in "$ROOT/backend/logs/django-error.log" "$ROOT/stderr.log" "$ROOT/backend/stderr.log" "$HOME/logs/error_log" "$HOME/logs/$DOMAIN.error.log"; do
-    [ -s "$lf" ] && { echo "── آخرین خطوط $lf ──"; tail -n 40 "$lf"; }
+    if [ -s "$lf" ]; then
+      NEW="$(tail -c +$(( ${LOGPOS[$lf]:-0} + 1 )) "$lf" 2>/dev/null | tail -n 40)"
+      if [ -n "$NEW" ]; then echo "── خطوط جدید $lf (بعد از شروع این استقرار) ──"; echo "$NEW"; fi
+    fi
   done
   echo ""; warn "این خروجی را (رمزی در آن نیست) برای بررسی بفرستید. بعد از رفع: touch $ROOT/tmp/restart.txt"
   exit 2

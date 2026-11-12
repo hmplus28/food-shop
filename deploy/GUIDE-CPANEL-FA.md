@@ -322,6 +322,14 @@ bash deploy.sh --domain دامنه-شما.ir
 - فقط یکی از دو بخش: `--skip-front` یا `--skip-back`
 - ساخت دوبارهٔ `host-dist` بعد از تغییر کد فرانت (ماشین محلی): `bash scripts/build_host.sh` سپس commit/push.
 
+### اگر `deploy.sh` گفت «۴۰۴ خودِ Django است» یا «Application URL روی / است»
+
+Passenger کل دامنه را به Django داده و فرانت و API هر دو خراب می‌شوند. در cPanel → **Setup Python App** → آیکن ویرایش (مداد) کنار برنامه:
+- **Application URL**: دامنه را انتخاب و در کادر مسیر بنویسید `food-shop` (نه خالی) → **Save**
+- سپس دکمهٔ **Restart**، و دوباره `bash deploy.sh --domain دامنه-شما.ir --check`
+
+با Application URL=`/food-shop`: فرانت از فایل‌های ایستای `public_html` سرو می‌شود و فقط `/food-shop/*` (API و dj-admin) به Django می‌رسد.
+
 ## خطای ۵۰۰ روی بک‌اند — عیب‌یابی گام‌به‌گام
 
 خطای ۵۰۰ یعنی Django بالا آمده ولی هنگام پردازش درخواست استثنا رخ داده؛ علت واقعی در لاگ است، نه در خود صفحهٔ ۵۰۰.
