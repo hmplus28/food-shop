@@ -84,6 +84,16 @@ if [ "$DO_BACK" -eq 1 ] && [ "$CHECK_ONLY" -eq 0 ]; then
   ( cd "$ROOT/backend" && bash deploy/deploy_cpanel.sh ) || die "استقرار بک‌اند ناموفق بود."
 fi
 
+# ── هشدار Application URL ──
+if [ -f "$WEBROOT/.htaccess" ]; then
+  BASEURI="$(grep -E 'PassengerBaseURI' "$WEBROOT/.htaccess" 2>/dev/null | head -n1 | sed -E 's/.*PassengerBaseURI[[:space:]]+"?([^"[:space:]]*)"?.*/\1/')"
+  case "$BASEURI" in
+    "") ;;
+    "/") warn "Application URL پایتون‌اپ روی «/» است؛ Passenger صفحهٔ اصلی فرانت را می‌گیرد. در cPanel → Setup Python App آن را به /food-shop تغییر دهید و Restart بزنید." ;;
+    *) info "Application URL پایتون‌اپ: $BASEURI" ;;
+  esac
+fi
+
 # ── ۳) بررسی نهایی ──
 echo ""; info "بررسی نهایی سایت ..."
 BAD=0
@@ -103,8 +113,9 @@ probe "/food-shop/api/v1/torob/products?page=1" "فید ترب"
 
 if [ "$BAD" -ne 0 ]; then
   echo ""; warn "مشکل پیدا شد — عیب‌یابی خودکار:"
-  VPY="$(ls -d "$HOME"/virtualenv/*/*/bin/python 2>/dev/null | grep -F "$(basename "$ROOT")" | head -n1)"
-  [ -z "$VPY" ] && VPY="$(ls -d "$HOME"/virtualenv/*/*/bin/python 2>/dev/null | head -n1)"
+  # venv سی‌پنل: ~/virtualenv/public_html/food-shop/3.11/bin/python (سه سطح) — python3 سیستمی ۳.۶ است و Django ندارد
+  VPY="$(ls -d "$HOME"/virtualenv/*/*/*/bin/python "$HOME"/virtualenv/*/*/bin/python 2>/dev/null | grep -F "$(basename "$ROOT")" | head -n1)"
+  [ -z "$VPY" ] && VPY="$(ls -d "$HOME"/virtualenv/*/*/*/bin/python 2>/dev/null | head -n1)"
   [ -z "$VPY" ] && VPY="python3"
   echo "── diagnose.py ($VPY) ──"
   ( cd "$ROOT/backend" && "$VPY" deploy/diagnose.py "$DOMAIN" 2>&1 | tail -60 )

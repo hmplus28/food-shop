@@ -8,13 +8,30 @@ from pathlib import Path
 import os
 import secrets
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / '.env')
+# .env را خودمان می‌خوانیم و عمداً داخل os.environ نمی‌ریزیم: زیر Passenger/cPanel پایتون
+# با locale ‏ASCII اجرا می‌شود و os.environ[k]=«مقدار فارسی» (مثل SHOP_NAME) با
+# UnicodeEncodeError می‌میرد (۵۰۰ روی همهٔ مسیرها). متغیرهای واقعیِ محیط همچنان اولویت دارند.
+try:
+    _ENV_FILE = {k: v for k, v in dotenv_values(os.environ.get('KHANOMGOL_ENV_FILE') or (BASE_DIR / '.env'), encoding='utf-8').items() if v is not None}
+except OSError:
+    _ENV_FILE = {}
+
+
+def _say(msg):
+    """چاپ امن: stdout زیر Passenger ممکن است ASCII باشد"""
+    try:
+        print(msg)
+    except (UnicodeEncodeError, OSError):
+        pass
+
 
 def env(name, default=''):
-    v = os.getenv(name)
+    v = os.environ.get(name)
+    if v in (None, ''):
+        v = _ENV_FILE.get(name)
     return v if v not in (None, '') else default
 
 def env_int(name, default):
@@ -43,9 +60,9 @@ def _ensure_secret_key():
                 return key          # فایل هست ولی کلید خالی است؛ ثابت نمی‌ماند
             prefix = content.rstrip() + '\n'
         env_file.write_text(prefix + f'SECRET_KEY={key}\n', encoding='utf-8')
-        print('[خانم گل] SECRET_KEY ساخته شد و در backend/.env ذخیره شد.')
+        _say('[خانم گل] SECRET_KEY ساخته شد و در backend/.env ذخیره شد.')
     except OSError:
-        print('[خانم گل] هشدار: SECRET_KEY ذخیره نشد؛ پس از هر ری‌استارت عوض می‌شود.')
+        _say('[خانم گل] هشدار: SECRET_KEY ذخیره نشد؛ پس از هر ری‌استارت عوض می‌شود.')
     return key
 
 SECRET_KEY = _ensure_secret_key()

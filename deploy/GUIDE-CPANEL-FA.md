@@ -336,6 +336,7 @@ bash deploy.sh --domain دامنه-شما.ir
 
 | خطا در لاگ | راه‌حل |
 | --- | --- |
+| `UnicodeEncodeError: 'ascii' codec can't encode` در `load_dotenv`/`os.environ` | (رفع‌شده در کد) زیر Passenger پایتون با locale ASCII است و مقدار فارسی `.env` (مثل `SHOP_NAME`) را نمی‌توانست در محیط بگذارد؛ `git pull && bash deploy.sh --domain ...` |
 | `no such table` / `Table 'khanomgo_foodshop.shop_product' doesn't exist` | مایگریشن اجرا نشده: `python manage.py migrate && python manage.py seed_shop` |
 | `MariaDB 10.x or later is required` / `MySQL 8.0.11 or later` | نسخهٔ دیتابیس هاست برای Django 5.2 قدیمی است: `pip install "Django>=5.0,<5.1"` (یا از هاست MariaDB جدیدتر بخواهید) |
 | `Access denied for user` (1045) / `Unknown database` (1049) | `DB_USER/DB_PASSWORD/DB_NAME` در `.env` را با cPanel → MySQL® Databases چک کنید و کاربر را به دیتابیس با «ALL PRIVILEGES» وصل کنید |
