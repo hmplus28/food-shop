@@ -87,6 +87,9 @@ class Product(models.Model):
 
 class Order(models.Model):
     """سفارش — وضعیت: ۰ در حال ثبت، ۱ در حال آماده‌سازی، ۲ در مسیر ارسال، ۳ تحویل شده"""
+    PAY_STATUS = [('unpaid', 'پرداخت نشده'), ('pending', 'در انتظار پرداخت'),
+                  ('paid', 'پرداخت شده'), ('failed', 'پرداخت ناموفق')]
+
     code = models.CharField('کد سفارش', max_length=20, unique=True, db_index=True)
     client_code = models.CharField('کد سمت مرورگر', max_length=20, blank=True, default='')
     user = models.ForeignKey(ShopUser, verbose_name='کاربر', null=True, blank=True,
@@ -101,6 +104,8 @@ class Order(models.Model):
     ship_label = models.CharField('برچسب ارسال', max_length=120, blank=True, default='')
     ship_days = models.CharField('زمان ارسال', max_length=60, blank=True, default='')
     total = models.BigIntegerField('قابل پرداخت', default=0)
+    pay_status = models.CharField('وضعیت پرداخت آنلاین', max_length=10, choices=PAY_STATUS,
+                                  default='unpaid', db_index=True)
     a_name = models.CharField('نام گیرنده', max_length=120)
     a_phone = models.CharField('موبایل گیرنده', max_length=15, db_index=True)
     a_prov = models.CharField('استان', max_length=60, blank=True, default='')
@@ -117,6 +122,33 @@ class Order(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Payment(models.Model):
+    """تراکنش پرداخت آنلاین (درگاه زیبال) — هر تلاش پرداخت یک ردیف؛ وضعیت‌ها:
+    pending (ساخته‌شده در زیبال، هنوز برنگشته) → paid / failed / cancelled"""
+    STATE = [('pending', 'در انتظار بازگشت از درگاه'), ('paid', 'پرداخت و تأیید شده'),
+             ('failed', 'ناموفق'), ('cancelled', 'لغو توسط کاربر')]
+
+    order = models.ForeignKey(Order, verbose_name='سفارش', related_name='payments', on_delete=models.CASCADE)
+    gateway = models.CharField('درگاه', max_length=10, default='zibal')
+    track_id = models.CharField('شناسهٔ تراکنش زیبال', max_length=40, db_index=True)
+    amount = models.BigIntegerField('مبلغ (تومان)', default=0)
+    ref_number = models.CharField('شمارهٔ مرجع', max_length=60, blank=True, default='')
+    card_number = models.CharField('کارت پرداخت (ماسک‌شده)', max_length=30, blank=True, default='')
+    state = models.CharField('وضعیت', max_length=10, choices=STATE, default='pending', db_index=True)
+    result = models.IntegerField('کد نتیجهٔ زیبال', null=True, blank=True)
+    message = models.CharField('پیام زیبال', max_length=200, blank=True, default='')
+    created_at = models.DateTimeField('زمان ساخت', auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'تراکنش پرداخت'
+        verbose_name_plural = 'تراکنش‌های پرداخت'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.order_id} → {self.track_id} ({self.state})'
 
 
 class OrderEvent(models.Model):

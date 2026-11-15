@@ -154,7 +154,7 @@ fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sm);
 const sitePath = new URL(SITE).pathname.replace(/\/+$/, '');
 fs.writeFileSync(path.join(DIST, 'robots.txt'), [
   'User-agent: *', 'Allow: /',
-  ...['cart', 'checkout', 'account', 'admin', 'auth', 'dj-admin'].map(x => `Disallow: ${sitePath}/${x}`),
+  ...['cart', 'checkout', 'pay', 'account', 'admin', 'auth', 'dj-admin'].map(x => `Disallow: ${sitePath}/${x}`),
   '', `Sitemap: ${SITE}/sitemap.xml`, ''].join('\n'));
 
 /* ---------- 404.html: مسیر بازگشت با مسیر پایهٔ واقعی ---------- */

@@ -137,7 +137,7 @@ class OrderOutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['code', 'client_code', 'status', 'ts', 'items', 'sub', 'off', 'coupon',
+        fields = ['code', 'client_code', 'status', 'pay_status', 'ts', 'items', 'sub', 'off', 'coupon',
                   'ship_cost', 'ship_type', 'ship_label', 'ship_days', 'total', 'addr', 'note', 'tracking', 'events']
 
     def get_ts(self, obj):
@@ -159,7 +159,7 @@ class OrderTrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['code', 'status', 'ts', 'total', 'ship_label', 'ship_days', 'items', 'tracking', 'events']
+        fields = ['code', 'status', 'pay_status', 'ts', 'total', 'ship_label', 'ship_days', 'items', 'tracking', 'events']
 
     def get_ts(self, obj):
         return int(obj.created_at.timestamp() * 1000)

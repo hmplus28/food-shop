@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Order, Banner, ConsultRequest, Coupon, MediaFile, OrderEvent, Pack, TrustItem, LuckyPrize, LuckyWin, OrderItem, Page, Product, ShippingMethod, ShopUser, SiteSetting, SmsLog
+from .models import Order, Banner, ConsultRequest, Coupon, MediaFile, OrderEvent, Pack, Payment, TrustItem, LuckyPrize, LuckyWin, OrderItem, Page, Product, ShippingMethod, ShopUser, SiteSetting, SmsLog
 
 
 @admin.register(ShopUser)
@@ -32,8 +32,8 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('code', 'a_name', 'a_phone', 'total', 'status', 'created_at')
-    list_filter = ('status',)
+    list_display = ('code', 'a_name', 'a_phone', 'total', 'status', 'pay_status', 'created_at')
+    list_filter = ('status', 'pay_status')
     search_fields = ('code', 'client_code', 'a_phone', 'a_name')
     inlines = [OrderItemInline]
     readonly_fields = ('code', 'client_code')
@@ -101,3 +101,12 @@ class SmsLogAdmin(admin.ModelAdmin):
     list_display = ('ts', 'provider', 'to', 'tag', 'ok')
     list_filter = ('provider', 'ok', 'tag')
     search_fields = ('to', 'text')
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('track_id', 'order', 'amount', 'state', 'result', 'ref_number', 'created_at')
+    list_filter = ('state', 'gateway')
+    search_fields = ('track_id', 'order__code', 'ref_number')
+    readonly_fields = ('order', 'gateway', 'track_id', 'amount', 'ref_number', 'card_number',
+                       'state', 'result', 'message', 'created_at', 'updated_at')

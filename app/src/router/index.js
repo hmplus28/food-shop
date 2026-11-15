@@ -9,6 +9,7 @@ const routes = [
   { path: '/page/:slug', name: 'page', component: () => import('../views/PageView.vue'), meta: { title: null } },
   { path: '/cart', name: 'cart', component: () => import('../views/CartView.vue'), meta: { title: 'سبد خرید' } },
   { path: '/checkout', name: 'checkout', component: () => import('../views/CheckoutView.vue'), meta: { title: 'تکمیل خرید' } },
+  { path: '/pay', name: 'pay', component: () => import('../views/PayView.vue'), meta: { title: 'نتیجهٔ پرداخت' } },
   { path: '/track', name: 'track', component: () => import('../views/TrackView.vue'), meta: { title: 'پیگیری سفارش' } },
   { path: '/auth', name: 'auth', component: () => import('../views/AuthView.vue'), meta: { title: 'ورود | ثبت‌نام' } },
   { path: '/account', name: 'account', component: () => import('../views/AccountView.vue'), meta: { title: 'پنل کاربری', requiresUser: true } },

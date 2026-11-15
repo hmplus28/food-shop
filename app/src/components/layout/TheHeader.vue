@@ -95,7 +95,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { CATS, visibleProducts } from '../../data/catalog';
 import { priceOf, money, toFa } from '../../data/site';
 import { ui, openNav, openCart, openModal, toast } from '../../stores/ui';
@@ -105,6 +105,7 @@ import { auth } from '../../stores/auth';
 import { addToCart } from '../../stores/cart';
 
 const router = useRouter();
+const route = useRoute();
 const q = ref(''), qM = ref('');
 const searchDD = ref(false), searchDDM = ref(false);
 
@@ -117,8 +118,36 @@ const results = computed(() => searchProducts(q.value));
 const resultsM = computed(() => searchProducts(qM.value));
 const popular = cat => visibleProducts().filter(p => p.cat === cat).slice(0, 4);
 
-function goSearch() { searchDD.value = false; router.push({ path: '/products', query: q.value.trim() ? { q: q.value.trim() } : {} }); q.value = ''; }
-function goSearchM() { searchDDM.value = false; router.push({ path: '/products', query: qM.value.trim() ? { q: qM.value.trim() } : {} }); qM.value = ''; }
+/* بعد از جستجو حتماً به بخش نتایج اسکرول شود (موبایل و دسکتاپ)؛
+ * با چند تلاش کوچک تا المنت بعد از رندر صفحهٔ فروشگاه پیدا شود. */
+function scrollToResults() {
+  const tryScroll = (left = 12) => {
+    const el = document.getElementById('shop-results');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else if (left > 0) setTimeout(() => tryScroll(left - 1), 60);
+  };
+  requestAnimationFrame(() => tryScroll());
+}
+
+async function goSearch() {
+  searchDD.value = false;
+  const s = q.value.trim();
+  q.value = '';
+  document.activeElement?.blur?.();
+  const same = route.path === '/products' && (route.query.q || '').trim() === s;
+  if (!same) await router.push({ path: '/products', query: s ? { q: s } : {} });
+  scrollToResults();
+}
+
+async function goSearchM() {
+  searchDDM.value = false;
+  const s = qM.value.trim();
+  qM.value = '';
+  document.activeElement?.blur?.();          // بستن کیبورد موبایل قبل از اسکرول
+  const same = route.path === '/products' && (route.query.q || '').trim() === s;
+  if (!same) await router.push({ path: '/products', query: s ? { q: s } : {} });
+  scrollToResults();
+}
 function quickAdd(p) { addToCart(p.id, p.weights[1] ?? p.weights[0], 1, true); searchDD.value = false; searchDDM.value = false; toast(`«${p.name}» به سبد اضافه شد 🛒`, 'ok'); }
 
 document.addEventListener('click', e => {

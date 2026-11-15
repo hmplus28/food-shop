@@ -21,6 +21,11 @@ urlpatterns = [
     # کد تخفیف (فقط بعد از ورود)
     path('coupons/check', views.CouponCheckView.as_view()),
 
+    # درگاه پرداخت آنلاین زیبال (config/start عمومی با محدودیت نرخ؛ start فقط با حساب)
+    path('pay/config', views.PayConfigView.as_view()),
+    path('pay/start', views.PayStartView.as_view()),
+    path('pay/verify', views.PayVerifyView.as_view()),
+
     # ظاهر سایت (تم/رنگ)
     path('settings', views.SiteSettingsView.as_view()),
     path('admin/settings', views.AdminSiteSettingsView.as_view()),

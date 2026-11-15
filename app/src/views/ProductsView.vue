@@ -39,7 +39,7 @@
             </select>
           </div>
         </aside>
-        <div>
+        <div id="shop-results" class="shop-results">
           <div v-if="filtered.length" class="shop-grid">
             <ProductCard v-for="p in filtered" :key="p.id" :p="p" />
           </div>
@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { CATS, visibleProducts, catOf } from '../data/catalog';
 import { toFa, priceOf, toEn } from '../data/site';
@@ -112,6 +112,15 @@ const filtered = computed(() => {
   }
   return list;
 });
+
+/* ---- اسکرول به نتایج بعد از جستجو (موبایل و دسکتاپ) ----
+ * بعد از تغییر «q» یا ورود مستقیم با ?q=… کاربر مستقیم به بخش نتایج می‌رود
+ * تا زیر هدر و فیلترها گم نشود؛ تغییر فیلترهای دیگر بدون اسکرول است. */
+function scrollToResults() {
+  document.getElementById('shop-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+watch(q, (nq, oq) => { if (nq && nq !== oq) nextTick(scrollToResults); });
+onMounted(() => { if (q.value) nextTick(() => setTimeout(scrollToResults, 80)); });
 </script>
 
 <style scoped>
@@ -124,8 +133,9 @@ const filtered = computed(() => {
 .f-price{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .f-price input{border:1.5px solid var(--line-2);border-radius:10px;padding:8px 10px;font-size:.84rem;width:100%}
 .shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.shop-results{scroll-margin-top:135px}
 @media(max-width:991px){.shop-layout{grid-template-columns:1fr}.filters{position:static;grid-template-columns:repeat(3,1fr)}}
-@media(max-width:767px){.filters{grid-template-columns:1fr}.shop-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+@media(max-width:767px){.filters{grid-template-columns:1fr}.shop-grid{grid-template-columns:repeat(2,1fr);gap:12px}.shop-results{scroll-margin-top:118px}}
 .crumbs{font-size:.8rem;color:var(--ink-3);margin-bottom:14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .crumbs b{color:var(--ink)}
 </style>

@@ -18,7 +18,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import (Banner, ConsultRequest, MediaFile, OrderEvent, Pack, TrustItem, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
+from .models import (Banner, ConsultRequest, MediaFile, OrderEvent, Pack, Payment, TrustItem, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
                      ShopUser, SiteSetting, SmsLog)
 from .permissions import IsShopAdmin
 from .pricing import CANCELLED, STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
@@ -26,7 +26,7 @@ from .seed import ensure_seed
 from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
                           OrderStatusPatchSerializer, OrderTrackSerializer, ProductSerializer, ProductWriteSerializer,
                           RegisterSerializer)
-from .sms import notify_new_order, notify_status_change, normalize_phone, provider_status, send_sms
+from .sms import _async, notify_new_order, notify_status_change, normalize_phone, provider_status, send_sms
 
 API_VERSION = '1.0.0'
 
@@ -1642,3 +1642,183 @@ class AdminTrustDetailView(APIView):
         drop_virtual(Product, t.product_id)
         t.delete()
         return ok({'deleted': True})
+
+
+# ---------------- درگاه پرداخت آنلاین زیبال ----------------
+#
+# جریان: «پرداخت» → POST /pay/start (ساخت تراکنش در زیبال) → ریدایرکت به
+# gateway.zibal.ir/start/{trackId} → بازگشت کاربر به صفحهٔ /pay فرانت (callbackUrl)
+# → فرانت POST /pay/verify را صدا می‌زند → تأیید مبلغ + ثبت وضعیت قطعی.
+# مبلغ سفارش تومان است و زیبال «ریال» می‌پذیرد (×۱۰). کد ۱۰۰/۲۰۱ = تأیید موفق.
+
+class PayThrottle(AnonRateThrottle):
+    scope = 'pay'
+
+
+def _zibal_post(path, payload, timeout=15):
+    """POST به زیبال؛ خروجی dict یا None — هیچ استثنایی به بیرون نمی‌رود"""
+    import json as _json
+    import urllib.error
+    import urllib.request
+    from django.conf import settings as _s
+    try:
+        req = urllib.request.Request(
+            _s.ZIBAL_API_BASE + path,
+            data=_json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return _json.loads(resp.read().decode('utf-8') or '{}')
+    except urllib.error.HTTPError as e:
+        try:
+            return _json.loads(e.read().decode('utf-8') or '{}')
+        except Exception:                                          # noqa: BLE001
+            return {'result': -999, 'message': f'خطای HTTP {e.code} از زیبال'}
+    except Exception as e:                                         # noqa: BLE001
+        return {'result': -998, 'message': f'اتصال به زیبال برقرار نشد ({e})'}
+
+
+def _front_base(request):
+    """ریشهٔ فرانت برای بازگشت از درگاه — همان دامنهٔ درخواست جاری (بدون زیرمسیر بک‌اند)"""
+    if settings.ZIBAL_CALLBACK_URL:
+        return settings.ZIBAL_CALLBACK_URL.rstrip('/')
+    https = request.is_secure() or request.headers.get('X-Forwarded-Proto') == 'https'
+    return ('https' if https else 'http') + '://' + request.get_host()
+
+
+def _pay_find_order(code, user=None):
+    """سفارش را با کد پیدا می‌کند؛ اگر user داده شود فقط سفارش خودش (کد یا موبایل حساب)"""
+    o = Order.objects.filter(code=(code or '').strip().upper()).first()
+    if not o:
+        return None, 'سفارشی با این کد پیدا نشد'
+    if user is not None and (o.user_id != user.id and o.a_phone != user.phone):
+        return None, 'این سفارش متعلق به حساب شما نیست'
+    return o, None
+
+
+class PayConfigView(APIView):
+    """GET: فعال‌بودن درگاه پرداخت برای فرانت (بدون دادهٔ حساس — فقط بله/خیر)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return ok({'enabled': bool(settings.ZIBAL_MERCHANT), 'gateway': 'zibal'})
+
+
+class PayStartView(APIView):
+    """POST {code}: ساخت تراکنش زیبال برای سفارش کاربر → {trackId, payUrl, amount}"""
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [PayThrottle]
+
+    def post(self, request):
+        if not settings.ZIBAL_MERCHANT:
+            return fail('درگاه پرداخت هنوز فعال نشده است؛ سفارش شما ثبت شد و به‌صورت تلفنی هماهنگ می‌شود')
+        code = (request.data.get('code') or '').strip()
+        o, err = _pay_find_order(code, request.user)
+        if not o:
+            return fail(err, 404)
+        if o.pay_status == 'paid':
+            return fail('این سفارش قبلاً پرداخت شده است ✅')
+        if o.status == 4:
+            return fail('این سفارش لغو شده است')
+        if o.total <= 0:
+            return fail('مبلغ قابل پرداخت این سفارش نامعتبر است')
+
+        # هر تلاش پرداخت یک ردیف تراکنش تازه (زیبال برای هر trackId یک پرداخت مستقل می‌سازد)
+        callback = f'{_front_base(request)}/pay?order={o.code}'
+        resp = _zibal_post('request', {
+            'merchant': settings.ZIBAL_MERCHANT,
+            'amount': o.total * settings.ZIBAL_TOMAN_TO_RIAL,
+            'callbackUrl': callback,
+            'description': f'سفارش {o.code} — {settings.SHOP_NAME}',
+            'orderId': o.code,
+            'mobile': o.a_phone,
+        })
+        track_id = str(resp.get('trackId') or '').strip()
+        if resp.get('result') == 100 and track_id:
+            Payment.objects.create(order=o, track_id=track_id, amount=o.total, state='pending',
+                                   result=100, message=resp.get('message') or '')
+            o.pay_status = 'pending'
+            o.save(update_fields=['pay_status'])
+            return ok({'trackId': track_id, 'amount': o.total,
+                       'payUrl': f'https://gateway.zibal.ir/start/{track_id}',
+                       'sandbox': settings.ZIBAL_MERCHANT.lower() == 'zibal'})
+        msg = resp.get('message') or 'ساخت تراکنش در زیبال انجام نشد'
+        Payment.objects.create(order=o, track_id=track_id or '-', amount=o.total, state='failed',
+                               result=resp.get('result'), message=msg[:200])
+        return fail(f'پرداخت آنلاین در دسترس نیست: {msg}')
+
+
+class PayVerifyView(APIView):
+    """POST {code, trackId}: تأیید تراکنش پس از بازگشت از درگاه (idempotent)"""
+    permission_classes = [AllowAny]
+    throttle_classes = [PayThrottle]
+
+    def post(self, request):
+        if not settings.ZIBAL_MERCHANT:
+            return fail('درگاه پرداخت فعال نیست')
+        track_id = str(request.data.get('trackId') or '').strip()
+        code = (request.data.get('code') or '').strip().upper()
+        if not track_id:
+            return fail('شناسهٔ تراکنش یافت نشد', 400)
+        p = Payment.objects.select_related('order').filter(track_id=track_id).order_by('-id').first()
+        if not p:
+            return fail('تراکنشی با این شناسه ثبت نشده است', 404)
+        if code and p.order.code != code:
+            return fail('شناسهٔ تراکنش با سفارش مطابقت ندارد')
+        o = p.order
+
+        # قبلاً تأیید شده → همان نتیجهٔ قبلی (خنثی بودن نسبت به refresh صفحه)
+        if p.state == 'paid':
+            return ok({'state': 'paid', 'order': {'code': o.code, 'pay_status': o.pay_status,
+                      'total': o.total}, 'amount': p.amount})
+
+        resp = _zibal_post('verify', {'merchant': settings.ZIBAL_MERCHANT, 'trackId': track_id})
+        result = resp.get('result')
+        p.result = result if isinstance(result, int) else None
+        p.message = str(resp.get('message') or '')[:200]
+
+        if result in (100, 201):
+            # کنترل مبلغ: زیبال ریال برمی‌گرداند؛ مبلغ باید دقیقاً با سفارش بخواند
+            paid_rial = int(resp.get('amount') or 0)
+            if paid_rial and paid_rial != p.amount * settings.ZIBAL_TOMAN_TO_RIAL:
+                p.state = 'failed'
+                p.message = 'مبلغ تراکنش با سفارش مطابقت ندارد'
+                p.save()
+                o.pay_status = 'failed'
+                o.save(update_fields=['pay_status'])
+                return fail('مبلغ پرداخت‌شده با مبلغ سفارش مطابقت ندارد؛ با پشتیبانی تماس بگیرید')
+            p.state = 'paid'
+            p.ref_number = str(resp.get('refNumber') or '')
+            p.card_number = str(resp.get('cardNumber') or '')[:30]
+            p.save()
+            o.pay_status = 'paid'
+            o.save(update_fields=['pay_status'])
+            OrderEvent.objects.create(order=o, status=o.status,
+                                      note=f'پرداخت آنلاین با زیبال تأیید شد (کد پیگیری درگاه: {track_id})',
+                                      by='zibal')
+            _fmt = f'{p.amount:,}'
+            _async(notify_payment_paid, o, f'{settings.SHOP_NAME}: پرداخت سفارش {o.code} به مبلغ {_fmt} تومان با موفقیت انجام شد. 🌰')
+            return ok({'state': 'paid', 'order': {'code': o.code, 'pay_status': o.pay_status,
+                      'total': o.total}, 'amount': p.amount})
+
+        if result in (202, 203):                                # پرداخت‌نشده/لغو‌شده یا trackId نامعتبر
+            p.state = 'cancelled' if result == 202 else 'failed'
+            p.save()
+            if o.pay_status == 'pending':
+                o.pay_status = 'failed'
+                o.save(update_fields=['pay_status'])
+            return fail('پرداخت انجام نشد یا لغو شد؛ می‌توانید دوباره تلاش کنید')
+
+        p.state = 'failed'
+        p.save()
+        return fail(p.message or 'تأیید تراکنش انجام نشد')
+
+
+def notify_payment_paid(order, text):
+    """پیامک موفقیت پرداخت به مشتری و مدیر (پس‌زمینه)"""
+    from .sms import _safe_send
+    _async(_safe_send, order.a_phone, text, 'pay-customer')
+    if settings.SHOP_NOTIFY_PHONE:
+        _async(_safe_send, settings.SHOP_NOTIFY_PHONE,
+               f'پرداخت سفارش {order.code} ({order.total:,} تومان) تأیید شد ✅', 'pay-admin')

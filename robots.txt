@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /food-shop/cart
 Disallow: /food-shop/checkout
+Disallow: /food-shop/pay
 Disallow: /food-shop/account
 Disallow: /food-shop/admin
 Disallow: /food-shop/auth

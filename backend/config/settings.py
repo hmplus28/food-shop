@@ -184,6 +184,7 @@ REST_FRAMEWORK = {
         'auth': '60/hour',
         'coupon': '200/hour',
         'consult': '10/hour',
+        'pay': '40/hour',
     },
 }
 
@@ -305,4 +306,14 @@ MELIPAYAMAK_FROM = env('MELIPAYAMAK_FROM')
 ADMIN_USERNAME = env('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = env('ADMIN_PASSWORD', 'admin1234')
 ADMIN_PHONE = env('ADMIN_PHONE', '09120000000')
+
+# ---------- درگاه پرداخت آنلاین زیبال ----------
+# کد پذیرندگی از panel.zibal.ir؛ مقدار 'zibal' = محیط آزمایشی (پرداخت تستی بدون پول واقعی)
+# تا وقتی ZIBAL_MERCHANT خالی باشد، فرانت بدون درگاه پرداخت کار می‌کند (فقط «ثبت سفارش»)
+ZIBAL_MERCHANT = env('ZIBAL_MERCHANT')
+# آدرس صفحهٔ بازگشت از درگاه به فرانت؛ خالی = خودِ دامنهٔ درخواست + /pay (پیش‌فرض درست است)
+ZIBAL_CALLBACK_URL = env('ZIBAL_CALLBACK_URL')
+ZIBAL_API_BASE = 'https://gateway.zibal.ir/v1/'
+# مبلغ سفارش‌ها تومان است؛ زیبال مبلغ را «ریال» می‌پذیرد → ضریب تبدیل
+ZIBAL_TOMAN_TO_RIAL = 10
 

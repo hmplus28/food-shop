@@ -88,7 +88,7 @@
         <p class="pay-note"><svg class="icon"><use href="#i-shield" /></svg> با ثبت سفارش، <RouterLink to="/page/terms">قوانین فروشگاه</RouterLink> را می‌پذیرید.</p>
       </div>
 
-      <!-- گام ۴: موفقیت -->
+      <!-- گام ۴: موفقیت (+ پرداخت آنلاین زیبال اگر درگاه فعال باشد) -->
       <div v-else class="modal-body" style="background:#fff;border-radius:var(--r-md)">
         <div class="co-success">
           <div class="ok-ic"><svg class="icon"><use href="#i-check" /></svg></div>
@@ -96,6 +96,22 @@
           <p style="font-size:.86rem;color:var(--ink-2)">کد سفارش شما:</p>
           <span class="ord-code">{{ placed?.code }}</span>
           <div class="sms-note"><svg class="icon"><use href="#i-sms" /></svg> <span>پیامک تأیید سفارش حاوی کد پیگیری به شماره <b>{{ toFa(auth.user?.phone || placed?.addr?.phone || '') }}</b> ارسال می‌شود.</span></div>
+
+          <!-- پرداخت آنلاین با زیبال (فقط سفارش‌های سمت سرور وقتی درگاه فعال است) -->
+          <div v-if="payEnabled && placed?.fromServer" class="zibal-box">
+            <div class="zibal-sum">
+              <span>مبلغ قابل پرداخت</span>
+              <b>{{ money(placed?.total) }} تومان</b>
+            </div>
+            <button class="btn btn-brand btn-lg btn-block co-pay-btn" :disabled="zibalBusy" @click="startZibalPay">
+              {{ zibalBusy ? 'در حال اتصال به درگاه… ⏳' : 'پرداخت آنلاین با زیبال 💳' }}
+            </button>
+            <button v-if="zibalErr" class="btn btn-light btn-sm btn-block" @click="startZibalPay">تلاش دوباره</button>
+            <div v-if="zibalErr" class="id-note err">{{ zibalErr }}</div>
+            <p class="pay-note">پرداخت امن از طریق درگاه رسمی زیبال؛ پس از پرداخت به سایت برمی‌گردید.</p>
+            <button class="btn btn-light btn-sm" @click="skipZibal">فعلاً پرداخت نمی‌کنم (پرداخت در محل)</button>
+          </div>
+
           <div class="co-actions">
             <RouterLink class="btn btn-brand" :to="{ path: '/track', query: { code: placed?.code } }">پیگیری سفارش</RouterLink>
             <RouterLink class="btn btn-gold" to="/account">مشاهده پنل کاربری</RouterLink>
@@ -117,7 +133,7 @@ import { placeOrder, placeOrderServer } from '../stores/orders';
 import { toast } from '../stores/ui';
 import { auth, login, register } from '../stores/auth';
 import { shipMethods } from '../stores/shop';
-import { apiState, phoneCheckApi } from '../services/api';
+import { apiState, phoneCheckApi, payConfigApi, payStartApi } from '../services/api';
 
 useSeo({ title: 'تکمیل خرید', description: 'تکمیل اطلاعات ارسال و ثبت سفارش از فروشگاه خانم گل', path: '/checkout' });
 
@@ -130,6 +146,27 @@ const errMsg = ref('');
 const shipType = ref('');
 const f = reactive({ name: '', phone: '', prov: 'تهران', city: '', addr: '', note: '' });
 const couponInput = ref('');
+
+/* ---- درگاه پرداخت زیبال (فقط وقتی بک‌اند فعال و درگاه روشن باشد) ---- */
+const payEnabled = ref(false);
+const zibalBusy = ref(false);
+const zibalErr = ref('');
+
+async function startZibalPay() {
+  zibalErr.value = '';
+  zibalBusy.value = true;
+  try {
+    const r = await payStartApi(placed.value.code);
+    if (r.ok && r.payUrl) {
+      window.location.assign(r.payUrl);          // ریدایرکت به درگاه زیبال
+      return;
+    }
+    zibalErr.value = r.msg || 'اتصال به درگاه پرداخت انجام نشد';
+  } catch { zibalErr.value = 'اتصال به سرور برقرار نشد؛ دوباره تلاش کنید'; }
+  zibalBusy.value = false;
+}
+
+function skipZibal() { payEnabled.value = false; }
 
 /* ---- گام ۱: شناسایی با شماره موبایل ---- */
 const phase = ref('phone');            // phone → login | register
@@ -169,6 +206,7 @@ onMounted(() => {
   if (!cart.items.length && step.value < 3) { toast('سبد خرید خالی است', 'err'); router.replace('/cart'); return; }
   fillFromAccount();
   shipType.value = shipMethods.value[0]?.type || '';
+  if (apiState.enabled) payConfigApi().then(r => { payEnabled.value = !!r?.enabled; }).catch(() => {});
 });
 
 const shipOpt = computed(() => shipMethods.value.find(m => m.type === shipType.value) || shipMethods.value[0] || { label: '', days: '', cost: 0 });
@@ -215,3 +253,12 @@ async function pay() {
 }
 </script>
 
+
+<style scoped>
+.zibal-box{margin:16px auto 6px;max-width:420px;background:var(--brand-050);border:1.5px solid var(--brand-100);border-radius:var(--r-md);padding:16px 14px}
+.zibal-box .co-pay-btn{margin-top:10px}
+.zibal-box .id-note.err{margin-top:10px}
+.zibal-box .btn-light{margin-top:10px}
+.zibal-sum{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;padding:8px 4px;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.zibal-sum b{color:var(--brand-700)}
+</style>

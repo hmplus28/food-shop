@@ -164,6 +164,8 @@ ADMIN_PHONE|09120000000
 SHOP_NAME|فروشگاه خانم گل
 SHOP_URL|https://hmplus28.github.io/food-shop/
 SHOP_NOTIFY_PHONE|
+ZIBAL_MERCHANT|
+ZIBAL_CALLBACK_URL|
 SMS_ORDER_TO_CUSTOMER|true
 SMS_STATUS_TO_CUSTOMER|true
 SMS_PROVIDER|console
@@ -242,6 +244,13 @@ SHOP_NAME=فروشگاه خانم گل
 SHOP_URL=https://hmplus28.github.io/food-shop/
 # موبایل مدیر برای پیامک «سفارش جدید» (خالی = ارسال نشود)
 SHOP_NOTIFY_PHONE=
+
+# ---------- درگاه پرداخت زیبال ----------
+# کد پذیرندگی از panel.zibal.ir؛ مقدار zibal = محیط آزمایشی؛ خالی = درگاه خاموش
+ZIBAL_MERCHANT=
+# صفحهٔ بازگشت از درگاه؛ خالی = دامنهٔ خود سایت + /pay (پیش‌فرض درست است)
+ZIBAL_CALLBACK_URL=
+
 SMS_ORDER_TO_CUSTOMER=true
 SMS_STATUS_TO_CUSTOMER=true
 

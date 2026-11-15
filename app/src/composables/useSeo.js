@@ -11,7 +11,7 @@ const DEFAULT_IMG = SITE + '/img/66fd0cba7ee8.jpg';
 const DEFAULT_TITLE = 'خانم گل | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی';
 
 /* صفحاتی که نباید در نتایج گوگل بیایند */
-const PRIVATE = ['/cart', '/checkout', '/account', '/admin', '/auth', '/404'];
+const PRIVATE = ['/cart', '/checkout', '/pay', '/account', '/admin', '/auth', '/404'];
 
 function setMeta(attr, key, content) {
   if (content == null) return;
