@@ -596,6 +596,10 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .f-badges{display:flex;gap:10px;flex-wrap:wrap}
 .f-badge{background:#fff;border-radius:13px;padding:9px 13px;display:flex;align-items:center;gap:9px;color:var(--ink-2);font-size:.72rem;font-weight:700;box-shadow:var(--sh-sm)}
 .f-badge .icon{width:26px;height:26px;color:var(--brand)}
+/* نماد اعتماد الکترونیکی (اینماد) — کارت واقعی با تصویر رسمی و لینک تأیید */
+a.f-badge-enamad{text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+.f-badge-enamad img{height:40px;width:auto;max-width:72px;object-fit:contain}
+a.f-badge-enamad:hover{transform:translateY(-2px);box-shadow:var(--sh-md);color:var(--ink-2)}
 .f-bottom{border-top:1px solid rgba(255,255,255,.09);padding:16px 0 22px;font-size:.76rem;color:#93a483;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .f-bottom b{color:var(--gold)}
 .f-dayna{display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none}

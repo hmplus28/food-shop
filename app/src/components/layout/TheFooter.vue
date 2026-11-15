@@ -33,7 +33,16 @@
             <li v-if="shop.info.hours"><svg class="icon"><use href="#i-clock" /></svg> {{ shop.info.hours }}</li>
           </ul>
           <div class="f-badges" style="margin-top:14px">
-            <span class="f-badge"><svg class="icon"><use href="#i-shield" /></svg> نماد اعتماد الکترونیکی</span>
+            <!-- نماد اعتماد الکترونیکی رسمی (اینماد) — کد تأییدشدهٔ پنل enamad.ir -->
+            <a class="f-badge f-badge-enamad"
+               href="https://trustseal.enamad.ir/?id=8722783&Code=zZZLttcxPXlYxzPxyW5NCeA9dTSBSOMh"
+               target="_blank" rel="noopener" referrerpolicy="origin"
+               aria-label="نماد اعتماد الکترونیکی — اینماد">
+              <img referrerpolicy="origin"
+                   src="https://trustseal.enamad.ir/logo.aspx?id=8722783&Code=zZZLttcxPXlYxzPxyW5NCeA9dTSBSOMh"
+                   alt="نماد اعتماد الکترونیکی (اینماد)" loading="lazy" @error="enamadFail">
+              <span>نماد اعتماد الکترونیکی</span>
+            </a>
             <span class="f-badge"><svg class="icon"><use href="#i-check" /></svg> ساماندهی رسانه‌های دیجیتال</span>
             <span class="f-badge"><svg class="icon"><use href="#i-lock" /></svg> درگاه پرداخت امن</span>
           </div>
@@ -62,4 +71,7 @@ import { toast } from '../../stores/ui';
 
 const footerCats = ['ajil', 'pistachio', 'date', 'saffron', 'tea', 'giftbox'].map(id => CATS.find(c => c.id === id));
 const note = t => toast(t, 'ok', 4200);
+
+/* اگر تصویر رسمی اینماد لود نشد (خطای شبکه)، کارت به شکل نشان متنی سالم بماند */
+const enamadFail = e => { e.target.style.display = 'none'; };
 </script>
