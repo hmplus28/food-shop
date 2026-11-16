@@ -60,6 +60,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { CATS, IMG } from '../../data/catalog';
 import { jYear } from '../../data/jalali';
 import { shop, telLink, waLink, guidePages, aboutPages } from '../../stores/shop';
@@ -69,7 +70,8 @@ const jy = jYear();
 const DAYNA_LOGO = IMG + 'dayna-logo.png';   // کپی محلی؛ در نبودش main.js به daynacode.ir برمی‌گردد
 import { toast } from '../../stores/ui';
 
-const footerCats = ['ajil', 'pistachio', 'date', 'saffron', 'tea', 'giftbox'].map(id => CATS.find(c => c.id === id));
+/* دسته‌های فوتر: از دادهٔ مدیریتی (پنل ادمین) — ۶ دستهٔ فعال اول؛ واکنش‌گرا به تغییرهای منو */
+const footerCats = computed(() => CATS.filter(c => c && c.id && c.name).slice(0, 6));
 const note = t => toast(t, 'ok', 4200);
 
 /* اگر تصویر رسمی اینماد لود نشد (خطای شبکه)، کارت به شکل نشان متنی سالم بماند */

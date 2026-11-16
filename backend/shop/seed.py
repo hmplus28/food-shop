@@ -9,7 +9,7 @@ import secrets
 from django.conf import settings
 from django.utils import timezone
 
-from .models import Product, ShopUser
+from .models import NavCat, NavLink, Product, ShopUser
 
 IMG = 'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/'
 
@@ -107,8 +107,31 @@ def ensure_home():
     return True
 
 
+def ensure_nav():
+    """دسته‌های منو (هدر/موبایل) و پیوندهای منو — ساخت اولیه فقط وقتی جدول خالی است (تولید هم دارد)؛
+    بعد از آن مدیر از پنل ادمین (تب «منو و دسته‌ها») ویرایش می‌کند. هر بار فراخوانی بی‌ضرر است."""
+    from django.db import transaction
+    from .defaults import CATS, NAV_LINKS
+    changed = False
+    if not NavCat.objects.exists():
+        with transaction.atomic():
+            for i, (slug, name, icon, subs, feat, hot) in enumerate(CATS):
+                _, created = NavCat.objects.get_or_create(
+                    slug=slug,
+                    defaults=dict(name=name, icon=icon, subs=subs, feat_img=feat[0], feat_title=feat[1],
+                                  feat_sub=feat[2], hot=hot, sort=i))
+                changed = changed or created
+    if not NavLink.objects.exists():
+        with transaction.atomic():
+            for i, (label, icon, link) in enumerate(NAV_LINKS):
+                _, created = NavLink.objects.get_or_create(label=label, defaults=dict(icon=icon, link=link, sort=i))
+                changed = changed or created
+    return changed
+
+
 def ensure_seed():
-    """ایمن برای صدا زدن در هر درخواست — فقط با SEED_FAKE=1 و فقط بار اول کاری می‌کند؛ در تولید بی‌اثر است"""
+    """ایمن برای صدا زدن در هر درخواست — ساخت اولیهٔ منو همیشه (تولید هم)، بقیه فقط با SEED_FAKE=1"""
+    ensure_nav()
     if not getattr(settings, 'SEED_FAKE', False):
         return False
     seeded = seed_products()
@@ -126,13 +149,17 @@ def purge_all_products():
 
 
 def seed_all():
-    """دستور مدیریتی: محصول (فقط با --fake/SEED_FAKE=1) + مدیر + گزارش"""
+    """دستور مدیریتی: محصول (فقط با --fake/SEED_FAKE=1) + مدیر + منو + گزارش"""
     p = seed_products()
     ensure_home()
+    nav_seeded = ensure_nav()
     admin, created = ensure_admin()
     return {
         'products_seeded': p,
         'seed_fake': bool(getattr(settings, 'SEED_FAKE', False)),
+        'nav_seeded': nav_seeded,
+        'nav_cats': NavCat.objects.count(),
+        'nav_links': NavLink.objects.count(),
         'products_total': Product.objects.count(),
         'admin_created': created,
         'admin_phone': admin.phone,

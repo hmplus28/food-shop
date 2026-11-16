@@ -417,3 +417,60 @@ class SmsLog(models.Model):
         verbose_name = 'پیامک'
         verbose_name_plural = 'پیامک‌ها'
         ordering = ['-ts']
+
+
+class NavCat(models.Model):
+    """دستهٔ منو — آیتم‌های منوی دسته‌بندی هدر (دسکتاپ) و منوی موبایل، همراه آیکن و زیرشاخه‌ها.
+    مدیر از پنل ادمین می‌سازد/ویرایش/حذف/ترتیب می‌کند؛ «شناسه» همان cat محصولات است
+    (تغییر شناسه به‌صورت خودکار محصولات مرتبط را هم جابه‌جا می‌کند)."""
+    slug = models.CharField('شناسه (انگلیسی)', max_length=40, unique=True, db_index=True)
+    name = models.CharField('عنوان', max_length=60)
+    icon = models.CharField('آیکن', max_length=30, default='i-nut')
+    subs = models.JSONField('زیرشاخه‌ها', default=list, blank=True)
+    feat_img = models.CharField('تصویر ویژه (URL)', max_length=300, blank=True, default='')
+    feat_title = models.CharField('عنوان باکس ویژه', max_length=80, blank=True, default='')
+    feat_sub = models.CharField('توضیح باکس ویژه', max_length=120, blank=True, default='')
+    hot = models.BooleanField('برچسب «داغ»', default=False)
+    active = models.BooleanField('نمایش', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'دستهٔ منو'
+        verbose_name_plural = 'دسته‌های منو (هدر و منوی موبایل)'
+        ordering = ['sort', 'id']
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def public(self):
+        """قالب مورد انتظار فرانت (همان ساختار CATS قبلی)"""
+        return {'id': self.slug, 'name': self.name, 'icon': self.icon,
+                'subs': self.subs if isinstance(self.subs, list) else [],
+                'feat': {'img': self.feat_img, 't': self.feat_title, 's': self.feat_sub},
+                'hot': self.hot}
+
+
+class NavLink(models.Model):
+    """پیوند منو — آیتم‌های پیوندی منو (مثل «پیگیری سفارش» پایین منوی موبایل) با آیکن؛
+    مدیر از پنل ادمین می‌سازد/ویرایش می‌کند؛ محل نمایش فعلی: پایین منوی موبایل."""
+    LOCATION = [('drawer', 'پایین منوی موبایل')]
+
+    label = models.CharField('عنوان', max_length=60)
+    icon = models.CharField('آیکن', max_length=30, default='i-leaf')
+    link = models.CharField('پیوند', max_length=200)
+    location = models.CharField('محل نمایش', max_length=12, choices=LOCATION, default='drawer')
+    active = models.BooleanField('نمایش', default=True)
+    sort = models.PositiveSmallIntegerField('ترتیب', default=0)
+
+    class Meta:
+        verbose_name = 'پیوند منو'
+        verbose_name_plural = 'پیوندهای منو'
+        ordering = ['sort', 'id']
+
+    def __str__(self):
+        return self.label
+
+    @property
+    def public(self):
+        return {'label': self.label, 'icon': self.icon, 'link': self.link, 'location': self.location}

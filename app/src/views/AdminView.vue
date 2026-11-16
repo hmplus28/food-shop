@@ -37,6 +37,7 @@
           <button :class="{ on: tab === 'lucky' }" @click="tab = 'lucky'">کارت شانس</button>
           <button :class="{ on: tab === 'shipping' }" @click="tab = 'shipping'">هزینه ارسال</button>
           <button :class="{ on: tab === 'home' }" @click="tab = 'home'">صفحهٔ اصلی</button>
+          <button :class="{ on: tab === 'menu' }" @click="tab = 'menu'">منو و دسته‌ها</button>
           <button :class="{ on: tab === 'media' }" @click="tab = 'media'">تصاویر</button>
           <button :class="{ on: tab === 'content' }" @click="tab = 'content'">محتوا و صفحات</button>
           <button :class="{ on: tab === 'consults' }" @click="tab = 'consults'">مشاوره‌ها<span v-if="stats.consults" class="badge-hide" style="background:var(--red);color:#fff;border-color:var(--red)">{{ toFa(stats.consults) }}</span></button>
@@ -86,6 +87,7 @@
         <AdminLucky v-else-if="tab === 'lucky'" />
         <AdminShipping v-else-if="tab === 'shipping'" />
         <AdminHome v-else-if="tab === 'home'" />
+        <AdminMenu v-else-if="tab === 'menu'" />
         <AdminMedia v-else-if="tab === 'media'" />
         <AdminContent v-else-if="tab === 'content'" />
         <AdminConsults v-else-if="tab === 'consults'" />
@@ -392,6 +394,7 @@ import SiteStudio from '../components/SiteStudio.vue';
 import AdminLucky from './admin/AdminLucky.vue';
 import AdminShipping from './admin/AdminShipping.vue';
 import AdminContent from './admin/AdminContent.vue';
+import AdminMenu from './admin/AdminMenu.vue';
 import AdminHome from './admin/AdminHome.vue';
 import AdminMedia from './admin/AdminMedia.vue';
 import ImageField from '../components/ImageField.vue';

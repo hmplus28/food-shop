@@ -241,8 +241,13 @@ useSeo({
   path: '/',
 });
 
-const catPicks = ['ajil', 'pistachio', 'date', 'dryfruit', 'saffron', 'tea', 'giftbox', 'mulberryfig']
-  .map(id => CATS.find(c => c.id === id)).filter(Boolean);
+/* دسته‌های بخش «دسته‌بندی‌های محبوب»: از دادهٔ مدیریتی (پنل ادمین) — اولویت با دسته‌های انتخابی قبلی؛
+   اگر دسته‌ها تغییر کنند، واکنش‌گرا جایگزین می‌شود (و اگر هیچ‌کدام نیامد، ۸ دستهٔ فعال اول) */
+const catPicks = computed(() => {
+  const picks = ['ajil', 'pistachio', 'date', 'dryfruit', 'saffron', 'tea', 'giftbox', 'mulberryfig']
+    .map(id => CATS.find(c => c && c.id === id)).filter(Boolean);
+  return picks.length >= 4 ? picks : CATS.filter(c => c && c.id).slice(0, 8);
+});
 
 /* ---------- شمارش معکوس‌ها ---------- */
 const now = ref(Date.now());

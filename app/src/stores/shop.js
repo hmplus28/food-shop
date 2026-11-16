@@ -4,7 +4,7 @@
 import { reactive, computed } from 'vue';
 import { LS, SHIP_OPTIONS, FREE_SHIP } from '../data/site';
 import { siteApi, localImg } from '../services/api';
-import { PACKS, TRUST, IMG, virtualFrom, setVirtualProducts } from '../data/catalog';
+import { PACKS, TRUST, IMG, virtualFrom, setVirtualProducts, applyCats } from '../data/catalog';
 
 export const DEFAULT_INFO = {
   shopName: 'فروشگاه خانم گل', phone: '۰۲۱-۹۱۰۹۲۰۰۰', phoneTel: '02191092000', whatsapp: '989120000000',
@@ -51,8 +51,12 @@ export const shop = reactive({
   banners: cached.banners || (__KG_API_ON__ ? [] : DEFAULT_BANNERS),
   packs: cached.packs || (__KG_API_ON__ ? [] : PACKS.map((p, i) => ({ id: i, pid: p.pid, name: p.name, sub: p.sub, image: '', old: p.old, now: p.now, endsAt: Date.now() + p.hours * 3600000, stock: 99, w: p.w }))),
   trust: cached.trust || (__KG_API_ON__ ? [] : TRUST.map(t => ({ id: t.day, day: t.day, name: t.name, image: t.img, old: t.old, price: t.price, pid: 90 + TRUST.indexOf(t), stock: 8 }))),
+  menu: cached.menu || [],        // پیوندهای منو (پایین منوی موبایل) — از پنل ادمین
   loaded: false,
 });
+
+/* دسته‌های مدیریتی کش‌شدهٔ مرورگر: بدون فلش و قبل از پاسخ سرور اعمال می‌شوند */
+if (cached.cats) applyCats(cached.cats, localImg);
 
 export async function loadShop() {
   const r = await siteApi();
@@ -65,9 +69,11 @@ export async function loadShop() {
   if (Array.isArray(r.banners)) shop.banners = r.banners;
   if (Array.isArray(r.packs)) shop.packs = r.packs;
   if (Array.isArray(r.trust)) shop.trust = r.trust;
+  if (Array.isArray(r.cats) && r.cats.length) applyCats(r.cats, localImg);   // دسته‌های مدیریتی (هدر/منو)
+  if (Array.isArray(r.menu)) shop.menu = r.menu;                             // پیوندهای منو
   shop.loaded = true;
   setVirtualProducts(virtualFrom(shop.packs, shop.trust, localImg));   // قابل‌خرید شدن پک/اعتماد در سبد
-  LS.set('shopCache', { info: shop.info, shipping: shop.shipping, pages: shop.pages, lucky: shop.lucky, home: shop.home, banners: shop.banners, packs: shop.packs, trust: shop.trust });
+  LS.set('shopCache', { info: shop.info, shipping: shop.shipping, pages: shop.pages, lucky: shop.lucky, home: shop.home, banners: shop.banners, packs: shop.packs, trust: shop.trust, cats: r.cats || [], menu: shop.menu });
   return true;
 }
 

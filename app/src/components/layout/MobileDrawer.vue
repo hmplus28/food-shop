@@ -24,17 +24,29 @@
     </div>
     <div class="drawer-foot">
       <a :href="telLink"><svg class="icon"><use href="#i-phone" /></svg> {{ shop.info.phone }}</a>
-      <RouterLink to="/#consult"><svg class="icon"><use href="#i-headset" /></svg> مشاوره خرید</RouterLink>
-      <RouterLink to="/track"><svg class="icon"><use href="#i-doc" /></svg> پیگیری سفارش</RouterLink>
+      <!-- پیوندهای منو: از پنل ادمین (تب «منو و دسته‌ها») — پیوند داخلی یا بیرونی با آیکن -->
+      <template v-for="(l, i) in menuLinks" :key="i">
+        <a v-if="l.link && l.link.startsWith('http')" :href="l.link" target="_blank" rel="noopener">
+          <svg class="icon"><use :href="'#' + l.icon" /></svg> {{ l.label }}</a>
+        <RouterLink v-else :to="l.link || '/'" @click="closeNav()">
+          <svg class="icon"><use :href="'#' + l.icon" /></svg> {{ l.label }}</RouterLink>
+      </template>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { CATS } from '../../data/catalog';
 import { ui, closeNav } from '../../stores/ui';
 import { shop, telLink } from '../../stores/shop';
 
 const accOpen = ref(null);
+
+/* اگر هنوز پیوندی از سرور نرسیده، پیش‌فرض ثابت نمایش داده می‌شود (حالت دمو/لحظهٔ بارگذاری) */
+const FALLBACK_LINKS = [
+  { label: 'مشاوره خرید', icon: 'i-headset', link: '/#consult' },
+  { label: 'پیگیری سفارش', icon: 'i-doc', link: '/track' },
+];
+const menuLinks = computed(() => (Array.isArray(shop.menu) && shop.menu.length ? shop.menu : FALLBACK_LINKS));
 </script>

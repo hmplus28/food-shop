@@ -81,8 +81,8 @@
                   </div>
                 </div>
                 <RouterLink class="mega-feat" :to="{ path: '/products', query: { cat: c.id } }">
-                  <img :src="c.feat.img" :alt="c.feat.t" loading="lazy">
-                  <b>{{ c.feat.t }}</b><span>{{ c.feat.s }}</span>
+                  <img v-if="c.feat && c.feat.img" :src="c.feat.img" :alt="c.feat.t || c.name" loading="lazy">
+                  <b>{{ (c.feat && c.feat.t) || c.name }}</b><span>{{ (c.feat && c.feat.s) || '' }}</span>
                 </RouterLink>
               </div>
             </div>

@@ -68,6 +68,10 @@ urlpatterns = [
     path('admin/home', views.AdminHomeView.as_view()),
     path('admin/banners', views.AdminBannersView.as_view()),
     path('admin/banners/<int:pk>', views.AdminBannerDetailView.as_view()),
+    path('admin/cats', views.AdminCatsView.as_view()),                 # دسته‌های منو (هدر/موبایل)
+    path('admin/cats/<int:pk>', views.AdminCatDetailView.as_view()),
+    path('admin/menu', views.AdminMenuView.as_view()),                 # پیوندهای منو
+    path('admin/menu/<int:pk>', views.AdminMenuDetailView.as_view()),
     path('admin/packs', views.AdminPacksView.as_view()),
     path('admin/packs/<int:pk>', views.AdminPackDetailView.as_view()),
     path('admin/trust', views.AdminTrustView.as_view()),

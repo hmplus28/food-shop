@@ -203,9 +203,10 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 
 /* ================= Mega Menu ================= */
 .main-nav{border-top:1px solid var(--line);background:#fff;position:relative}
-.nav-list{display:flex;align-items:center;gap:2px;overflow-x:auto;scrollbar-width:none}
-.nav-list::-webkit-scrollbar{display:none}
-.nav-item>a{display:flex;align-items:center;gap:6px;padding:12px 13px;font-size:.87rem;font-weight:600;color:var(--ink-2);
+/* آیتم‌های منو از پنل ادمین قابل مدیریت‌اند؛ به‌جای اسکرول افقی، به ردیف‌های بعدی می‌شکنند
+   تا تعداد آیتم‌ها هرچه بود (کم یا زیاد) بدون اسکرول نمایش داده شود */
+.nav-list{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0 2px;padding:2px 0}
+.nav-item>a{display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:.85rem;font-weight:600;color:var(--ink-2);
   white-space:nowrap;border-bottom:2.5px solid transparent;transition:var(--tr)}
 .nav-item>a .icon{width:17px;height:17px;color:var(--gold-600)}
 .nav-item>a:hover,.nav-item:hover>a{color:var(--brand-700);border-bottom-color:var(--brand)}

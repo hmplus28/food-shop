@@ -69,8 +69,27 @@ const suffix = String(Date.now()).slice(-7);
   await a.click('.admin-login button[type=submit]'); await a.waitForTimeout(1200);
   t('ورود مدیر با موبایل+رمز موفق', await a.locator('.admin-tabs').count() === 1);
   const tabsA = await a.locator('.admin-tabs button').allInnerTexts();
-  t('پنل ادمین: ۱۳ تب (داشبورد، محصولات، سفارش‌ها، کدها، کارت شانس، ارسال، صفحهٔ اصلی، تصاویر، محتوا، مشاوره، کاربران، پیامک، ظاهر)', ['داشبورد', 'محصولات', 'سفارش‌ها', 'کدهای تخفیف', 'کارت شانس', 'هزینه ارسال', 'صفحهٔ اصلی', 'تصاویر', 'محتوا و صفحات', 'مشاوره‌ها', 'کاربران', 'پنل پیامک', 'ظاهر سایت'].every(x => tabsA.includes(x)), tabsA.join('|'));
+  t('پنل ادمین: ۱۴ تب (داشبورد، محصولات، سفارش‌ها، کدها، کارت شانس، ارسال، صفحهٔ اصلی، منو و دسته‌ها، تصاویر، محتوا، مشاوره، کاربران، پیامک، ظاهر)', ['داشبورد', 'محصولات', 'سفارش‌ها', 'کدهای تخفیف', 'کارت شانس', 'هزینه ارسال', 'صفحهٔ اصلی', 'منو و دسته‌ها', 'تصاویر', 'محتوا و صفحات', 'مشاوره‌ها', 'کاربران', 'پنل پیامک', 'ظاهر سایت'].every(x => tabsA.includes(x)), tabsA.join('|'));
   t('پنل ادمین: تب پیش‌فرض داشبورد با نمودار ۷ روزه', await a.locator('.bar-col').count() === 7, await a.locator('.bar-col').count());
+
+  // ---------- منو و دسته‌ها (هدر/منوی موبایل قابل مدیریت) ----------
+  await a.locator('.admin-tabs button', { hasText: 'منو و دسته‌ها' }).click(); await a.waitForTimeout(500);
+  t('پنل ادمین: تب منو فهرست ۱۳ دستهٔ سرور را نشان می‌دهد', await a.locator('.ad-list button').count() === 13, await a.locator('.ad-list button').count());
+  await a.locator('.ad-list button').first().click(); await a.waitForTimeout(300);
+  t('پنل ادمین: ویرایشگر دسته با انتخابگر آیکن باز می‌شود', await a.locator('.icogrid button').count() >= 20, await a.locator('.icogrid button').count());
+  t('پنل ادمین: آیکن فعلی دسته در انتخابگر علامت خورده', await a.locator('.icogrid button.on').count() === 1);
+  // تغییر نام دستهٔ اول → باید واکنش‌گرا در هدرِ همان صفحه هم دیده شود
+  const newName = 'آجیل و مغزها ' + suffix;
+  await a.locator('.ad-grid input[type=text]').first().fill(newName);
+  await a.locator('button', { hasText: 'ذخیرهٔ دسته' }).first().click(); await a.waitForTimeout(900);
+  t('پنل ادمین: نام جدید دسته در فهرست ذخیره شد', (await a.locator('.ad-list').innerText()).includes(newName));
+  t('فرانت واکنش‌گرا: نام جدید در منوی هدرِ همان صفحه اعمال شد', (await a.locator('.nav-list').innerText()).includes(newName));
+  await a.locator('.ad-grid input[type=text]').first().fill('آجیل و مغزها');
+  await a.locator('button', { hasText: 'ذخیرهٔ دسته' }).first().click(); await a.waitForTimeout(600);
+  t('بازگشت نام دسته به حالت اصلی', (await a.locator('.nav-list').innerText()).includes('آجیل و مغزها'));
+  // پیوندهای منو
+  await a.locator('.subtabs button', { hasText: 'پیوندهای منو' }).click(); await a.waitForTimeout(400);
+  t('پنل ادمین: زیرتب پیوندهای منو با ۲ پیوند پیش‌فرض', await a.locator('.ad-list button').count() === 2, await a.locator('.ad-list button').count());
   await a.locator('.admin-tabs button', { hasText: 'محصولات' }).click(); await a.waitForTimeout(300);
   t('پنل ادمین: ۲۸ محصول از سرور', await a.locator('.tbl tbody tr').count() >= 28, await a.locator('.tbl tbody tr').count());
   await a.locator('.admin-tabs button', { hasText: 'کاربران' }).click(); await a.waitForTimeout(500);

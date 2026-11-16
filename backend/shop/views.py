@@ -18,7 +18,7 @@ from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import (Banner, ConsultRequest, MediaFile, OrderEvent, Pack, Payment, TrustItem, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
+from .models import (Banner, ConsultRequest, MediaFile, NavCat, NavLink, OrderEvent, Pack, Payment, TrustItem, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
                      ShopUser, SiteSetting, SmsLog)
 from .permissions import IsShopAdmin
 from .pricing import CANCELLED, STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
@@ -85,6 +85,13 @@ CAT_NAMES = {
 TOROB_PAGE_SIZE = 100
 
 
+def _cat_names():
+    """نام دسته‌ها با اولویت دادهٔ مدیریتی (NavCat)؛ برای فید ترب"""
+    names = dict(CAT_NAMES)
+    names.update({c.slug: c.name for c in NavCat.objects.all()})
+    return names
+
+
 def _weight_text(w):
     return 'عدد' if w == 1 else (f'{w // 1000} کیلوگرم' if w % 1000 == 0 else f'{w} گرم')
 
@@ -103,9 +110,10 @@ def public_img(u):
     return IMG_CDN + name
 
 
-def torob_item(p):
+def torob_item(p, names=None):
     """یک محصول در قالب API ترب — قیمت و وزنِ پیش‌فرض همان است که صفحهٔ محصول نشان می‌دهد
     (وزن دوم فهرست)، تا قیمت فید و صفحه همیشه یکی باشد. قیمت‌ها به تومان."""
+    names = names or CAT_NAMES
     ws = p.weights or [1]
     w = ws[min(1, len(ws) - 1)]
     price = line_unit_price(p, w)
@@ -119,12 +127,12 @@ def torob_item(p):
         'current_price': price,
         'old_price': old if old > price else 0,
         'availability': 'instock' if p.stock > 0 else 'outofstock',
-        'category_name': CAT_NAMES.get(p.cat, p.cat),
+        'category_name': names.get(p.cat, p.cat),
         'image_link': img,
         'image_links': [img] if img else [],
         'page_url': f'{base}/product/{p.id}/',
         'short_desc': (p.desc or '')[:300],
-        'spec': {'وزن': _weight_text(w), 'درجه': p.grade or '', 'دسته': CAT_NAMES.get(p.cat, p.cat)},
+        'spec': {'وزن': _weight_text(w), 'درجه': p.grade or '', 'دسته': names.get(p.cat, p.cat)},
         'date_added': p.created_at.isoformat(),
         'date_updated': p.updated_at.isoformat(),
         'guarantee': 'مرجوعی رایگان تا ۷ روز',
@@ -151,8 +159,9 @@ class TorobProductsView(APIView):
         pages = max(1, -(-total // TOROB_PAGE_SIZE))
         page = self._page(request)
         start = (page - 1) * TOROB_PAGE_SIZE
+        names = _cat_names()
         return Response({'count': total, 'max_pages': pages,
-                         'products': [torob_item(p) for p in qs[start:start + TOROB_PAGE_SIZE]]})
+                         'products': [torob_item(p, names) for p in qs[start:start + TOROB_PAGE_SIZE]]})
 
     def get(self, request):
         return self._respond(request)
@@ -801,15 +810,27 @@ def _shipping_public():
             'freeFrom': int(s.get('freeFrom') or 0), 'freeEnabled': bool(s.get('freeEnabled', True))}
 
 
+def _cats_public():
+    """دسته‌های فعال منو (هدر و منوی موبایل) — از دادهٔ مدیریتی NavCat"""
+    return [c.public for c in NavCat.objects.filter(active=True)]
+
+
+def _menu_public():
+    """پیوندهای فعال منو (پایین منوی موبایل) — از دادهٔ مدیریتی NavLink"""
+    return [m.public for m in NavLink.objects.filter(active=True, location='drawer')]
+
+
 class SiteView(APIView):
-    """GET /site — همهٔ محتوای عمومی در یک درخواست: اطلاعات تماس/متن‌ها، ارسال، فهرست صفحات، کارت شانس"""
+    """GET /site — همهٔ محتوای عمومی در یک درخواست: اطلاعات تماس/متن‌ها، ارسال، فهرست صفحات، کارت شانس،
+    دسته‌های منو (هدر/موبایل) و پیوندهای منو"""
     permission_classes = [AllowAny]
 
     def get(self, request):
-        lucky = _setting('lucky', DEFAULT_LUCKY)
         ensure_seed()
+        lucky = _setting('lucky', DEFAULT_LUCKY)
         return ok({'info': _setting('info', DEFAULT_INFO), 'shipping': _shipping_public(), **_home_public(),
                    'pages': [_page_brief(p) for p in Page.objects.filter(active=True)],
+                   'cats': _cats_public(), 'menu': _menu_public(),
                    'lucky': {'enabled': bool(lucky.get('enabled')), 'cooldownHours': lucky.get('cooldownHours')}})
 
 
@@ -1510,6 +1531,170 @@ class AdminBannerDetailView(APIView):
     def delete(self, request, pk):
         n, _ = Banner.objects.filter(pk=pk).delete()
         return ok({'deleted': True}) if n else fail('بنر پیدا نشد', 404)
+
+
+# ---------------- مدیر: منو و دسته‌ها (هدر و منوی موبایل) ----------------
+
+_SLUG_OK = _re.compile(r'^[a-z0-9][a-z0-9-]{0,39}$')
+_ICON_OK = _re.compile(r'^i-[a-z0-9-]{1,24}$')
+
+
+def _nav_cat_row(c, counts=None):
+    return {'id': c.id, 'slug': c.slug, 'name': c.name, 'icon': c.icon,
+            'subs': c.subs if isinstance(c.subs, list) else [],
+            'feat': {'img': c.feat_img, 't': c.feat_title, 's': c.feat_sub},
+            'hot': c.hot, 'active': c.active, 'sort': c.sort,
+            'products': (counts or {}).get(c.slug, 0)}
+
+
+def _nav_cat_from(data, inst=None):
+    """اعتبارسنجی ورودی دستهٔ منو — الگوبرداری از _banner_from"""
+    def pick(k, d):
+        return data[k] if k in data else d
+    slug = str(pick('slug', inst.slug if inst else '')).strip().lower()
+    if not _SLUG_OK.match(slug):
+        return None, 'شناسه دسته باید انگلیسی، کوچک و با حرف/عدد شروع شود (مثلاً pistachio)'
+    name = str(pick('name', inst.name if inst else '')).strip()
+    if not name or len(name) > 60:
+        return None, 'عنوان دسته الزامی است (حداکثر ۶۰ کاراکتر)'
+    icon = str(pick('icon', inst.icon if inst else 'i-nut')).strip()
+    if not _ICON_OK.match(icon):
+        return None, 'آیکن معتبر نیست (مثلاً i-nut)'
+    subs_in = pick('subs', inst.subs if inst else [])
+    if not isinstance(subs_in, list) or len(subs_in) > 12:
+        return None, 'زیرشاخه‌ها باید فهرستی با حداکثر ۱۲ مورد باشد'
+    subs = []
+    for s in subs_in:
+        s = str(s or '').strip()
+        if len(s) > 60:
+            return None, 'هر زیرشاخه حداکثر ۶۰ کاراکتر است'
+        if s:
+            subs.append(s)
+    feat = pick('feat', {}) if isinstance(pick('feat', {}), dict) else {}
+    img = _check_img(feat.get('img', inst.feat_img if inst else ''))
+    if img is None:
+        return None, 'نشانی تصویر ویژه نامعتبر است (آپلودشده، img/… یا https://…)'
+    try:
+        sort = _int(pick('sort', inst.sort if inst else 0), 0, 99, 'ترتیب')
+    except ValueError as e:
+        return None, str(e)
+    fields = {'slug': slug, 'name': name, 'icon': icon, 'subs': subs,
+              'feat_img': img, 'feat_title': str(feat.get('t', inst.feat_title if inst else ''))[:80].strip(),
+              'feat_sub': str(feat.get('s', inst.feat_sub if inst else ''))[:120].strip(),
+              'hot': bool(pick('hot', inst.hot if inst else False)),
+              'active': bool(pick('active', inst.active if inst else True)), 'sort': sort}
+    return fields, None
+
+
+class AdminCatsView(APIView):
+    """GET/POST /admin/cats — فهرست دسته‌های منو (با شمارش محصولات) و ساخت دستهٔ جدید"""
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        from django.db.models import Count
+        counts = {row['cat']: row['n'] for row in
+                  Product.objects.values('cat').annotate(n=Count('id'))}
+        return ok({'cats': [_nav_cat_row(c, counts) for c in NavCat.objects.all()]})
+
+    def post(self, request):
+        fields, err = _nav_cat_from(request.data)
+        if err:
+            return fail(err, 400)
+        if NavCat.objects.filter(slug=fields['slug']).exists():
+            return fail('دسته‌ای با این شناسه از قبل وجود دارد', 400)
+        return ok({'cat': _nav_cat_row(NavCat.objects.create(**fields))})
+
+
+class AdminCatDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request, pk):
+        c = NavCat.objects.filter(pk=pk).first()
+        if not c:
+            return fail('دسته پیدا نشد', 404)
+        fields, err = _nav_cat_from(request.data, c)
+        if err:
+            return fail(err, 400)
+        old_slug = c.slug
+        with transaction.atomic():
+            if fields['slug'] != old_slug:
+                if NavCat.objects.filter(slug=fields['slug']).exclude(pk=c.pk).exists():
+                    return fail('دسته‌ای با این شناسه از قبل وجود دارد', 400)
+                # تغییر شناسه دسته، محصولات مرتبط را هم خودکار جابه‌جا می‌کند
+                Product.objects.filter(cat=old_slug).update(cat=fields['slug'])
+            for k, v in fields.items():
+                setattr(c, k, v)
+            c.save()
+        return ok({'cat': _nav_cat_row(c)})
+
+    def delete(self, request, pk):
+        c = NavCat.objects.filter(pk=pk).first()
+        if not c:
+            return fail('دسته پیدا نشد', 404)
+        used = Product.objects.filter(cat=c.slug).count()
+        if used:
+            return fail(f'{used} محصول در این دسته است؛ اول محصولات را به دستهٔ دیگری منتقل یا حذف کنید', 400)
+        c.delete()
+        return ok({'deleted': True})
+
+
+def _nav_link_row(m):
+    return {'id': m.id, 'label': m.label, 'icon': m.icon, 'link': m.link,
+            'location': m.location, 'active': m.active, 'sort': m.sort}
+
+
+def _nav_link_from(data, inst=None):
+    def pick(k, d):
+        return data[k] if k in data else d
+    label = str(pick('label', inst.label if inst else '')).strip()
+    if not label or len(label) > 60:
+        return None, 'عنوان پیوند الزامی است (حداکثر ۶۰ کاراکتر)'
+    icon = str(pick('icon', inst.icon if inst else 'i-leaf')).strip()
+    if not _ICON_OK.match(icon):
+        return None, 'آیکن معتبر نیست (مثلاً i-leaf)'
+    link = _check_link(pick('link', inst.link if inst else ''))
+    if not link:
+        return None, 'پیوند باید با / یا https:// شروع شود (مثلاً /track)'
+    try:
+        sort = _int(pick('sort', inst.sort if inst else 0), 0, 99, 'ترتیب')
+    except ValueError as e:
+        return None, str(e)
+    return {'label': label, 'icon': icon, 'link': link, 'location': 'drawer',
+            'active': bool(pick('active', inst.active if inst else True)), 'sort': sort}, None
+
+
+class AdminMenuView(APIView):
+    """GET/POST /admin/menu — فهرست و ساخت پیوندهای منو (پایین منوی موبایل)"""
+    permission_classes = [IsShopAdmin]
+
+    def get(self, request):
+        return ok({'menu': [_nav_link_row(m) for m in NavLink.objects.all()]})
+
+    def post(self, request):
+        fields, err = _nav_link_from(request.data)
+        if err:
+            return fail(err, 400)
+        return ok({'link': _nav_link_row(NavLink.objects.create(**fields))})
+
+
+class AdminMenuDetailView(APIView):
+    permission_classes = [IsShopAdmin]
+
+    def put(self, request, pk):
+        m = NavLink.objects.filter(pk=pk).first()
+        if not m:
+            return fail('پیوند پیدا نشد', 404)
+        fields, err = _nav_link_from(request.data, m)
+        if err:
+            return fail(err, 400)
+        for k, v in fields.items():
+            setattr(m, k, v)
+        m.save()
+        return ok({'link': _nav_link_row(m)})
+
+    def delete(self, request, pk):
+        n, _ = NavLink.objects.filter(pk=pk).delete()
+        return ok({'deleted': True}) if n else fail('پیوند پیدا نشد', 404)
 
 
 # ---------------- مدیر: پک‌ها ----------------
