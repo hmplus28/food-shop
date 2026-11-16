@@ -5,6 +5,10 @@ import { LS } from './site';
 /* تصاویر روی خود هاست در /img/ (دانلود با scripts/fetch_assets.py)؛ در نبود فایل، fallback خودکار به منبع اصلی (main.js) */
 export const IMG = (import.meta.env.BASE_URL || '/') + 'img/';
 
+/* حالت اتصال به بک‌اند (true در بیلد هاست/تولید) — کاتالوگ فقط از سرور؛
+   وقتی ایستا true باشد، کد و دادهٔ کاتالوگ نمونه (محصولات فیک) از باندل حذف می‌شود (tree-shaking). */
+export const API_ON = __KG_API_ON__;
+
 /* دسته‌بندی‌ها (۱۳ دسته) */
 export const CATS = [
   { id: 'ajil', name: 'آجیل و مغزها', icon: 'i-nut', subs: ['آجیل مخلوط شور', 'آجیل مخلوط شیرین', 'آجیل چهارمغز', 'مغزهای خام', 'آجیل سویسالی', 'آجیل رژیمی'], feat: { img: IMG + '66fd0cba7ee8.jpg', t: 'آجیل مخلوط خانم گل', s: 'پنج‌مغز منتخب؛ تازه بو داده' } },
@@ -74,7 +78,8 @@ export const TRUST = [
 ];
 export const TRUST_WHY = 'اعتماد شما بزرگ‌ترین سرمایه ماست! هر روز یک کالای منتخب — لوازم سرو و دکور سنتی — را با قیمت ویژه به سبد شما اضافه می‌کنیم؛ چون به خانم گل اعتماد دارید، به ما مطمئنید.';
 export const TRUST_VPIDS = {};
-TRUST.forEach((t, i) => { TRUST_VPIDS[t.day] = 90 + i; });
+/* فقط حالت دمو: نگاشت روز هفته به شناسهٔ محصول مجازی خرید اطمینان؛ در بیلد تولید حذف می‌شود تا دادهٔ نمونه از باندل خارج شود */
+__KG_API_ON__ || TRUST.forEach((t, i) => { TRUST_VPIDS[t.day] = 90 + i; });
 
 /* کارت شانس */
 export const PRIZES = [
@@ -108,10 +113,13 @@ export const THEMES = [
   { id: 'abi', name: 'آبی نفتی', color: '#1f5a73' },
 ];
 
-/* ---------- فهرست واکنش‌گرای محصولات (با ادغام تغییرات پنل مدیر) ---------- */
+/* ---------- فهرست واکنش‌گرای محصولات ----------
+   حالت سرور (API_ON): شروع با کاتالوگ خالی — همهٔ محصولات از بک‌اند می‌آید (محصولات واقعی مدیر).
+   حالت دمو/آفلاین (API_OFF مثل GitHub Pages و تست‌های UI): کاتالوگ نمونهٔ ۲۸ محصوله.
+   محصولات مجازی بخش خرید اطمینان (قابل افزودن به سبد؛ در فروشگاه نمایش داده نمی‌شوند) فقط در حالت دمو همین‌جا تعریف می‌شوند؛ در حالت سرور از /site می‌آیند. */
 function buildBase() {
+  if (API_ON) return [];                    // مهم: سایت واقعی هیچ‌وقت محصول فیک نشان نمی‌دهد — حتی یک لحظه
   const list = BASE.map(p => ({ ...p, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights] }));
-  /* محصولات مجازی بخش خرید اطمینان (قابل افزودن به سبد؛ در فروشگاه نمایش داده نمی‌شوند) */
   TRUST.forEach((t, i) => {
     list.push({ id: 90 + i, name: t.name, cat: 'giftbox', img: t.img, price: t.price * 1000, weights: [1], stock: 8, disc: 0, grade: 'دست‌ساز', rate: 4.9, sold: 88, tags: ['خرید اطمینان'], sec: [], hide: true, desc: 'کالای منتخب بخش «خرید اطمینان»؛ هر روز با قیمت ویژه.' });
   });
@@ -120,10 +128,10 @@ function buildBase() {
 
 export const products = reactive(buildBase());
 
-/* اعمال ویرایش‌های آزمایشی پنل مدیر (LocalStorage) روی فهرست فعلی —
+/* اعمال ویرایش‌های آزمایشی پنل مدیر (LocalStorage) روی فهرست فعلی — فقط حالت دمو.
    بعد از همگام‌سازی بک‌اند هم دوباره صدا زده می‌شود تا ویرایش‌ها حفظ شوند. */
 export function applyAdminOverrides() {
-  if (String(import.meta.env.VITE_API_ENABLED).toLowerCase() === 'true') return;   // با سرور فعال، سرور مرجع است
+  if (API_ON) return;   // با سرور فعال، سرور مرجع است
   const saved = LS.get('adminProducts', null);
   if (Array.isArray(saved) && saved.length) products.splice(0, products.length, ...saved);
 }
@@ -147,7 +155,7 @@ export function applyVirtualProducts() {
 }
 export function setVirtualProducts(list) { VIRTUAL = list; applyVirtualProducts(); }
 /* از کش مرورگر هنگام بارگذاری: سبد ذخیره‌شده با پک/کالای اعتماد بعد از رفرش پاک نشود */
-if (String(import.meta.env.VITE_API_ENABLED).toLowerCase() === 'true') {
+if (API_ON) {
   const c = LS.get('shopCache', {});
   if (c && (c.packs || c.trust)) VIRTUAL = virtualFrom(c.packs, c.trust, u => u);
   applyVirtualProducts();

@@ -40,6 +40,7 @@ urlpatterns = [
 
     # محصولات
     path('products', views.ProductListCreateView.as_view()),
+    path('products/bulk', views.AdminProductsBulkView.as_view()),      # عملیات گروهی مدیر (قبل از <int:pk>)
     path('products/<int:pk>', views.ProductDetailView.as_view()),
 
     # سفارش‌ها (mine قبل از <code> باشد)

@@ -140,14 +140,15 @@ function extractList(json) {
   return null;
 }
 
-/* همگام‌سازی فهرست محصولات از بک‌اند به آرایهٔ واکنش‌گرا؛ خطا → دادهٔ محلی */
+/* همگام‌سازی فهرست محصولات از بک‌اند به آرایهٔ واکنش‌گرا؛ سرور مرجع است:
+   فهرست خالی یعنی فروشگاه بدون محصول (پاک‌سازی محصولات نمونه) — هیچ فالبک فیک نشان داده نمی‌شود.
+   فقط خطای شبکه/ساختار → بی‌صدا رد می‌شود (دادهٔ فعلی می‌ماند؛ در اولین بار = خالی). */
 export async function syncCatalog() {
   if (!API_ENABLED) return false;
   try {
     const list = extractList(await req('/products'));
     if (!list) throw new Error('ساختار پاسخ محصولات قابل خواندن نبود');
     const mapped = list.map(normalizeProduct).filter(Boolean);
-    if (!mapped.length) throw new Error('فهرست محصولات خالی بود');
     products.splice(0, products.length, ...mapped);
     applyVirtualProducts();         // پک‌ها و کالاهای خرید اطمینان (پنهان) دوباره به کاتالوگ اضافه شوند
     LS.del('adminProducts');        // سرور مرجع است؛ نسخهٔ محلی قدیمی پنل مدیر کنار گذاشته می‌شود
@@ -474,4 +475,14 @@ export async function productDeleteApi(id) {
     apiState.online = true;
     return true;
   } catch (e) { note(e); return false; }
+}
+
+/* عملیات گروهی روی محصولات (مدیر): action = 'delete' | 'hide' | 'show' — برای پاک‌سازی محصولات نمونه */
+export async function productBulkApi(ids, action = 'delete') {
+  if (!API_ENABLED || !Array.isArray(ids) || !ids.length) return null;
+  try {
+    const res = await req('/products/bulk', { method: 'POST', body: { ids, action } });
+    apiState.online = true;
+    return res && res.ok ? res : null;
+  } catch (e) { note(e); return null; }
 }

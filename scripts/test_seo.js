@@ -15,6 +15,8 @@ const U='http://localhost:4173/food-shop/';
  t('صفحه محصول: Product+Breadcrumb JSON-LD، قیمت و موجودی', metas.ld.includes('Product')&&metas.ld.includes('BreadcrumbList')&&+metas.price>0&&metas.av==='instock');
  // JS view
  const c=await b.newContext({viewport:{width:1280,height:900}}); await c.addInitScript(()=>{try{sessionStorage.setItem('asalat_lucky_seen','1')}catch(e){}});
+ // درخواست‌های بیرونی (CDN تصاویر/اینماد…) مسدود شود تا networkidle به منابع خارجی گره نخورد
+ await c.route(/^https?:\/\/(?!localhost|127\.0\.0\.1)/, r => r.abort());
  const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  for (const r of ['product/1/','product/1','products/','cart','nope']) {
   await p.goto(U+r,{waitUntil:'networkidle'}); await p.waitForTimeout(300);

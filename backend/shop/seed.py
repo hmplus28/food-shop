@@ -1,7 +1,8 @@
-"""همگام‌سازی دادهٔ اولیه — محصولات همان کاتالوگ فرانت (app/src/data/catalog.js)
+"""دادهٔ نمونه (دمو) — محصولات همان کاتالوگ فرانت (app/src/data/catalog.js)
 
-تا فرانت و بک‌اند روی «همان ۲۸ محصول با همان شناسه/قیمت» کار کنند.
-صدا زدن ensure_seed() در /health و لیست محصولات؛ اگر جدول خالی بود یک‌بار پر می‌شود.
+فقط وقتی SEED_FAKE=1 باشد فعال است (توسعه/دمو). در تولید پیش‌فرض خاموش است تا
+سایت واقعی بدون محصولات فیک شروع شود؛ مدیر محصولات را از پنل ادمین می‌سازد.
+حذف محصولات نمونه از دیتابیس: پنل ادمین ← انتخاب گروهی + حذف، یا «python manage.py seed_shop --purge».
 """
 import secrets
 
@@ -45,7 +46,10 @@ BASE = [
 
 
 def seed_products(force=False):
-    """درج ۲۸ محصول پایه (فقط وقتی جدول خالی است؛ با force همه بازنویسی می‌شوند)"""
+    """درج ۲۸ محصول پایه — فقط با SEED_FAKE=1 (توسعه/دمو)؛ در تولید بی‌اثر است.
+    (فقط وقتی جدول خالی است؛ با force همه بازنویسی می‌شوند)"""
+    if not getattr(settings, 'SEED_FAKE', False):
+        return False
     if force:
         Product.objects.all().delete()
     elif Product.objects.exists():
@@ -74,11 +78,14 @@ def ensure_admin():
 
 
 def ensure_home():
-    """محتوای اولیهٔ صفحهٔ اصلی (بنر، پک‌ها، خرید اطمینان، تنظیم بخش‌ها) — فقط یک‌بار؛ بعد از آن مدیر مدیریت می‌کند"""
+    """محتوای نمونهٔ صفحهٔ اصلی (بنر، پک‌ها، خرید اطمینان، تنظیم بخش‌ها) — فقط با SEED_FAKE=1 و یک‌بار؛
+    بعد از آن مدیر از پنل «صفحهٔ اصلی» همه را ویرایش/حذف می‌کند. در تولید بی‌اثر است."""
     from django.db import transaction
     from .bundles import sync_virtual
     from .defaults import BANNERS, HOME, PACKS, TRUST
     from .models import Banner, Pack, SiteSetting, TrustItem
+    if not getattr(settings, 'SEED_FAKE', False):
+        return False
     if SiteSetting.objects.filter(key='homeSeeded').exists() or not Product.objects.exists():
         return False
     base = {p['id']: p for p in BASE}
@@ -101,7 +108,9 @@ def ensure_home():
 
 
 def ensure_seed():
-    """ایمن برای صدا زدن در هر درخواست — فقط بار اول کاری می‌کند"""
+    """ایمن برای صدا زدن در هر درخواست — فقط با SEED_FAKE=1 و فقط بار اول کاری می‌کند؛ در تولید بی‌اثر است"""
+    if not getattr(settings, 'SEED_FAKE', False):
+        return False
     seeded = seed_products()
     if seeded:
         ensure_admin()
@@ -109,13 +118,21 @@ def ensure_seed():
     return seeded
 
 
+def purge_all_products():
+    """حذف همهٔ محصولات (نمونه یا واقعی) — سفارش‌های قبلی سالم می‌مانند (اقلام سفارش اسنپ‌شات است).
+    فقط از دستور مدیریتی «seed_shop --purge» یا پنل ادمین (انتخاب گروهی) صدا زده شود."""
+    n, _ = Product.objects.all().delete()
+    return n
+
+
 def seed_all():
-    """دستور مدیریتی: محصول + مدیر + گزارش"""
+    """دستور مدیریتی: محصول (فقط با --fake/SEED_FAKE=1) + مدیر + گزارش"""
     p = seed_products()
     ensure_home()
     admin, created = ensure_admin()
     return {
         'products_seeded': p,
+        'seed_fake': bool(getattr(settings, 'SEED_FAKE', False)),
         'products_total': Product.objects.count(),
         'admin_created': created,
         'admin_phone': admin.phone,

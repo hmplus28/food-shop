@@ -6,13 +6,14 @@ cd "$(dirname "$0")/.."
 FAIL=0
 fresh_backend() {
   pkill -f "manage.py runserver" 2>/dev/null; sleep 1
-  ( cd backend && rm -rf db.sqlite3 logs && python manage.py migrate >/dev/null 2>&1 && python manage.py seed_shop >/dev/null 2>&1 \
+  ( cd backend && rm -rf db.sqlite3 logs && python manage.py migrate >/dev/null 2>&1 && SEED_FAKE=1 python manage.py seed_shop >/dev/null 2>&1 \
     && (nohup python manage.py runserver 8787 >/dev/null 2>&1 &) ); sleep 3
 }
 run() { echo "── $1"; shift; "$@" 2>&1 | grep -E "✗|نتیجه|بدون خطا" ; [ "${PIPESTATUS[0]}" -eq 0 ] || FAIL=1; }
 
 fresh_backend; run "API بک‌اند" python3 scripts/test_backend_api.py
 fresh_backend; run "امنیت بک‌اند" python3 scripts/test_backend_security.py
+run "قفل محصولات نمونه (SEED_FAKE)" python3 scripts/test_seed_gate.py
 run "locale ASCII (رگرسیون ۵۰۰ هاست)" python3 scripts/test_ascii_locale.py
 
 ( cd app && npm run build >/dev/null 2>&1 && (nohup npx vite preview --port 4173 >/dev/null 2>&1 &) ); sleep 3

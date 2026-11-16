@@ -7,10 +7,15 @@ import { toast } from './ui';
 import { apiState, couponCheckApi } from '../services/api';
 import { auth } from './auth';
 
-/* فقط ردیف‌های سالم: محصول موجود، وزن مجاز و تعداد ۱ تا ۲۰ */
-const sanitize = list => (Array.isArray(list) ? list : []).filter(c =>
-  c && typeof c === 'object' && prod(c.pid) && prod(c.pid).weights.includes(c.w) &&
-  Number.isFinite(c.qty) && c.qty >= 1).map(c => ({ pid: Number(c.pid), w: c.w, qty: Math.min(20, Math.floor(c.qty)) }));
+/* فقط ردیف‌های سالم: ساختار درست (عدد بودن شناسه/وزن/تعداد) —
+   چک «محصول در کاتالوگ هست و وزن مجاز است» فقط بعد از همگام‌سازی کاتالوگ انجام می‌شود (pruneCart؛ withCatalog).
+   در حالت سرور کاتالوگ هنگام راه‌اندازی هنوز خالی است؛ چک محصولی همین‌جا سبد ذخیره‌شدهٔ مشتری را می‌ریخت. */
+const sanitize = (list, withCatalog = false) => (Array.isArray(list) ? list : []).filter(c => {
+  if (!c || typeof c !== 'object' || !Number.isFinite(Number(c.pid)) || !Number.isFinite(Number(c.w)) ||
+      !Number.isFinite(Number(c.qty)) || Number(c.qty) < 1) return false;
+  const p = prod(Number(c.pid));
+  return !withCatalog || (!!p && p.weights.includes(Number(c.w)));
+}).map(c => ({ pid: Number(c.pid), w: c.w, qty: Math.min(20, Math.floor(c.qty)) }));
 
 export const cart = reactive({
   items: sanitize(LS.get('cart', [])),      // [{pid, w, qty}]
@@ -22,7 +27,7 @@ const save = () => LS.set('cart', cart.items);
 
 /* بعد از همگام‌سازی کاتالوگ با بک‌اند، کالاهای حذف/مخفی‌شده را از سبد پاک کن */
 export function pruneCart() {
-  const clean = sanitize(cart.items);
+  const clean = sanitize(cart.items, true);
   if (clean.length !== cart.items.length) {
     cart.items.splice(0, cart.items.length, ...clean);
     save();

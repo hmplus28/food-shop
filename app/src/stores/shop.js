@@ -40,15 +40,17 @@ const DEFAULT_BANNERS = [{ id: 0, image: IMG + '62b15d793f24.png', tag: 'تاز�
 
 const cached = LS.get('shopCache', {});
 
+/* حالت سرور (API_ON): محتوای ابتدایی = کش مرورگر یا خالی — هیچ محتوای فیک قبل از پاسخ سرور دیده نمی‌شود.
+   حالت دمو: پیش‌فرض‌های نمونه تا لحظهٔ بارگذاری. */
 export const shop = reactive({
   info: { ...DEFAULT_INFO, ...(cached.info || {}) },
   shipping: cached.shipping || { methods: SHIP_OPTIONS.map(o => ({ ...o })), freeFrom: FREE_SHIP, freeEnabled: true },
   pages: cached.pages || [],
   lucky: cached.lucky || { enabled: true, cooldownHours: 24 },
   home: { ...DEFAULT_HOME, ...(cached.home || {}) },
-  banners: cached.banners || DEFAULT_BANNERS,
-  packs: cached.packs || PACKS.map((p, i) => ({ id: i, pid: p.pid, name: p.name, sub: p.sub, image: '', old: p.old, now: p.now, endsAt: Date.now() + p.hours * 3600000, stock: 99, w: p.w })),
-  trust: cached.trust || TRUST.map(t => ({ id: t.day, day: t.day, name: t.name, image: t.img, old: t.old, price: t.price, pid: 90 + TRUST.indexOf(t), stock: 8 })),
+  banners: cached.banners || (__KG_API_ON__ ? [] : DEFAULT_BANNERS),
+  packs: cached.packs || (__KG_API_ON__ ? [] : PACKS.map((p, i) => ({ id: i, pid: p.pid, name: p.name, sub: p.sub, image: '', old: p.old, now: p.now, endsAt: Date.now() + p.hours * 3600000, stock: 99, w: p.w }))),
+  trust: cached.trust || (__KG_API_ON__ ? [] : TRUST.map(t => ({ id: t.day, day: t.day, name: t.name, image: t.img, old: t.old, price: t.price, pid: 90 + TRUST.indexOf(t), stock: 8 }))),
   loaded: false,
 });
 

@@ -13,8 +13,10 @@ const suffix = String(Date.now()).slice(-7);
 
 (async () => {
   const b = await chromium.launch();
+  // درخواست‌های بیرونی (CDN تصاویر/اینماد…) مسدود شود تا networkidle به منابع خارجی گره نخورد
+  const mkctx = async (opts = {}) => { const c = await b.newContext(opts); await c.route(/^https?:\/\/(?!localhost|127\.0\.0\.1)/, r => r.abort()); return c; };
   // ---------- ناشناس ----------
-  const anon = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const anon = await mkctx({ viewport: { width: 1280, height: 900 } });
   const reqs = [];
   anon.on('request', r => reqs.push(r.url()));
   const p = await anon.newPage(); const errs = [];
@@ -58,7 +60,7 @@ const suffix = String(Date.now()).slice(-7);
   t('کاربر عادی در /admin فرم ورود مدیر می‌بیند (نه پنل)', await p.locator('.admin-login').count() === 1);
 
   // ---------- سوپریوزر ----------
-  const adm = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const adm = await mkctx({ viewport: { width: 1280, height: 900 } });
   await adm.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); } catch (e) {} });
   const a = await adm.newPage(); a.on('pageerror', e => errs.push(e.message));
   await a.goto(U + 'admin', { waitUntil: 'networkidle' });
@@ -109,11 +111,11 @@ const suffix = String(Date.now()).slice(-7);
   const chk = await (await fetch(API + '/coupons/check?code=' + CODE, { headers: { Authorization: 'Bearer ' + tokA0 } })).json();
   t('کد ساخته‌شده توسط مدیر در سرور معتبر است (۲۵٪)', chk.ok && chk.coupon.val === 25, JSON.stringify(chk));
   const ulog = await (await fetch(API + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: '0911' + suffix, password: 'pass-1234' }) })).json();
-  const guestCtx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const guestCtx = await mkctx({ viewport: { width: 1280, height: 900 } });
   await guestCtx.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); localStorage.setItem('asalat_cart', JSON.stringify([{ pid: 1, w: 500, qty: 1 }])); } catch (e) {} });
   const gp = await guestCtx.newPage(); await gp.goto(U + 'cart', { waitUntil: 'networkidle' });
   t('مهمان در سبد کادر کد تخفیف ندارد و پیام «ابتدا وارد شوید» می‌بیند', await gp.locator('#main .coupon-row').count() === 0 && (await gp.locator('#main .coupon-login').innerText()).includes('وارد حساب'));
-  const sp = await b.newContext({ viewport: { width: 1280, height: 900 } }); await sp.addInitScript(([tk, us]) => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); localStorage.setItem('asalat_cart', JSON.stringify([{ pid: 1, w: 500, qty: 1 }])); localStorage.setItem('asalat_apiToken', JSON.stringify(tk)); localStorage.setItem('asalat_user', JSON.stringify(us)); } catch (e) {} }, [ulog.token, ulog.user]);
+  const sp = await mkctx({ viewport: { width: 1280, height: 900 } }); await sp.addInitScript(([tk, us]) => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); localStorage.setItem('asalat_cart', JSON.stringify([{ pid: 1, w: 500, qty: 1 }])); localStorage.setItem('asalat_apiToken', JSON.stringify(tk)); localStorage.setItem('asalat_user', JSON.stringify(us)); } catch (e) {} }, [ulog.token, ulog.user]);
   const cp = await sp.newPage(); await cp.goto(U + 'cart', { waitUntil: 'networkidle' }); await cp.waitForTimeout(500);
   await cp.fill('#main .coupon-row input', CODE); await cp.click('#main .coupon-row button'); await cp.waitForTimeout(900);
   const offTxt = await cp.locator('#main .t-row').nth(1).innerText();
@@ -140,7 +142,7 @@ const suffix = String(Date.now()).slice(-7);
   t('تا ذخیره نشده، بازدیدکنندهٔ دیگر تغییر را نمی‌بیند', (await (await fetch(API + '/settings')).json()).theme === 'default');
   await a.locator('.ss-save').click(); await a.waitForTimeout(900);
   t('ذخیره برای کل سایت: سرور تم را نگه می‌دارد', (await (await fetch(API + '/settings')).json()).theme === 'anari');
-  const v = await b.newContext(); const vp = await v.newPage();
+  const v = await mkctx(); const vp = await v.newPage();
   await vp.goto(U, { waitUntil: 'networkidle' }); await vp.waitForTimeout(500);
   t('بازدیدکنندهٔ تازه همان تم اناری را می‌بیند (اعمال در کل سایت)', await vp.evaluate(() => document.documentElement.dataset.theme) === 'anari');
   t('بازدیدکنندهٔ تازه دکمهٔ تنظیم ندارد', await vp.locator('.ss-btn').count() === 0);
@@ -156,7 +158,7 @@ const suffix = String(Date.now()).slice(-7);
   const tok = await a.evaluate(() => JSON.parse(localStorage.getItem('asalat_apiToken')));
   await fetch(API + '/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify({ theme: 'default', tune: null }) });
   // دست‌کاری LocalStorage نباید مدیر بسازد
-  const hack = await b.newContext(); await hack.addInitScript(() => { localStorage.setItem('asalat_admin', 'true'); });
+  const hack = await mkctx(); await hack.addInitScript(() => { localStorage.setItem('asalat_admin', 'true'); });
   const hp = await hack.newPage(); await hp.goto(U + 'admin', { waitUntil: 'networkidle' });
   t('جعل پرچم admin در LocalStorage پنل را باز نمی‌کند', await hp.locator('.admin-login').count() === 1);
 
@@ -180,7 +182,7 @@ const suffix = String(Date.now()).slice(-7);
 
   // ---------- تسویه: شمارهٔ موبایل → ثبت‌نام (حساب جدید) ----------
   const NEWP = '0917' + suffix;
-  const mkCtx = async (extra = {}) => { const c = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const mkCtx = async (extra = {}) => { const c = await mkctx({ viewport: { width: 1280, height: 900 } });
     await c.addInitScript(([x]) => { try { if (!x.noLuckySeen) sessionStorage.setItem('asalat_lucky_seen', '1'); if (x.cart) localStorage.setItem('asalat_cart', JSON.stringify([{ pid: 1, w: 500, qty: 1 }])); } catch (e) {} }, [extra]); return c; };
   const co = await mkCtx({ cart: true }); const cop = await co.newPage(); cop.on('pageerror', e => errs.push(e.message));
   await cop.goto(U + 'checkout', { waitUntil: 'networkidle' });
@@ -218,7 +220,7 @@ const suffix = String(Date.now()).slice(-7);
   await glp.locator('.fab.gold').click(); await glp.waitForTimeout(500);
   t('مهمان: کارت قفل است و دکمهٔ ورود/ثبت‌نام دارد', await glp.locator('.lc-inner.locked').count() === 1 && await glp.locator('.lucky-foot button', { hasText: 'ورود / ثبت‌نام' }).count() === 1);
   const lreg = await (await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'شانس ازما', phone: '0918' + suffix, password: 'lucky-1234' }) })).json();
-  const lc = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const lc = await mkctx({ viewport: { width: 1280, height: 900 } });
   await lc.addInitScript(([tk, us]) => { try { localStorage.setItem('asalat_apiToken', JSON.stringify(tk)); localStorage.setItem('asalat_user', JSON.stringify(us)); } catch (e) {} }, [lreg.token, lreg.user]);
   const lp = await lc.newPage(); lp.on('pageerror', e => errs.push(e.message));
   await lp.goto(U, { waitUntil: 'networkidle' }); await lp.waitForTimeout(2600);
@@ -262,7 +264,7 @@ const suffix = String(Date.now()).slice(-7);
   await a.locator('.modal button', { hasText: /^ذخیره$/ }).last().click(); await a.waitForTimeout(1000);
   const site1 = await (await fetch(API + '/site')).json();
   t('مدیر: هزینهٔ اولین روش ارسال از پنل تغییر کرد (۷۷٬۰۰۰)', site1.shipping.methods[0].cost === 77000, JSON.stringify(site1.shipping.methods[0]));
-  const sc = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const sc = await mkctx({ viewport: { width: 1280, height: 900 } });
   await sc.addInitScript(([tk, us]) => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); localStorage.setItem('asalat_cart', JSON.stringify([{ pid: 1, w: 500, qty: 1 }])); localStorage.setItem('asalat_apiToken', JSON.stringify(tk)); localStorage.setItem('asalat_user', JSON.stringify(us)); } catch (e) {} }, [ulog.token, ulog.user]);
   const scp = await sc.newPage(); await scp.goto(U + 'checkout', { waitUntil: 'networkidle' }); await scp.waitForTimeout(700);
   t('مشتری: هزینهٔ جدید ارسال در تسویه دیده می‌شود (۷۷٬۰۰۰)', (await scp.locator('.ship-opts').innerText()).includes('۷۷٬۰۰۰'), (await scp.locator('.ship-opts').innerText()).slice(0, 80));
@@ -385,7 +387,7 @@ const suffix = String(Date.now()).slice(-7);
   t('سفارش لغوشده در پنل مدیر غیرقابل ویرایش است', await a.locator('.ord-mgmt select').isDisabled());
 
   // ---------- ورود مدیر از صفحهٔ ورود عادی ----------
-  const sa = await b.newContext({ viewport: { width: 1280, height: 900 } }); await sa.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); } catch (e) {} });
+  const sa = await mkctx({ viewport: { width: 1280, height: 900 } }); await sa.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); } catch (e) {} });
   const sp2 = await sa.newPage(); await sp2.goto(U + 'auth', { waitUntil: 'networkidle' });
   await sp2.fill('.auth-form input[type=tel]', ADMIN_PHONE); await sp2.fill('.auth-form input[type=password]', ADMIN_PASS);
   await sp2.click('.auth-form button[type=submit]'); await sp2.waitForURL(/admin/, { timeout: 8000 }).catch(() => {});
@@ -396,7 +398,7 @@ const suffix = String(Date.now()).slice(-7);
   t('فوتر: سال شمسی ۱۴۰۵', (await sp2.locator('.f-bottom').innerText()).includes('۱۴۰۵'), (await sp2.locator('.f-bottom').innerText()).slice(0, 40));
 
   // ---------- موبایل ----------
-  const mob = await b.newContext({ viewport: { width: 375, height: 700 } });
+  const mob = await mkctx({ viewport: { width: 375, height: 700 } });
   await mob.addInitScript(() => { try { sessionStorage.setItem('asalat_lucky_seen', '1'); } catch (e) {} });
   const m = await mob.newPage(); m.on('pageerror', e => errs.push(e.message));
   await m.goto(U, { waitUntil: 'networkidle' });
@@ -414,7 +416,10 @@ const suffix = String(Date.now()).slice(-7);
   t('نوار سبد موبایل نمایش داده می‌شود', await m.locator('.m-cart-bar.show').count() === 1);
   const pad = await m.evaluate(() => parseFloat(getComputedStyle(document.body).paddingBottom));
   t('فضای انتهای صفحه برای نوار سبد رزرو شده (فوتر دیده می‌شود)', pad >= 80, pad);
-  await m.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await m.waitForTimeout(500);
+  /* اسکرول لحظه‌ای (scroll-behavior:smooth سایت را دور می‌زند) و صبر برای رسیدن به انتهای واقعی صفحه */
+  await m.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, document.scrollingElement.scrollHeight); });
+  await m.waitForFunction(() => { const se = document.scrollingElement; return se.scrollTop + window.innerHeight >= se.scrollHeight - 2; }, null, { timeout: 5000 }).catch(() => {});
+  await m.waitForTimeout(200);
   const last = await m.evaluate(() => { const f = document.querySelector('.f-bottom').getBoundingClientRect(); const bar = document.querySelector('.m-cart-bar').getBoundingClientRect(); return { fb: f.bottom, barTop: bar.top }; });
   t('پایین فوتر زیر نوار سبد نمی‌ماند', last.fb <= last.barTop + 1, JSON.stringify(last));
   const fabIcon = m.locator('.fab[aria-label="بازگشت به بالا"] svg');

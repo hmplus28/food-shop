@@ -18,11 +18,14 @@ cd app && npm run build                # خروجی در app/dist ← محتوا
 # بک‌اند
 cd backend && pip install -r requirements.txt
 cp .env.example .env                   # سپس مقادیر را پر کنید
-python manage.py migrate && python manage.py seed_shop
+python manage.py migrate && python manage.py seed_shop   # مدیر ساخته می‌شود؛ بدون محصولات فیک (پیش‌فرض تولید)
+python manage.py seed_shop --fake      # فقط توسعه/دمو: درج ۲۸ محصول نمونه + بنر/پک/خرید اطمینان نمونه (یا SEED_FAKE=1 در .env)
+python manage.py seed_shop --purge     # حذف همهٔ محصولات از دیتابیس (سفارش‌های قبلی سالم می‌مانند؛ با --yes بدون پرسش)
 python manage.py runserver 8787
 
 # تست (سرور باید روشن باشد)
-python3 scripts/test_backend_api.py        # باید 236/236 سبز باشد (ارسال، محتوا، کارت شانس، مشاوره، کدها، کاربران، صفحهٔ اصلی، تصاویر، وضعیت سفارش، موجودی)
+python3 scripts/test_backend_api.py        # باید ۲۴۴/۲۴۴ سبز باشد (ارسال، محتوا، کارت شانس، مشاوره، کدها، کاربران، صفحهٔ اصلی، تصاویر، وضعیت سفارش، موجودی، عملیات گروهی محصولات)
+python3 scripts/test_seed_gate.py          # قفل محصولات نمونه: بدون SEED_FAKE هیچ فیک درج نمی‌شود (۲۱ بررسی)
 python3 scripts/test_backend_security.py   # باید 71/71 سبز باشد
 node scripts/test_cart_ui.js                # سبد خرید (۲۷ بررسی؛ نیاز به vite preview روی 4173)
 node scripts/test_seo.js                    # سئو/پیش‌رندر (نیاز به vite preview روی 4173)
@@ -60,6 +63,12 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - **تصاویر**: آپلود مدیر `POST /admin/media` (multipart؛ فقط JPG/PNG/WebP/GIF با بررسی محتوا، ≤۴MB، نام تصادفی)، سرو با `GET /media/<12hex.ext>`؛ مسیر ذخیره‌شده `media/…` و در فرانت با `imgSrc()` به آدرس API تبدیل می‌شود. SVG رد می‌شود (XSS). `backend/media/` در گیت نیست؛ هنگام استقرار پوشهٔ media روی هاست می‌ماند.
 - **وضعیت سفارش**: ۵ وضعیت (۴=لغو شده)، تاریخچهٔ `OrderEvent` (با توضیح برای مشتری)، `tracking` (کد رهگیری)، پیامک تغییر وضعیت با کد رهگیری/توضیح. لغو → موجودی و آمار فروش برمی‌گردد و سفارش لغوشده بازنمی‌شود. **ثبت سفارش موجودی را کم می‌کند** (کنترل اتمی؛ ناموجود/ناکافی رد می‌شود).
 - **درگاه پرداخت زیبال**: `pay_status` روی سفارش + مدل `Payment`. `GET /pay/config` (فعال‌بودن)، `POST /pay/start` (فقط حساب؛ ساخت تراکنش → ریدایرکت `gateway.zibal.ir/start/{trackId}`)، `POST /pay/verify` (تأیید مبلغ ریالی ×۱۰، idempotent؛ ۱۰۰/۲۰۱=موفق، ۲۰۲=لغو/ناموفق). بازگشت به فرانت `/pay` (صفحهٔ نتیجه + تلاش دوباره). فعال تا وقتی `ZIBAL_MERCHANT` خالی است خاموش (فرانت دکمه را نشان نمی‌دهد). مقدار `zibal` = سندباکس تست.
+
+## محصولات نمونه (دمو) در برابر فروش واقعی
+- **درج محصولات/محتوای نمونه فقط با `SEED_FAKE=1`**: `ensure_seed`/`seed_products`/`ensure_home` بدون این پرچم بی‌اثرند (پیش‌فرض تولید). کاتالوگ واقعی را مدیر از پنل می‌سازد.
+- **پاک‌سازی محصولات نمونه از دیتابیس**: پنل ادمین ← تب محصولات ← انتخاب گروهی (چک‌باکس ستون اول + «انتخاب همه») ← «حذف انتخاب‌شده‌ها»؛ یا روی هاست `python manage.py seed_shop --purge --yes`. سفارش‌های قبلی سالم می‌مانند (اقلام سفارش اسنپ‌شات `OrderItem` است؛ `Pack.product_id`/`TrustItem.product_id` هم بدون قید FK است).
+- **حالت سرور (`VITE_API_ENABLED=true`) هیچ محصول فیک در باندل ندارد**: `buildBase()` در `catalog.js` خالی برمی‌گردد؛ `syncCatalog` فهرست خالی سرور را «کاتالوگ خالی» می‌پذیرد (نه فالبک فیک). بیلد دمو (GitHub Pages، API خاموش) برای تست‌های UI به کاتالوگ نمونه نیاز دارد.
+- **پیش‌رندر**: در بیلد API-روشن (`build_host.sh`) هیچ صفحهٔ محصول پیش‌رندر نمی‌شود و sitemap بدون محصول است؛ فقط `/`, `/products`, `/track`.
 - SQLite محلی با `transaction_mode=IMMEDIATE` (پیامک پس‌زمینه هم‌زمان می‌نویسد؛ وگرنه «database is locked»).
 
 ## سئو و ترب

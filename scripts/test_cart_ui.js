@@ -8,6 +8,8 @@ const fa=s=>s.replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/
 (async()=>{
  const b=await chromium.launch();
  const ctx=await b.newContext({viewport:{width:1280,height:900}});
+ // درخواست‌های بیرونی (CDN تصاویر/اینماد…) مسدود شود تا networkidle به منابع خارجی گره نخورد
+ await ctx.route(/^https?:\/\/(?!localhost|127\.0\.0\.1)/, r => r.abort());
  await ctx.addInitScript(()=>{try{sessionStorage.setItem('asalat_lucky_seen','1')}catch(e){}});
  const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  const ls=()=>p.evaluate(()=>JSON.parse(localStorage.getItem('asalat_cart')||'[]'));

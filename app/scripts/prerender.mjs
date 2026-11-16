@@ -22,6 +22,7 @@ const FILE_ENV = loadEnv('production', ROOT, 'VITE_');          // app/.env هم
 const envOf = k => process.env[k] || FILE_ENV[k] || '';
 const SITE = (envOf('VITE_SITE_URL') || LEGACY).trim().replace(/\/+$/, '');
 const BASE = process.env.VITE_BASE || '/food-shop/';       // مثل vite.config.js فقط از متغیر شل (deploy_cpanel.sh آن را export می‌کند)
+const API_ON = (envOf('VITE_API_ENABLED') || '').toLowerCase() === 'true';   // بیلد هاست/تولید: کاتالوگ از سرور است
 const TODAY = new Date().toISOString().slice(0, 10);
 
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -39,13 +40,19 @@ try {
   ({ productSeo } = await server.ssrLoadModule('/src/data/seoProduct.js'));
   ({ priceOf, weightLabel } = await server.ssrLoadModule('/src/data/site.js'));
 } finally { await server.close(); }
+/* بیلد API-روشن (تولید): catalog.js با کاتالوگ خالی شروع می‌شود → هیچ صفحهٔ محصول فیک پیش‌رندر نمی‌شود
+   و sitemap فهرست محصول ندارد (محصولات واقعی پویا از سرور/ترب می‌آیند). بیلد دمو (API خاموش) با کاتالوگ نمونه پیش‌رندر می‌شود. */
 const list = products.filter(p => !p.hide);
+if (API_ON && list.length) {
+  console.warn(`[prerender] توجه: با VITE_API_ENABLED=true کاتالوگ باید خالی باشد؛ ${list.length} محصول نادیده گرفته می‌شود.`);
+  list.length = 0;
+}
 
 /* ---------- ساخت یک صفحه از روی قالب ---------- */
 function render({ route, title, description, ogType = 'website', image, robots = 'index, follow, max-image-preview:large', product, jsonld = [], body }) {
   const canonical = url(route);
   const full = title ? `${title} | خانم گل` : 'خانم گل | فروشگاه اینترنتی خشکبار، آجیل و محصولات طبیعی';
-  const img = image || list[0]?.img;
+  const img = image || defaultImg;
   const meta = [
     `<link rel="canonical" href="${esc(canonical)}">`,
     `<meta property="og:title" content="${esc(full)}">`,
@@ -79,6 +86,7 @@ function render({ route, title, description, ogType = 'website', image, robots =
 
 const nav = `<nav><a href="${BASE}">خانه</a> | <a href="${BASE}products/">فروشگاه</a> | <a href="${BASE}track/">پیگیری سفارش</a></nav>`;
 const productLi = p => `<li><a href="${BASE}product/${p.id}/">${esc(p.name)}</a> — ${money(priceOf(p, p.weights[Math.min(1, p.weights.length - 1)]))} تومان</li>`;
+const productLis = () => list.length ? `<ul>${list.map(productLi).join('')}</ul>` : '<p>محصولات به‌صورت زنده از فروشگاه بارگذاری می‌شوند؛ برای فهرست کامل به فروشگاه مراجعه کنید.</p>';
 
 function write(route, html) {
   const dir = path.join(DIST, route === '/' ? '' : route);
@@ -92,6 +100,7 @@ const imgOk = u => {   // تصویر محلی فقط وقتی واقعاً در 
   return !m || fs.existsSync(path.join(DIST, 'img', m[1]));
 };
 const seoImg = u => (imgOk(u) ? u : CDN + u.split('/img/').pop());
+const defaultImg = seoImg(list[0]?.img || CATS[0]?.feat?.img || '');   // og:image پیش‌فرض وقتی کاتالوگ خالی است
 
 const pages = [];   // برای sitemap
 
@@ -102,19 +111,20 @@ write('/', render({
   jsonld: [],
   body: `${nav}<h1>خانم گل | فروشگاه اینترنتی خشکبار و آجیل</h1><p>خرید آنلاین آجیل، پسته، بادام، گردو، خرما و زعفران با تضمین تازگی و ارسال سریع سراسری.</p>
 <h2>دسته‌بندی‌ها</h2><ul>${CATS.map(c => `<li><a href="${BASE}products/?cat=${c.id}">${esc(c.name)}</a></li>`).join('')}</ul>
-<h2>محصولات</h2><ul>${list.map(productLi).join('')}</ul>`,
+<h2>محصولات</h2>${productLis()}`,
 }));
 pages.push({ route: '/', pr: '1.0', cf: 'daily' });
 
 /* فروشگاه */
+const itemList = list.length ? [{
+  '@context': 'https://schema.org', '@type': 'ItemList',
+  itemListElement: list.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: url('/product/' + p.id), name: p.name })),
+}] : [];
 write('/products', render({
   route: '/products', title: 'فروشگاه محصولات',
   description: 'لیست کامل محصولات خانم گل؛ آجیل، خشکبار، زعفران و دمنوش با تضمین تازگی و مرجوعی رایگان',
-  jsonld: [{
-    '@context': 'https://schema.org', '@type': 'ItemList',
-    itemListElement: list.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: url('/product/' + p.id), name: p.name })),
-  }],
-  body: `${nav}<h1>فروشگاه محصولات خانم گل</h1><ul>${list.map(productLi).join('')}</ul>`,
+  jsonld: itemList,
+  body: `${nav}<h1>فروشگاه محصولات خانم گل</h1>${productLis()}`,
 }));
 pages.push({ route: '/products', pr: '0.9', cf: 'daily' });
 

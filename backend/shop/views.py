@@ -280,6 +280,37 @@ class ProductDetailView(APIView):
         return ok({'deleted': int(pk)})
 
 
+class AdminProductsBulkView(APIView):
+    """POST /admin/products/bulk — عملیات گروهی روی محصولات برای مدیر: {ids: […], action: 'delete'|'hide'|'show'}
+    برای پاک‌سازی محصولات نمونه و شروع فروش واقعی؛ اقلام سفارش‌های قبلی اسنپ‌شات است و آسیب نمی‌بیند."""
+    permission_classes = [IsShopAdmin]
+
+    def post(self, request):
+        ids = request.data.get('ids')
+        action = str(request.data.get('action') or 'delete')
+        if not isinstance(ids, list) or not ids or len(ids) > 500:
+            return fail('فهرست شناسهٔ محصولات را بفرستید (۱ تا ۵۰۰ مورد)', 400)
+        clean = []
+        for v in ids:
+            try:
+                clean.append(int(v))
+            except (TypeError, ValueError):
+                return fail('شناسهٔ محصول باید عدد باشد', 400)
+        qs = Product.objects.filter(id__in=clean)
+        found = qs.count()
+        if not found:
+            return fail('هیچ‌کدام از محصولات پیدا نشد', 404)
+        if action == 'delete':
+            n, _ = qs.delete()
+            msg = f'{n} محصول حذف شد'
+        elif action in ('hide', 'show'):
+            n = qs.update(hide=(action == 'hide'))
+            msg = f'{n} محصول پنهان شد' if action == 'hide' else f'{n} محصول دوباره نمایش داده می‌شود'
+        else:
+            return fail('عملیات نامعتبر (حذف/پنهان/نمایش)', 400)
+        return ok({'done': n, 'missing': len(clean) - found, 'action': action, 'msg': msg})
+
+
 # ---------------- سفارش‌ها ----------------
 
 class OrderCreateListView(APIView):

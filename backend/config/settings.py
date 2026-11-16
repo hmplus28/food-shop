@@ -307,6 +307,11 @@ ADMIN_USERNAME = env('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = env('ADMIN_PASSWORD', 'admin1234')
 ADMIN_PHONE = env('ADMIN_PHONE', '09120000000')
 
+# درج ۲۸ محصول نمونه + محتوای نمونهٔ صفحهٔ اصلی (بنر/پک/خرید اطمینان) — فقط برای توسعه و دمو.
+# در تولید خاموش بماند (پیش‌فرض) تا کاتالوگ واقعیِ مدیر بدون محصول فیک شروع شود؛
+# موقتی روشن کردن: SEED_FAKE=1 در .env یا دستور «python manage.py seed_shop --fake»
+SEED_FAKE = env_bool('SEED_FAKE', False)
+
 # ---------- درگاه پرداخت آنلاین زیبال ----------
 # کد پذیرندگی از panel.zibal.ir؛ مقدار 'zibal' = محیط آزمایشی (پرداخت تستی بدون پول واقعی)
 # تا وقتی ZIBAL_MERCHANT خالی باشد، فرانت بدون درگاه پرداخت کار می‌کند (فقط «ثبت سفارش»)

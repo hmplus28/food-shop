@@ -128,12 +128,20 @@
             <input v-model="pq" class="fld" type="search" placeholder="جستجوی محصول…" style="max-width:220px">
             <button class="btn btn-light btn-sm" @click="loadProducts">به‌روزرسانی ⟳</button>
           </div>
+          <div v-if="sel.length" class="bulk-bar">
+            <span>«{{ toFa(sel.length) }}» محصول انتخاب شده —</span>
+            <button class="btn btn-light btn-sm" @click="bulkAct('hide')">پنهان‌کردن انتخاب‌شده‌ها</button>
+            <button class="btn btn-light btn-sm" @click="bulkAct('show')">نمایش انتخاب‌شده‌ها</button>
+            <button class="btn btn-light btn-sm del" @click="bulkAct('delete')">حذف انتخاب‌شده‌ها</button>
+            <button class="btn btn-light btn-sm" @click="sel = []">لغو انتخاب</button>
+          </div>
           <div v-if="!shownProducts.length" class="up-empty"><svg class="icon"><use href="#i-box" /></svg><p>محصولی پیدا نشد.</p></div>
           <div v-else class="tbl-wrap">
             <table class="tbl">
-              <thead><tr><th>محصول</th><th>دسته</th><th>قیمت پایه (کیلو)</th><th>تخفیف</th><th>موجودی</th><th></th></tr></thead>
+              <thead><tr><th style="width:34px"><input type="checkbox" aria-label="انتخاب همه" :checked="allChecked" @change="toggleAll"></th><th>محصول</th><th>دسته</th><th>قیمت پایه (کیلو)</th><th>تخفیف</th><th>موجودی</th><th></th></tr></thead>
               <tbody>
                 <tr v-for="p in shownProducts" :key="p.id">
+                  <td><input type="checkbox" :aria-label="'انتخاب ' + p.name" :checked="sel.includes(p.id)" @change="toggleSel(p.id)"></td>
                   <td class="td-p"><img :src="p.img" alt=""><div><b>{{ p.name }}</b><span v-if="p.hide" class="badge-hide">پنهان</span><small>{{ p.grade }}</small></div></td>
                   <td>{{ catOf(p.cat)?.name || '—' }}</td>
                   <td>{{ money(p.price) }}</td>
@@ -395,7 +403,7 @@ import { auth, adminLogin, adminLogout } from '../stores/auth';
 import { STATUS } from '../stores/orders';
 import { toast } from '../stores/ui';
 import { adminCall, apiCall, adminStatsApi, ordersListApi, patchOrderStatusApi, adminSmsLogApi, adminSmsTestApi, adminUsersApi,
-  adminProductsApi, productCreateApi, productUpdateApi, productDeleteApi, syncCatalog } from '../services/api';
+  adminProductsApi, productCreateApi, productUpdateApi, productDeleteApi, productBulkApi, syncCatalog } from '../services/api';
 import { pruneCart } from '../stores/cart';
 import { loadShop } from '../stores/shop';
 
@@ -413,13 +421,33 @@ async function loadStats() { const s = await adminStatsApi(); if (s) stats.value
 /* ---------- محصولات (همیشه از سرور؛ شامل پنهان‌ها) ---------- */
 const plist = ref([]);
 const pq = ref('');
+const sel = ref([]);
 const shownProducts = computed(() => {
   const q = pq.value.trim();
   return q ? plist.value.filter(p => (p.name + ' ' + (catOf(p.cat)?.name || '')).includes(q)) : plist.value;
 });
+const allChecked = computed(() => shownProducts.value.length > 0 && shownProducts.value.every(p => sel.value.includes(p.id)));
+function toggleSel(id) {
+  const i = sel.value.indexOf(id);
+  if (i > -1) sel.value.splice(i, 1); else sel.value.push(id);
+}
+function toggleAll() {
+  if (allChecked.value) sel.value = [];
+  else sel.value = shownProducts.value.map(p => p.id);
+}
+async function bulkAct(action) {
+  const label = { delete: 'حذف همیشگی', hide: 'پنهان‌کردن', show: 'نمایش' }[action];
+  if (!window.confirm(`«${toFa(sel.value.length)}» محصول انتخاب‌شده — ${label}؟`)) return;
+  const r = await productBulkApi([...sel.value], action);
+  if (!r) return toast('عملیات گروهی روی سرور انجام نشد', 'err');
+  toast(`${r.msg || 'انجام شد'} ✅`, 'ok');
+  sel.value = [];
+  afterChange();
+}
 async function loadProducts() {
   const l = await adminProductsApi();
-  if (l) plist.value = l.filter(p => !(p.sec || []).includes('__virtual')); else toast('دریافت محصولات از سرور انجام نشد', 'err');
+  if (l) { plist.value = l.filter(p => !(p.sec || []).includes('__virtual')); sel.value = sel.value.filter(id => plist.value.some(p => p.id === id)); }
+  else toast('دریافت محصولات از سرور انجام نشد', 'err');
 }
 /* پس از هر تغییر، کاتالوگ عمومی و آمار هم تازه می‌شود */
 async function afterChange() { await Promise.all([loadProducts(), loadStats(), Promise.all([loadShop(), syncCatalog()]).then(pruneCart)]); }
@@ -636,6 +664,8 @@ watch(() => auth.isAdmin, v => { if (v) loadAll(); });
 .admin-tabs button.on{background:var(--brand-050);color:var(--brand-700);border-color:var(--brand-100)}
 .admin-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-sm);padding:14px}
 .admin-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.bulk-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:9px 12px;border:1px dashed var(--brand-200, #b8e0a0);background:var(--brand-050);border-radius:12px;font-size:.8rem;font-weight:700;color:var(--ink-2)}
+.bulk-bar .del{color:var(--red);border-color:#f7cdc9;background:#fff}
 .sync-chip{font-size:.72rem;padding:6px 12px;border-radius:999px;font-weight:700}
 .sync-chip.on{background:var(--brand-050);color:var(--brand-700);border:1px solid var(--brand-100)}
 .sync-chip.off{background:var(--bg-warm);color:var(--ink-3);border:1px solid var(--line)}
