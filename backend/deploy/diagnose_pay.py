@@ -27,6 +27,7 @@ os.chdir(ROOT)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 DOMAIN = (sys.argv[1] if len(sys.argv) > 1 else '').replace('https://', '').replace('http://', '').strip('/')
 
+UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'
 bad, hints = [], []
 CODES = {
     100: 'موفق', 102: 'merchant پیدا نشد (کد اشتباه)', 103: 'merchant غیرفعال یا قرارداد درگاه امضا نشده',
@@ -69,7 +70,7 @@ def post(url, body, timeout=15):
 
 
 def get(url, timeout=15, headers=None):
-    r = urllib.request.Request(url, headers=headers or {'User-Agent': 'diagnose-pay'})
+    r = urllib.request.Request(url, headers=headers or {'User-Agent': UA})
     try:
         with urllib.request.urlopen(r, timeout=timeout) as resp:
             return resp.status, resp.read().decode('utf-8', 'replace')
@@ -208,17 +209,17 @@ if DOMAIN:
     cands = [f'https://api.{DOMAIN}/api/v1', f'https://{DOMAIN}/api/v1']
     for api in cands:
         try:
-            st, body = get(api + '/pay/config', headers={'User-Agent': 'diagnose-pay', 'Origin': f'https://{DOMAIN}'})
+            st, body = get(api + '/pay/config', headers={'User-Agent': UA, 'Origin': f'https://{DOMAIN}', 'Accept': 'application/json'})
             en = None
             try:
                 en = json.loads(body).get('enabled')
             except Exception:                                               # noqa: BLE001
                 pass
-            line(st == 200, f'GET {api}/pay/config', f'HTTP {st} enabled={en}')
+            line(st == 200 and en is not None, f'GET {api}/pay/config', f'HTTP {st} enabled={en} | {body[:80].strip()!r}')
             if st == 200 and en is False:
                 line(False, 'API می‌گوید درگاه خاموش است', 'برنامهٔ پایتون هنوز مرچنت را نمی‌بیند')
-                hint('بعد از تغییر .env باید Setup Python App ← Restart بزنید (یا فایل tmp/restart.txt را touch کنید).')
-            if st == 200:
+                hint('برنامهٔ در حال اجرا مرچنت را ندارد: Setup Python App ← Restart بزنید (یا: touch ~/…/backend/tmp/restart.txt).')
+            if st == 200 and en is not None:
                 break
         except Exception as e:                                              # noqa: BLE001
             line(False, f'{api}/pay/config', repr(e)[:120])
