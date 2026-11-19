@@ -19,6 +19,7 @@
 #    --skip-back        فقط فرانت
 #    --fetch-assets     تصاویر محصولات و لوگوی دایناکد را مستقیم داخل <ریشهٔ وب>/img دانلود می‌کند (بدون Node؛ نیازمند دسترسی هاست به CDN)
 #    --check            فقط بررسی و عیب‌یابی (بدون استقرار)
+#    --check-pay        فقط عیب‌یابی درگاه پرداخت زیبال (مرچنت، callback، شبکه، درخواست آزمایشی، تراکنش‌ها)
 #    --insecure         بررسی با http به‌جای https (قبل از نصب SSL)
 #
 #  نسخهٔ آمادهٔ هاست روی ماشین محلی ساخته می‌شود:  bash scripts/build_host.sh
@@ -26,7 +27,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOMAIN="${KHANOMGOL_DOMAIN:-}"; API_BASE="${KHANOMGOL_API_BASE:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; FETCH=0; SCHEME=https
+DOMAIN="${KHANOMGOL_DOMAIN:-}"; API_BASE="${KHANOMGOL_API_BASE:-}"; WEBROOT=""; DO_FRONT=1; DO_BACK=1; CHECK_ONLY=0; CHECK_PAY=0; FETCH=0; SCHEME=https
 
 if [ -t 1 ]; then G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; B='\033[0;34m'; O='\033[0m'; else G=; Y=; R=; B=; O=; fi
 say(){ echo -e "${G}✔${O} $*"; }; info(){ echo -e "${B}ℹ${O} $*"; }; warn(){ echo -e "${Y}⚠${O} $*" >&2; }
@@ -43,6 +44,7 @@ while [ $# -gt 0 ]; do
     --skip-front) DO_FRONT=0; shift ;;
     --skip-back) DO_BACK=0; shift ;;
     --check) CHECK_ONLY=1; shift ;;
+    --check-pay) CHECK_PAY=1; shift ;;
     --fetch-assets) FETCH=1; shift ;;
     --insecure) SCHEME=http; shift ;;
     -h|--help) awk 'NR>1 { if ($0 ~ /^#/) { sub(/^# ? ?/, ""); print } else exit }' "$0"; exit 0 ;;
@@ -51,6 +53,15 @@ while [ $# -gt 0 ]; do
 done
 [ -n "$WEBROOT" ] && WEBROOT="${WEBROOT/#\~/$HOME}"
 [ -z "$WEBROOT" ] && WEBROOT="$HOME/public_html"
+
+if [ "$CHECK_PAY" -eq 1 ]; then
+  _R="$(cd "$(dirname "$0")" && pwd)"
+  VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | grep -F "$(basename "$_R")" | sort -r | head -n1)"
+  [ -z "$VPY" ] && VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | sort -r | head -n1)"
+  [ -z "$VPY" ] && VPY="python3"
+  ( cd "$_R/backend" && "$VPY" deploy/diagnose_pay.py "$DOMAIN" 2>&1 )
+  exit $?
+fi
 
 echo -e "\n${B}═══════════════════════════════════════════════════════════════${O}"
 echo -e "${B}  فروشگاه خانم گل — استقرار یکپارچه (فرانت + بک‌اند)${O}"
@@ -234,6 +245,8 @@ PYSEL
   [ -z "$VPY" ] && VPY="python3"
   echo "── diagnose.py ($VPY) ──"
   ( cd "$ROOT/backend" && "$VPY" deploy/diagnose.py "$DOMAIN" 2>&1 | tail -60 )
+  echo "── diagnose_pay.py (درگاه زیبال) ──"
+  ( cd "$ROOT/backend" && "$VPY" deploy/diagnose_pay.py "$DOMAIN" 2>&1 | tail -80 )
   for lf in "$ROOT/backend/logs/django-error.log" "$ROOT/stderr.log" "$ROOT/backend/stderr.log" "$HOME/logs/error_log" "$HOME/logs/$DOMAIN.error.log"; do
     if [ -s "$lf" ]; then
       NEW="$(tail -c +$(( ${LOGPOS[$lf]:-0} + 1 )) "$lf" 2>/dev/null | tail -n 40)"

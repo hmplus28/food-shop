@@ -75,6 +75,7 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.
 - داده‌های سئوی محصول فقط در `app/src/data/seoProduct.js` ساخته می‌شود (هم صفحهٔ محصول هم پیش‌رندر). JSON-LD امتیاز/نظر ساختگی نداشته باشد.
 - فید ترب: `GET|POST /api/v1/torob/products?page=N` (`backend/shop/views.py: TorobProductsView`)؛ قیمت باید با قیمت وزن پیش‌فرض صفحهٔ محصول یکی بماند.
+- عیب‌یابی درگاه روی هاست: `bash deploy.sh --domain دامنه --check-pay` (`backend/deploy/diagnose_pay.py`؛ بعد از هر deploy هم خودکار اجرا می‌شود).
 - لاگ ۵۰۰: `backend/logs/django-error.log`؛ راهنما: بخش «خطای ۵۰۰» در `deploy/GUIDE-CPANEL-FA.md`.
 
 ## قواعد مهم
