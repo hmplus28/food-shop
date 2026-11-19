@@ -93,6 +93,11 @@ class Order(models.Model):
                              on_delete=models.SET_NULL, related_name='orders')
     status = models.PositiveSmallIntegerField('وضعیت', default=0)
     tracking = models.CharField('کد رهگیری مرسوله', max_length=60, blank=True, default='')
+    # پرداخت: none = بدون پرداخت آنلاین (درگاه تنظیم نبوده) | unpaid | paid | failed
+    pay_status = models.CharField('وضعیت پرداخت', max_length=10, default='none', db_index=True)
+    pay_authority = models.CharField('شناسهٔ تراکنش درگاه', max_length=64, blank=True, default='')
+    pay_ref = models.CharField('کد پیگیری پرداخت', max_length=40, blank=True, default='')
+    paid_at = models.DateTimeField('زمان پرداخت', null=True, blank=True)
     sub = models.BigIntegerField('جمع کالاها', default=0)
     off = models.BigIntegerField('تخفیف', default=0)
     coupon = models.CharField('کد تخفیف', max_length=40, blank=True, default='')

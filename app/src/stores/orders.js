@@ -38,12 +38,20 @@ export async function placeOrderServer({ addr, shipType, note = '' }) {
   const order = {
     code: r.code, remoteCode: r.code, ts: Date.now(), items: cart.items.map(c => ({ ...c })),
     sub: r.sub, off: r.off, coupon: cart.coupon, shipCost: r.ship_cost, shipType, shipLabel: opt.label, shipDays: opt.days,
-    total: r.total, addr: body.addr, status: Number(r.status) || 0, fromServer: true, tracking: '', events: [],
+    total: r.total, addr: body.addr, status: Number(r.status) || 0, fromServer: true, tracking: '', events: [], pay_status: r.pay_required ? 'unpaid' : 'none',
   };
   orders.unshift(order);
   save();
   clearCart();
-  return { ok: true, order };
+  return { ok: true, order, payRequired: !!r.pay_required };
+}
+
+/* شروع پرداخت آنلاین: آدرس درگاه را می‌گیرد و کاربر را به آن می‌برد. خروجی فقط در صورت خطا برمی‌گردد */
+export async function startPayment(code) {
+  const r = await apiCall('/orders/' + encodeURIComponent(code) + '/pay', { method: 'POST' });
+  if (!r.ok || !r.payUrl) return { ok: false, msg: r.msg || 'اتصال به درگاه پرداخت برقرار نشد' };
+  window.location.href = r.payUrl;
+  return { ok: true };
 }
 
 export function placeOrder({ addr, shipType }) {
@@ -98,7 +106,7 @@ export async function trackOrder(q) {
       code: r.code, ts: r.ts, status: Number(r.status) || 0, total: r.total, shipLabel: r.ship_label, shipDays: r.ship_days,
       shipType: /پیک/.test(r.ship_label || '') ? 'peyk' : 'post',
       items: (r.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name })), addr: {},
-      tracking: r.tracking || '', events: r.events || [],
+      tracking: r.tracking || '', events: r.events || [], pay_status: r.pay_status || 'none',
     };
   }
   return findOrder(code);
@@ -147,7 +155,7 @@ export async function syncMineOrders() {
       || (r.client_code && (o.code === r.client_code || o.remoteCode === r.client_code)));
     if (local) {
       if (Number.isInteger(r.status) && local.status !== r.status) { local.status = r.status; save(); }
-      local.tracking = r.tracking || ''; local.events = r.events || [];
+      local.tracking = r.tracking || ''; local.events = r.events || []; local.pay_status = r.pay_status || 'none'; local.pay_ref = r.pay_ref || '';
       if (r.code && local.remoteCode !== r.code) { local.remoteCode = r.code; save(); }
       continue;
     }
@@ -157,7 +165,7 @@ export async function syncMineOrders() {
       sub: r.sub, off: r.off, coupon: r.coupon,
       shipCost: r.ship_cost, shipType: r.ship_type, shipLabel: r.ship_label, shipDays: r.ship_days,
       total: r.total, addr: r.addr || { phone: '' }, status: Number(r.status) || 0,
-      fromServer: true, tracking: r.tracking || '', events: r.events || [],
+      fromServer: true, tracking: r.tracking || '', events: r.events || [], pay_status: r.pay_status || 'none', pay_ref: r.pay_ref || '',
     });
     added++;
   }

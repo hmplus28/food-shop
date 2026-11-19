@@ -83,14 +83,24 @@
         </div>
         <div v-if="errMsg" class="id-note err">{{ errMsg }}</div>
         <button class="btn btn-brand btn-lg btn-block co-pay-btn" :disabled="paying" @click="pay">
-          <svg class="icon"><use href="#i-check" /></svg> {{ paying ? 'در حال ثبت سفارش… ⏳' : 'ثبت نهایی سفارش' }}
+          <svg class="icon"><use href="#i-check" /></svg> {{ paying ? (shop.payment.online ? 'در حال انتقال به درگاه… ⏳' : 'در حال ثبت سفارش… ⏳') : (shop.payment.online ? 'ثبت سفارش و پرداخت آنلاین' : 'ثبت نهایی سفارش') }}
         </button>
         <p class="pay-note"><svg class="icon"><use href="#i-shield" /></svg> با ثبت سفارش، <RouterLink to="/page/terms">قوانین فروشگاه</RouterLink> را می‌پذیرید.</p>
       </div>
 
       <!-- گام ۴: موفقیت -->
       <div v-else class="modal-body" style="background:#fff;border-radius:var(--r-md)">
-        <div class="co-success">
+        <div v-if="payFail" class="co-success">
+          <h3>سفارش ثبت شد، اما پرداخت آغاز نشد</h3>
+          <p style="font-size:.86rem;color:var(--ink-2)">{{ payFail }}</p>
+          <span class="ord-code">{{ placed?.code }}</span>
+          <p style="font-size:.82rem;color:var(--ink-2)">تا پرداخت، سفارش نهایی نمی‌شود و پس از مدتی خودکار لغو می‌گردد.</p>
+          <div class="co-actions">
+            <button class="btn btn-brand" :disabled="paying" @click="retryPay">تلاش دوباره برای پرداخت</button>
+            <RouterLink class="btn btn-light" :to="{ path: '/track', query: { code: placed?.code } }">پیگیری سفارش</RouterLink>
+          </div>
+        </div>
+        <div v-else class="co-success">
           <div class="ok-ic"><svg class="icon"><use href="#i-check" /></svg></div>
           <h3>سفارش شما با موفقیت ثبت شد! 🎉</h3>
           <p style="font-size:.86rem;color:var(--ink-2)">کد سفارش شما:</p>
@@ -113,10 +123,10 @@ import { toFa, toEn, money, weightLabel, priceOf } from '../data/site';
 import { prod } from '../data/catalog';
 import { useSeo } from '../composables/useSeo';
 import { cart, cartSub, couponVal, shipFree, applyCoupon } from '../stores/cart';
-import { placeOrder, placeOrderServer } from '../stores/orders';
+import { placeOrder, placeOrderServer, startPayment } from '../stores/orders';
 import { toast } from '../stores/ui';
 import { auth, login, register } from '../stores/auth';
-import { shipMethods } from '../stores/shop';
+import { shipMethods, shop } from '../stores/shop';
 import { apiState, phoneCheckApi } from '../services/api';
 
 useSeo({ title: 'تکمیل خرید', description: 'تکمیل اطلاعات ارسال و ثبت سفارش از فروشگاه خانم گل', path: '/checkout' });
@@ -126,6 +136,8 @@ const needAccount = () => apiState.enabled && !auth.user;     // ثبت سفار
 const step = ref(needAccount() ? 0 : 1);
 const paying = ref(false);
 const placed = ref(null);
+const payFail = ref('');
+async function retryPay() { payFail.value = ''; paying.value = true; const p = await startPayment(placed.value.code); if (!p.ok) { payFail.value = p.msg; paying.value = false; } }
 const errMsg = ref('');
 const shipType = ref('');
 const f = reactive({ name: '', phone: '', prov: 'تهران', city: '', addr: '', note: '' });
@@ -205,6 +217,15 @@ async function pay() {
         return toast(r.msg, 'err', 5200);
       }
       order = r.order;
+      if (r.payRequired) {                       // پرداخت آنلاین: سفارش ثبت شده؛ به درگاه می‌رویم
+        placed.value = order;
+        const p = await startPayment(order.code);
+        if (p.ok) { paying.value = true; return; }     // مرورگر در حال رفتن به درگاه است
+        payFail.value = p.msg;
+        step.value = 3;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
     } else {
       order = placeOrder({ addr: { ...f, phone: phoneEn.value }, shipType: shipType.value });
     }

@@ -13,6 +13,11 @@ run() { echo "── $1"; shift; "$@" 2>&1 | grep -E "✗|نتیجه|بدون خ
 
 fresh_backend; run "API بک‌اند" python3 scripts/test_backend_api.py
 fresh_backend; run "امنیت بک‌اند" python3 scripts/test_backend_security.py
+# پرداخت آنلاین با درگاه ساختگی (سرور با ZIBAL_MERCHANT/ZIBAL_BASE تستی)
+pkill -f "manage.py runserver" 2>/dev/null; sleep 1
+( cd backend && rm -rf db.sqlite3 logs && python manage.py migrate >/dev/null 2>&1 && python manage.py seed_shop >/dev/null 2>&1 \
+  && (ZIBAL_MERCHANT=test-merchant ZIBAL_BASE=http://127.0.0.1:8896 SHOP_URL=http://shop.test/ nohup python manage.py runserver 8787 >/dev/null 2>&1 &) ); sleep 3
+run "پرداخت آنلاین (زیبال ساختگی)" python3 scripts/test_payment.py
 run "locale ASCII (رگرسیون ۵۰۰ هاست)" python3 scripts/test_ascii_locale.py
 
 ( cd app && npm run build >/dev/null 2>&1 && (nohup npx vite preview --port 4173 >/dev/null 2>&1 &) ); sleep 3

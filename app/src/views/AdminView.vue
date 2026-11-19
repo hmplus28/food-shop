@@ -311,6 +311,11 @@
           <div v-if="detail.note" style="grid-column:1/-1"><b>توضیح مشتری:</b>{{ detail.note }}</div>
         </div>
         <div class="ord-mgmt">
+          <p v-if="detail.pay_status && detail.pay_status !== 'none'" style="margin-bottom:8px">
+            <b>پرداخت:</b> {{ { paid: 'پرداخت‌شده ✅', unpaid: 'در انتظار پرداخت ⏳', failed: 'ناموفق ❌' }[detail.pay_status] }}
+            <span v-if="detail.pay_ref"> — کد پیگیری: <b dir="ltr">{{ detail.pay_ref }}</b></span>
+            <button v-if="detail.pay_status !== 'paid' && detail.status !== 4" class="btn btn-light btn-sm" style="margin-inline-start:8px" @click="markPaid">ثبت پرداخت دستی</button>
+          </p>
           <h4 class="ad-h" style="margin-bottom:8px">مدیریت وضعیت سفارش</h4>
           <div class="ad-grid">
             <div class="fld w"><label>وضعیت</label>
@@ -463,7 +468,7 @@ const oq = ref('');
 function mapServerOrder(o) {
   return {
     code: o.code, ts: o.ts, status: o.status, sub: o.sub, off: o.off, coupon: o.coupon, note: o.note || '',
-    shipCost: o.ship_cost, shipLabel: o.ship_label, shipDays: o.ship_days, total: o.total, tracking: o.tracking || '', events: o.events || [],
+    shipCost: o.ship_cost, shipLabel: o.ship_label, shipDays: o.ship_days, total: o.total, tracking: o.tracking || '', events: o.events || [], pay_status: o.pay_status || 'none', pay_ref: o.pay_ref || '',
     items: (o.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name, cost: c.cost })),
     addr: { name: '', phone: '', prov: '', city: '', addr: '', ...(o.addr || {}) },
   };
@@ -475,6 +480,15 @@ async function loadOrders() {
 /* ---- مدیریت وضعیت سفارش (وضعیت + کد رهگیری + توضیح؛ تاریخچه و پیامک) ---- */
 const ost = reactive({ status: 0, note: '', tracking: '', busy: false });
 watch(detail, d => { if (d) { ost.status = d.status; ost.note = ''; ost.tracking = d.tracking || ''; } });
+async function markPaid() {
+  const d = detail.value;
+  if (!window.confirm('فقط اگر مبلغ را خارج از درگاه (کارت‌به‌کارت/نقدی) دریافت کرده‌اید پرداخت را دستی ثبت کنید. ادامه؟')) return;
+  const r = await apiCall('/orders/' + encodeURIComponent(d.code), { method: 'PATCH', body: { paid: true } });
+  if (!r.ok) return toast(r.msg || 'ثبت پرداخت انجام نشد', 'err');
+  toast('پرداخت ثبت شد ✅', 'ok');
+  await loadOrders(); loadStats();
+  detail.value = olist.value.find(x => x.code === d.code) || null;
+}
 async function saveOrderStatus() {
   const d = detail.value;
   if (ost.status === 4 && d.status !== 4 && !window.confirm('با لغو سفارش، موجودی کالاها برمی‌گردد و این کار قابل بازگشت نیست. ادامه می‌دهید؟')) return;

@@ -61,6 +61,12 @@ python3 backend/deploy/diagnose.py         # عیب‌یابی خطای ۵۰۰ �
 - **وضعیت سفارش**: ۵ وضعیت (۴=لغو شده)، تاریخچهٔ `OrderEvent` (با توضیح برای مشتری)، `tracking` (کد رهگیری)، پیامک تغییر وضعیت با کد رهگیری/توضیح. لغو → موجودی و آمار فروش برمی‌گردد و سفارش لغوشده بازنمی‌شود. **ثبت سفارش موجودی را کم می‌کند** (کنترل اتمی؛ ناموجود/ناکافی رد می‌شود).
 - SQLite محلی با `transaction_mode=IMMEDIATE` (پیامک پس‌زمینه هم‌زمان می‌نویسد؛ وگرنه «database is locked»).
 
+## پرداخت آنلاین (زیبال)
+- `shop/zibal.py` طبق مستندات رسمی IPG: `POST /v1/request` → `GET /start/<trackId>` (Referer همان دامنهٔ ثبت‌شده؛ مرورگر خودکار می‌فرستد) → بازگشت GET به `<SHOP_URL>/pay/callback?trackId&success&status&orderId` → `POST /v1/verify`. مبلغ ریال = تومان×۱۰.
+- فعال‌سازی: `ZIBAL_MERCHANT=<کد درگاه>` در `backend/.env` (تست: `zibal`)؛ خالی = پرداخت آنلاین خاموش و رفتار قبلی. `SHOP_URL` باید دامنهٔ ثبت‌شده در پنل زیبال باشد. اگر IP هاست محدود شده باشد باید در پنل زیبال ثبت شود (کد ۱۱۵).
+- سفارش با `pay_status=unpaid` ثبت می‌شود (موجودی رزرو؛ پیامک/آمار فقط بعد از پرداخت موفق؛ `PAY_EXPIRE_MINUTES` بعد از آن لغو و موجودی برمی‌گردد). نتیجه فقط با verify سرور (مبلغ و orderId چک می‌شود)؛ `success` مرورگر بی‌اعتبار است. مدیر می‌تواند پرداخت دستی ثبت کند (`PATCH {paid:true}`).
+- تست: `scripts/test_payment.py` (درگاه ساختگی روی 8896).
+
 ## سئو و ترب
 - `npm run build` = `vite build` + `app/scripts/prerender.mjs` (صفحات ایستای سئو، sitemap.xml، robots.txt). روی دامنهٔ واقعی: `VITE_BASE=/ VITE_SITE_URL=https://دامنه npm run build`.
 - داده‌های سئوی محصول فقط در `app/src/data/seoProduct.js` ساخته می‌شود (هم صفحهٔ محصول هم پیش‌رندر). JSON-LD امتیاز/نظر ساختگی نداشته باشد.

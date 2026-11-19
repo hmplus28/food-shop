@@ -138,7 +138,8 @@ class OrderOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['code', 'client_code', 'status', 'ts', 'items', 'sub', 'off', 'coupon',
-                  'ship_cost', 'ship_type', 'ship_label', 'ship_days', 'total', 'addr', 'note', 'tracking', 'events']
+                  'ship_cost', 'ship_type', 'ship_label', 'ship_days', 'total', 'addr', 'note', 'tracking', 'events',
+                  'pay_status', 'pay_ref', 'paid_at']
 
     def get_ts(self, obj):
         return int(obj.created_at.timestamp() * 1000)
@@ -159,7 +160,7 @@ class OrderTrackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['code', 'status', 'ts', 'total', 'ship_label', 'ship_days', 'items', 'tracking', 'events']
+        fields = ['code', 'status', 'ts', 'total', 'ship_label', 'ship_days', 'items', 'tracking', 'events', 'pay_status']
 
     def get_ts(self, obj):
         return int(obj.created_at.timestamp() * 1000)
@@ -169,3 +170,4 @@ class OrderStatusPatchSerializer(serializers.Serializer):
     status = serializers.IntegerField(min_value=0, max_value=4, required=False)
     note = serializers.CharField(max_length=200, required=False, allow_blank=True)
     tracking = serializers.CharField(max_length=60, required=False, allow_blank=True)
+    paid = serializers.BooleanField(required=False)

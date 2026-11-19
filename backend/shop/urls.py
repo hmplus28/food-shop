@@ -40,6 +40,8 @@ urlpatterns = [
     # سفارش‌ها (mine قبل از <code> باشد)
     path('orders', views.OrderCreateListView.as_view()),
     path('orders/mine', views.MyOrdersView.as_view()),
+    path('orders/<str:code>/pay', views.OrderPayView.as_view()),
+    path('orders/<str:code>/verify', views.OrderVerifyView.as_view()),
     path('orders/<str:code>', views.OrderTrackPatchView.as_view()),
 
     # مدیر فروشگاه

@@ -26,6 +26,7 @@ from .seed import ensure_seed
 from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
                           OrderStatusPatchSerializer, OrderTrackSerializer, ProductSerializer, ProductWriteSerializer,
                           RegisterSerializer)
+from . import zibal
 from .sms import notify_new_order, notify_status_change, normalize_phone, provider_status, send_sms
 
 API_VERSION = '1.0.0'
@@ -60,6 +61,10 @@ class AuthThrottle(AnonRateThrottle):
 
 class CouponThrottle(AnonRateThrottle):
     scope = 'coupon'
+
+
+class PayThrottle(AnonRateThrottle):
+    scope = 'pay'
 
 
 # ---------------- سلامت سرویس ----------------
@@ -319,6 +324,8 @@ class OrderCreateListView(APIView):
         client_code = (d.get('client_code') or request.data.get('code') or '').strip().upper()
         user = request.user
 
+        _expire_unpaid()                               # پرداخت‌نشده‌های قدیمی لغو و موجودی‌شان آزاد شود
+        pay_online = zibal.enabled()
         with transaction.atomic():
             # موجودی: قفل ردیف محصولات، بررسی و کم‌کردن (جلوگیری از فروش بیش از موجودی)
             need = {}
@@ -335,7 +342,8 @@ class OrderCreateListView(APIView):
             order = Order.objects.create(
                 code=code, client_code=client_code, user=user, status=0,
                 a_name=addr['name'], a_phone=addr['phone'], a_prov=addr['prov'],
-                a_city=addr['city'], a_addr=addr['addr'], note=d.get('note', ''), **money)
+                a_city=addr['city'], a_addr=addr['addr'], note=d.get('note', ''),
+                pay_status='unpaid' if pay_online else 'none', **money)
             OrderEvent.objects.create(order=order, status=0, by=request.user.phone)
             if money['coupon']:
                 Coupon.objects.filter(code=money['coupon']).update(used=F('used') + 1)   # شمارندهٔ استفاده
@@ -344,8 +352,9 @@ class OrderCreateListView(APIView):
                 order.items.create(pid=p.id, name=p.name, img=p.img, w=w, qty=qty,
                                    unit_price=unit, cost=unit * qty)
 
-        notify_new_order(order)          # پیامک مشتری + مدیر (پس‌زمینه)
-        return ok({'code': order.code, 'status': order.status, 'total': order.total,
+        if not pay_online:
+            notify_new_order(order)      # پیامک مشتری + مدیر (با درگاه، بعد از تأیید پرداخت ارسال می‌شود)
+        return ok({'code': order.code, 'status': order.status, 'total': order.total, 'pay_required': pay_online,
                    'sub': order.sub, 'off': order.off, 'ship_cost': order.ship_cost})
 
     @staticmethod
@@ -363,6 +372,9 @@ class OrderCreateListView(APIView):
             if st not in ('0', '1', '2', '3', '4'):
                 return fail('وضعیت باید عددی ۰ تا ۴ باشد', 400)
             qs = qs.filter(status=int(st))
+        pay = request.query_params.get('pay')
+        if pay in ('paid', 'unpaid', 'failed', 'none'):
+            qs = qs.filter(pay_status=pay)
         phone = normalize_phone(request.query_params.get('phone', ''))
         if phone:
             qs = qs.filter(a_phone=phone)
@@ -421,7 +433,8 @@ class OrderTrackPatchView(APIView):
         tracking = d['tracking'].strip() if 'tracking' in d else o.tracking
         if o.status == CANCELLED and new_status != CANCELLED:
             return fail('سفارش لغوشده قابل بازگشایی نیست', 400)
-        if new_status == o.status and not note and tracking == o.tracking:
+        mark_paid = bool(d.get('paid')) and o.pay_status != 'paid'
+        if new_status == o.status and not note and tracking == o.tracking and not mark_paid:
             return fail('تغییری ارسال نشد', 400)
         with transaction.atomic():
             if new_status == CANCELLED and o.status != CANCELLED:
@@ -431,6 +444,10 @@ class OrderTrackPatchView(APIView):
             changed = new_status != o.status
             o.status, o.tracking = new_status, tracking
             o.save(update_fields=['status', 'tracking', 'updated_at'])
+            if mark_paid:
+                o.pay_status, o.pay_ref, o.paid_at = 'paid', o.pay_ref or 'manual', timezone.now()
+                o.save(update_fields=['pay_status', 'pay_ref', 'paid_at'])
+                OrderEvent.objects.create(order=o, status=new_status, note='پرداخت توسط مدیر ثبت شد', by=request.user.phone)
             OrderEvent.objects.create(order=o, status=new_status, note=note[:200], by=request.user.phone)
         if changed or note:
             notify_status_change(o, o.status, note)
@@ -506,7 +523,7 @@ def _dashboard_extras():
     today = timezone.localdate()
     since = today - timezone.timedelta(days=6)
     rows = {r['d']: r for r in Order.objects.filter(created_at__date__gte=since)
-            .exclude(status=CANCELLED).annotate(d=TruncDate('created_at')).values('d').annotate(n=Count('id'), s=Sum('total'))}
+            .exclude(status=CANCELLED).exclude(pay_status__in=UNPAID).annotate(d=TruncDate('created_at')).values('d').annotate(n=Count('id'), s=Sum('total'))}
     daily = []
     for i in range(7):
         d = since + timezone.timedelta(days=i)
@@ -527,7 +544,7 @@ class AdminStatsView(APIView):
 
     def get(self, request):
         orders = Order.objects.all()
-        revenue = sum(orders.exclude(status=CANCELLED).values_list('total', flat=True) or [0])
+        revenue = sum(orders.exclude(status=CANCELLED).exclude(pay_status__in=UNPAID).values_list('total', flat=True) or [0])
         st = provider_status()
         last_sms = SmsLog.objects.first()
         return ok({
@@ -558,7 +575,7 @@ class AdminUsersView(APIView):
             limit = max(1, min(500, int(request.query_params.get('limit') or 200)))
         except ValueError:
             limit = 200
-        stats = {r['a_phone']: r for r in Order.objects.exclude(status=CANCELLED).values('a_phone').annotate(n=Count('id'), total=Sum('total'))}
+        stats = {r['a_phone']: r for r in Order.objects.exclude(status=CANCELLED).exclude(pay_status__in=UNPAID).values('a_phone').annotate(n=Count('id'), total=Sum('total'))}
         rows = [_user_row(u, stats.get(u.phone, {})) for u in qs[:limit]]
         return ok({'users': rows, 'total': ShopUser.objects.count()})
 
@@ -777,7 +794,7 @@ class SiteView(APIView):
     def get(self, request):
         lucky = _setting('lucky', DEFAULT_LUCKY)
         ensure_seed()
-        return ok({'info': _setting('info', DEFAULT_INFO), 'shipping': _shipping_public(), **_home_public(),
+        return ok({'info': _setting('info', DEFAULT_INFO), 'shipping': _shipping_public(), 'payment': {'online': zibal.enabled(), 'gateway': 'zibal'}, **_home_public(),
                    'pages': [_page_brief(p) for p in Page.objects.filter(active=True)],
                    'lucky': {'enabled': bool(lucky.get('enabled')), 'cooldownHours': lucky.get('cooldownHours')}})
 
@@ -1642,3 +1659,95 @@ class AdminTrustDetailView(APIView):
         drop_virtual(Product, t.product_id)
         t.delete()
         return ok({'deleted': True})
+
+
+# ================= پرداخت آنلاین (زیبال) =================
+UNPAID = ('unpaid', 'failed')
+
+
+def _release_stock(order):
+    for it in order.items.all():
+        Product.objects.filter(id=it.pid).update(stock=F('stock') + it.qty)
+        Product.objects.filter(id=it.pid, sold__gte=it.qty).update(sold=F('sold') - it.qty)
+
+
+def _expire_unpaid():
+    """سفارش‌های پرداخت‌نشدهٔ قدیمی خودکار لغو می‌شوند و موجودی کالاها آزاد می‌شود (موجودی بی‌دلیل قفل نماند)"""
+    limit = timezone.now() - timezone.timedelta(minutes=settings.PAY_EXPIRE_MINUTES)
+    for o in Order.objects.filter(pay_status__in=UNPAID, created_at__lt=limit).exclude(status=CANCELLED)[:50]:
+        with transaction.atomic():
+            fresh = Order.objects.select_for_update().get(pk=o.pk)
+            if fresh.status == CANCELLED or fresh.pay_status not in UNPAID:
+                continue
+            _release_stock(fresh)
+            fresh.status = CANCELLED
+            fresh.save(update_fields=['status', 'updated_at'])
+            OrderEvent.objects.create(order=fresh, status=CANCELLED, note='پرداخت انجام نشد؛ سفارش خودکار لغو شد', by='system')
+
+
+def _own_order(request, code):
+    o = Order.objects.filter(code=(code or '').strip().upper()).first()
+    if not o or o.user_id != request.user.id:
+        return None
+    return o
+
+
+class OrderPayView(APIView):
+    """POST /orders/<code>/pay — شروع (یا تکرار) پرداخت آنلاین؛ آدرس درگاه را برمی‌گرداند. فقط صاحب سفارش."""
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [PayThrottle]
+
+    def post(self, request, code):
+        if not zibal.enabled():
+            return fail('پرداخت آنلاین فعال نیست', 400)
+        o = _own_order(request, code)
+        if not o:
+            return fail('سفارش پیدا نشد', 404)
+        if o.status == CANCELLED:
+            return fail('این سفارش لغو شده است؛ سفارش جدید ثبت کنید', 400)
+        if o.pay_status == 'paid':
+            return fail('این سفارش قبلاً پرداخت شده است', 400)
+        if o.pay_status == 'none':
+            return fail('این سفارش نیاز به پرداخت آنلاین ندارد', 400)
+        callback = f'{settings.SHOP_URL.rstrip("/")}/pay/callback'
+        track, err = zibal.request_payment(o.total, callback, f'سفارش {o.code} — {settings.SHOP_NAME}', o.code, request.user.phone)
+        if err:
+            return fail(err)
+        o.pay_authority, o.pay_status = track, 'unpaid'
+        o.save(update_fields=['pay_authority', 'pay_status', 'updated_at'])
+        return ok({'payUrl': zibal.start_url(track), 'code': o.code})
+
+
+class OrderVerifyView(APIView):
+    """POST /orders/<code>/verify {trackId} — پس از بازگشت از درگاه. نتیجه را فقط verify سرور به سرور تعیین می‌کند
+    (success/status مرورگر نادیده گرفته می‌شود)؛ idempotent: چندبار صدا زدن اثر اضافه ندارد."""
+    permission_classes = [AllowAny]
+    throttle_classes = [PayThrottle]
+
+    def post(self, request, code):
+        o = Order.objects.filter(code=(code or '').strip().upper()).first()
+        if not o or o.pay_status == 'none':
+            return fail('سفارش پیدا نشد', 404)
+        track = str(request.data.get('trackId') or '').strip()
+        if o.pay_status == 'paid':
+            return ok({'code': o.code, 'pay_status': 'paid', 'ref': o.pay_ref, 'total': o.total})
+        if not track or track != o.pay_authority:
+            return fail('شناسهٔ تراکنش با این سفارش مطابقت ندارد', 400)
+        good, ref, err = zibal.verify(o.total, track, o.code)
+        with transaction.atomic():
+            fresh = Order.objects.select_for_update().get(pk=o.pk)
+            if fresh.pay_status == 'paid':                           # هم‌زمان توسط درخواست دیگری تأیید شد
+                return ok({'code': fresh.code, 'pay_status': 'paid', 'ref': fresh.pay_ref, 'total': fresh.total})
+            if not good:
+                fresh.pay_status = 'failed'
+                fresh.save(update_fields=['pay_status', 'updated_at'])
+                return Response({'ok': False, 'msg': err or 'پرداخت تأیید نشد', 'pay_status': 'failed', 'code': fresh.code})
+            fresh.pay_status, fresh.pay_ref, fresh.paid_at = 'paid', ref, timezone.now()
+            fresh.save(update_fields=['pay_status', 'pay_ref', 'paid_at', 'updated_at'])
+            late = fresh.status == CANCELLED
+            OrderEvent.objects.create(order=fresh, status=fresh.status, by='gateway',
+                                      note=('پرداخت پس از لغو سفارش دریافت شد؛ نیاز به بررسی/بازگشت وجه' if late
+                                            else f'پرداخت آنلاین موفق — کد پیگیری {ref}')[:200])
+        if not late:
+            notify_new_order(fresh)                                  # پیامک مشتری + مدیر فقط بعد از پرداخت موفق
+        return ok({'code': fresh.code, 'pay_status': 'paid', 'ref': ref, 'total': fresh.total, 'late': late})

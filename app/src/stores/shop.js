@@ -44,6 +44,7 @@ export const shop = reactive({
   info: { ...DEFAULT_INFO, ...(cached.info || {}) },
   shipping: cached.shipping || { methods: SHIP_OPTIONS.map(o => ({ ...o })), freeFrom: FREE_SHIP, freeEnabled: true },
   pages: cached.pages || [],
+  payment: cached.payment || { online: false },
   lucky: cached.lucky || { enabled: true, cooldownHours: 24 },
   home: { ...DEFAULT_HOME, ...(cached.home || {}) },
   banners: cached.banners || DEFAULT_BANNERS,
@@ -59,13 +60,14 @@ export async function loadShop() {
   if (r.shipping && Array.isArray(r.shipping.methods) && r.shipping.methods.length) shop.shipping = r.shipping;
   shop.pages = Array.isArray(r.pages) ? r.pages : [];
   if (r.lucky) shop.lucky = r.lucky;
+  shop.payment = r.payment || { online: false };
   if (r.home) shop.home = { ...DEFAULT_HOME, ...r.home };
   if (Array.isArray(r.banners)) shop.banners = r.banners;
   if (Array.isArray(r.packs)) shop.packs = r.packs;
   if (Array.isArray(r.trust)) shop.trust = r.trust;
   shop.loaded = true;
   setVirtualProducts(virtualFrom(shop.packs, shop.trust, localImg));   // قابل‌خرید شدن پک/اعتماد در سبد
-  LS.set('shopCache', { info: shop.info, shipping: shop.shipping, pages: shop.pages, lucky: shop.lucky, home: shop.home, banners: shop.banners, packs: shop.packs, trust: shop.trust });
+  LS.set('shopCache', { info: shop.info, shipping: shop.shipping, pages: shop.pages, lucky: shop.lucky, payment: shop.payment, home: shop.home, banners: shop.banners, packs: shop.packs, trust: shop.trust });
   return true;
 }
 

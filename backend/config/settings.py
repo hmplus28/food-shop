@@ -184,6 +184,7 @@ REST_FRAMEWORK = {
         'auth': '60/hour',
         'coupon': '200/hour',
         'consult': '10/hour',
+        'pay': '60/hour',
     },
 }
 
@@ -285,6 +286,13 @@ if _csrf:
 SHOP_NAME = env('SHOP_NAME', 'فروشگاه خانم گل')
 SHOP_URL = env('SHOP_URL', 'https://hmplus28.github.io/food-shop/')
 SHOP_NOTIFY_PHONE = env('SHOP_NOTIFY_PHONE')
+
+# ---------- درگاه پرداخت زیبال ----------
+# با تنظیم ZIBAL_MERCHANT، ثبت سفارش به درگاه می‌رود و فقط پس از «تأیید پرداخت» نهایی می‌شود.
+# برای تست آزمایشی (بدون پول واقعی) مقدار merchant را «zibal» بگذارید.
+ZIBAL_MERCHANT = env('ZIBAL_MERCHANT').strip()
+ZIBAL_BASE = env('ZIBAL_BASE')                              # فقط برای تست محلی (درگاه ساختگی)
+PAY_EXPIRE_MINUTES = env_int('PAY_EXPIRE_MINUTES', 60)    # سفارش پرداخت‌نشده پس از این مدت خودکار لغو و موجودی برمی‌گردد
 # تصاویر محصولات روی خود هاست در {SHOP_URL}img/ هستند؟ (deploy.sh بعد از دانلود تصاویر true می‌کند)
 LOCAL_IMAGES = env_bool('LOCAL_IMAGES', False)
 SMS_ORDER_TO_CUSTOMER = env_bool('SMS_ORDER_TO_CUSTOMER', True)

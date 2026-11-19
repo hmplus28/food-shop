@@ -176,6 +176,8 @@ GHASEDAK_LINE|
 MELIPAYAMAK_USERNAME|
 MELIPAYAMAK_PASSWORD|
 MELIPAYAMAK_FROM|
+ZIBAL_MERCHANT|
+PAY_EXPIRE_MINUTES|60
 APPEOF
     if ! grep -Eq "^[[:space:]]*(export[[:space:]]+)?SECRET_KEY=" "$ENV_FILE"; then
         printf '\n# کلید امنیتی توکن‌ها (تولیدشده توسط deploy/deploy_cpanel.sh — تغییر ندهید)\nSECRET_KEY=%s\n' "$(random_key)" >> "$ENV_FILE"
@@ -258,6 +260,10 @@ GHASEDAK_LINE=
 MELIPAYAMAK_USERNAME=
 MELIPAYAMAK_PASSWORD=
 MELIPAYAMAK_FROM=
+
+# ---------- درگاه پرداخت زیبال (خالی = پرداخت آنلاین خاموش؛ تست: zibal) ----------
+ZIBAL_MERCHANT=
+PAY_EXPIRE_MINUTES=60
 
 
 # ---------- زیرمسیر Passenger (Application URL = /food-shop) ----------
