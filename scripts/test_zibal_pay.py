@@ -39,11 +39,11 @@ Order.objects.filter(client_code='ZIBAL-TEST').delete()
 
 c = Client()
 
-# ---------- /pay/config ----------
-r = c.get('/api/v1/pay/config')
-check('pay/config 200', r.status_code == 200)
-check('pay/config enabled', r.json().get('enabled') is True)
-check('pay/config gateway=zibal', r.json().get('gateway') == 'zibal')
+# ---------- /pay/status ----------
+r = c.get('/api/v1/pay/status')
+check('pay/status 200', r.status_code == 200)
+check('pay/status enabled', r.json().get('enabled') is True)
+check('pay/status gateway=zibal', r.json().get('gateway') == 'zibal')
 
 # ---------- ثبت سفارش (مثل فرانت) ----------
 r = c.post('/api/v1/auth/login', {'phone': '09120000001', 'password': 'test1234'},

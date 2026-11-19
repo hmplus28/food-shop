@@ -209,20 +209,20 @@ if DOMAIN:
     cands = [f'https://api.{DOMAIN}/api/v1', f'https://{DOMAIN}/api/v1']
     for api in cands:
         try:
-            st, body = get(api + '/pay/config', headers={'User-Agent': UA, 'Origin': f'https://{DOMAIN}', 'Accept': 'application/json'})
+            st, body = get(api + '/pay/status', headers={'User-Agent': UA, 'Origin': f'https://{DOMAIN}', 'Accept': 'application/json'})
             en = None
             try:
                 en = json.loads(body).get('enabled')
             except Exception:                                               # noqa: BLE001
                 pass
-            line(st == 200 and en is not None, f'GET {api}/pay/config', f'HTTP {st} enabled={en} | {body[:80].strip()!r}')
+            line(st == 200 and en is not None, f'GET {api}/pay/status', f'HTTP {st} enabled={en} | {body[:80].strip()!r}')
             if st == 200 and en is False:
                 line(False, 'API می‌گوید درگاه خاموش است', 'برنامهٔ پایتون هنوز مرچنت را نمی‌بیند')
                 hint('برنامهٔ در حال اجرا مرچنت را ندارد: Setup Python App ← Restart بزنید (یا: touch ~/…/backend/tmp/restart.txt).')
             if st == 200 and en is not None:
                 break
         except Exception as e:                                              # noqa: BLE001
-            line(False, f'{api}/pay/config', repr(e)[:120])
+            line(False, f'{api}/pay/status', repr(e)[:120])
 else:
     print('  (دامنه داده نشد؛ مثال: python deploy/diagnose_pay.py khanomgol8.ir)')
 
@@ -233,7 +233,7 @@ if DOMAIN:
         st, html = get(f'https://{DOMAIN}/')
         js = re.findall(r'src="(/assets/[^"]+\.js)"', html)
         print('  index →', js[:1])
-        found = {'pay/config': False, 'pay/start': False}
+        found = {'pay/status': False, 'pay/start': False}
         for u in (re.findall(r'(?:src|href)="(/assets/[^"]+\.js)"', html) + re.findall(r'(/assets/[A-Za-z]*Checkout[^"\']*\.js)', html))[:6]:
             try:
                 code = get(f'https://{DOMAIN}{u}')[1]
@@ -250,8 +250,8 @@ if DOMAIN:
                         found[k] = found[k] or (k in code)
                 except OSError:
                     pass
-        line(found['pay/config'] and found['pay/start'], 'فرانت مستقرشده کد پرداخت زیبال را دارد', str(found))
-        if not (found['pay/config'] and found['pay/start']):
+        line(found['pay/status'] and found['pay/start'], 'فرانت مستقرشده کد پرداخت زیبال را دارد', str(found))
+        if not (found['pay/status'] and found['pay/start']):
             hint('فرانت روی هاست قدیمی/کش است: git pull ، سپس bash deploy.sh --domain دامنه و در مرورگر Ctrl+Shift+R (یا حذف کش Cloudflare/مرورگر).')
         st, rb = get(f'https://{DOMAIN}/pay')
         line(st == 200, 'مسیر /pay (صفحهٔ بازگشت از درگاه) در SPA باز می‌شود', f'HTTP {st}')

@@ -22,6 +22,7 @@ urlpatterns = [
     path('coupons/check', views.CouponCheckView.as_view()),
 
     # درگاه پرداخت آنلاین زیبال (config/start عمومی با محدودیت نرخ؛ start فقط با حساب)
+    path('pay/status', views.PayConfigView.as_view()),    # نام «config» در آدرس توسط فایروال هاست ۴۰۳ می‌شود
     path('pay/config', views.PayConfigView.as_view()),
     path('pay/start', views.PayStartView.as_view()),
     path('pay/verify', views.PayVerifyView.as_view()),

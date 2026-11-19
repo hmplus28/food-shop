@@ -358,11 +358,11 @@ export const phoneCheckApi = phone => apiCall('/auth/phone-check', { method: 'PO
 export const createOrderStrict = body => apiCall('/orders', { method: 'POST', body });
 
 /* ---- درگاه پرداخت آنلاین زیبال (فقط با بک‌اند فعال) ----
- * GET  {BASE}/pay/config              → {ok, enabled}          (فعال‌بودن درگاه)
+ * GET  {BASE}/pay/status              → {ok, enabled}          (فعال‌بودن درگاه)
  * POST {BASE}/pay/start   {code}      → {ok, trackId, payUrl}  (ساخت تراکنش؛ فقط حساب کاربری)
  * POST {BASE}/pay/verify  {code,trackId} → {ok, state, order}  (تأیید پس از بازگشت از درگاه)
  */
-export const payConfigApi = () => apiCall('/pay/config');
+export const payConfigApi = () => apiCall('/pay/status');
 export const payStartApi = code => apiCall('/pay/start', { method: 'POST', body: { code } });
 export const payVerifyApi = (code, trackId) => apiCall('/pay/verify', { method: 'POST', body: { code, trackId } });
 
