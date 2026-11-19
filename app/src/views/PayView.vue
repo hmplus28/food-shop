@@ -31,7 +31,7 @@
           <h3>پرداخت انجام نشد</h3>
           <div class="id-note err" style="text-align:right">{{ failMsg }}</div>
           <template v-if="orderCode">
-            <p style="font-size:.84rem;color:var(--ink-2)">نگران نباشید؛ سفارش <b>{{ orderCode }}</b> ثبت است و می‌توانید دوباره پرداخت کنید:</p>
+            <p style="font-size:.84rem;color:var(--ink-2)">سفارش <b>{{ orderCode }}</b> هنوز <b>پرداخت‌نشده</b> است و تا پرداخت، نهایی و ارسال نمی‌شود. می‌توانید دوباره پرداخت کنید:</p>
             <button class="btn btn-brand btn-lg btn-block co-pay-btn" :disabled="retrying" @click="retryPay">
               {{ retrying ? 'در حال اتصال به درگاه… ⏳' : 'تلاش دوباره برای پرداخت 💳' }}
             </button>

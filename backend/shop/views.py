@@ -384,8 +384,9 @@ class OrderCreateListView(APIView):
                 order.items.create(pid=p.id, name=p.name, img=p.img, w=w, qty=qty,
                                    unit_price=unit, cost=unit * qty)
 
-        notify_new_order(order)          # پیامک مشتری + مدیر (پس‌زمینه)
-        return ok({'code': order.code, 'status': order.status, 'total': order.total,
+        if not settings.ZIBAL_MERCHANT:   # با درگاه فعال، پیامک «ثبت سفارش» فقط بعد از پرداخت موفق می‌رود (notify_payment_paid)
+            notify_new_order(order)      # پیامک مشتری + مدیر (پس‌زمینه)
+        return ok({'code': order.code, 'status': order.status, 'total': order.total, 'pay_status': order.pay_status,
                    'sub': order.sub, 'off': order.off, 'ship_cost': order.ship_cost})
 
     @staticmethod

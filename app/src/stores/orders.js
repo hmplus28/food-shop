@@ -98,7 +98,7 @@ export async function trackOrder(q) {
       code: r.code, ts: r.ts, status: Number(r.status) || 0, total: r.total, shipLabel: r.ship_label, shipDays: r.ship_days,
       shipType: /پیک/.test(r.ship_label || '') ? 'peyk' : 'post',
       items: (r.items || []).map(c => ({ pid: c.pid, w: c.w, qty: c.qty, pname: c.name })), addr: {},
-      tracking: r.tracking || '', events: r.events || [],
+      tracking: r.tracking || '', events: r.events || [], pay_status: r.pay_status || 'none',
     };
   }
   return findOrder(code);
@@ -147,7 +147,7 @@ export async function syncMineOrders() {
       || (r.client_code && (o.code === r.client_code || o.remoteCode === r.client_code)));
     if (local) {
       if (Number.isInteger(r.status) && local.status !== r.status) { local.status = r.status; save(); }
-      local.tracking = r.tracking || ''; local.events = r.events || [];
+      local.tracking = r.tracking || ''; local.events = r.events || []; local.pay_status = r.pay_status || 'none';
       if (r.code && local.remoteCode !== r.code) { local.remoteCode = r.code; save(); }
       continue;
     }
@@ -157,7 +157,7 @@ export async function syncMineOrders() {
       sub: r.sub, off: r.off, coupon: r.coupon,
       shipCost: r.ship_cost, shipType: r.ship_type, shipLabel: r.ship_label, shipDays: r.ship_days,
       total: r.total, addr: r.addr || { phone: '' }, status: Number(r.status) || 0,
-      fromServer: true, tracking: r.tracking || '', events: r.events || [],
+      fromServer: true, tracking: r.tracking || '', events: r.events || [], pay_status: r.pay_status || 'none',
     });
     added++;
   }
