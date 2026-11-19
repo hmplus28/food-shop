@@ -66,7 +66,7 @@
               <div v-for="p in favList" :key="p.id" class="fav-row">
                 <img :src="p.img" :alt="p.name">
                 <div><b>{{ p.name }}</b><span>{{ money(priceOf(p, p.weights[1])) }} تومان</span></div>
-                <div class="fav-acts"><button class="btn btn-brand btn-sm" @click="addToCart(p.id, p.weights[1], 1, true)">خرید</button></div>
+                <div class="fav-acts"><button class="btn btn-brand btn-sm" @click="addToCart(p.id, p.weights[1], 1)">خرید</button></div>
               </div>
             </template>
             <div v-else class="up-empty"><svg class="icon"><use href="#i-heart" /></svg><p>لیست علاقه‌مندی‌های شما خالی است.</p></div>

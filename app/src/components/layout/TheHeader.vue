@@ -99,7 +99,7 @@ import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { CATS, visibleProducts } from '../../data/catalog';
 import { priceOf, money, toFa } from '../../data/site';
-import { ui, openNav, openCart, openModal, toast } from '../../stores/ui';
+import { ui, openNav, openCart, openModal } from '../../stores/ui';
 import { cartCount } from '../../stores/cart';
 import { favCount } from '../../stores/fav';
 import { auth } from '../../stores/auth';
@@ -151,7 +151,7 @@ async function goSearchM() {
   if (!same) await router.push({ path: '/products', query: s ? { q: s } : {} });
   scrollToResults();
 }
-function quickAdd(p) { addToCart(p.id, p.weights[1] ?? p.weights[0], 1, true); searchDD.value = false; searchDDM.value = false; toast(`«${p.name}» به سبد اضافه شد 🛒`, 'ok'); }
+function quickAdd(p) { addToCart(p.id, p.weights[1] ?? p.weights[0], 1); searchDD.value = false; searchDDM.value = false; }   /* اعلان واحد از خود سبد خرید */
 
 document.addEventListener('click', e => {
   if (!e.target.closest('.search-wrap') && !e.target.closest('.m-search')) { searchDD.value = false; searchDDM.value = false; }

@@ -327,8 +327,8 @@ const trustOff = computed(() => (trustItem.value && trustItem.value.old > trustI
 const trustLabel = computed(() => selDay.value === new Date().getDay() ? ('پیشنهاد امروز — ' + DAY_NAMES[selDay.value]) : ('پیش‌نمایش ' + DAY_NAMES[selDay.value]));
 function trustAdd() {
   if (!trustItem.value) return;
-  addToCart(trustItem.value.pid, 1, 1, true);
-  toast(`«${trustItem.value.name}» به سبد اضافه شد؛ نماد اعتماد خانم گل در راه است 🛡️`, 'gold');
+  /* اعلان واحد از خود سبد خرید — بدون متن اضافه */
+  addToCart(trustItem.value.pid, 1, 1);
 }
 
 /* ---------- فرم مشاوره + پیگیری داخل صفحه ---------- */
