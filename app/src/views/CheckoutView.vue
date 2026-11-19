@@ -92,7 +92,8 @@
       <div v-else class="modal-body" style="background:#fff;border-radius:var(--r-md)">
         <div class="co-success">
           <div class="ok-ic"><svg class="icon"><use href="#i-check" /></svg></div>
-          <h3>سفارش شما با موفقیت ثبت شد! 🎉</h3>
+          <h3 v-if="payEnabled && placed?.fromServer">سفارش ثبت شد؛ در انتظار پرداخت ⏳</h3>
+          <h3 v-else>سفارش شما با موفقیت ثبت شد! 🎉</h3>
           <p style="font-size:.86rem;color:var(--ink-2)">کد سفارش شما:</p>
           <span class="ord-code">{{ placed?.code }}</span>
           <div class="sms-note"><svg class="icon"><use href="#i-sms" /></svg> <span>پیامک تأیید سفارش حاوی کد پیگیری به شماره <b>{{ toFa(auth.user?.phone || placed?.addr?.phone || '') }}</b> ارسال می‌شود.</span></div>
@@ -109,7 +110,6 @@
             <button v-if="zibalErr" class="btn btn-light btn-sm btn-block" @click="startZibalPay">تلاش دوباره</button>
             <div v-if="zibalErr" class="id-note err">{{ zibalErr }}</div>
             <p class="pay-note">پرداخت امن از طریق درگاه رسمی زیبال؛ پس از پرداخت به سایت برمی‌گردید.</p>
-            <button class="btn btn-light btn-sm" @click="skipZibal">فعلاً پرداخت نمی‌کنم (پرداخت در محل)</button>
           </div>
 
           <div class="co-actions">
@@ -166,7 +166,6 @@ async function startZibalPay() {
   zibalBusy.value = false;
 }
 
-function skipZibal() { payEnabled.value = false; }
 
 /* ---- گام ۱: شناسایی با شماره موبایل ---- */
 const phase = ref('phone');            // phone → login | register
@@ -217,7 +216,8 @@ const payTotal = computed(() => Math.max(0, cartSub.value - couponVal.value.off 
 function next() {
   if (!f.name.trim()) return toast('نام و نام خانوادگی را وارد کنید', 'err');
   if (!/^09\d{9}$/.test(phoneEn.value)) return toast('شماره موبایل معتبر وارد کنید (۰۹…)', 'err');
-  if (!f.addr.trim() || !f.city.trim()) return toast('شهر و آدرس کامل را وارد کنید', 'err');
+  if (!f.city.trim()) return toast('شهر را وارد کنید', 'err');
+  if (f.addr.trim().length < 10) return toast('آدرس کامل پستی را وارد کنید (حداقل ۱۰ نویسه: خیابان، کوچه، پلاک)', 'err');
   if (!shipType.value) return toast('روش ارسال را انتخاب کنید', 'err');
   errMsg.value = '';
   step.value = 2;
@@ -239,6 +239,7 @@ async function pay() {
       const r = await placeOrderServer({ addr: { ...f, phone: phoneEn.value }, shipType: shipType.value, note: f.note });
       if (!r.ok) {
         if (r.status === 401) { step.value = 0; return toast('نشست شما منقضی شده؛ دوباره وارد شوید', 'err'); }
+        if (/آدرس|شهر|نام|موبایل|شماره/.test(r.msg || '')) { step.value = 1; window.scrollTo({ top: 0, behavior: 'smooth' }); return toast(r.msg, 'err', 5200); }
         errMsg.value = r.msg;
         return toast(r.msg, 'err', 5200);
       }
@@ -249,6 +250,11 @@ async function pay() {
     placed.value = order;
     step.value = 3;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (order.fromServer) {                       // درگاه روشن است؟ مستقیم به درگاه برویم
+      const c = await payConfigApi().catch(() => null);
+      payEnabled.value = !!c?.enabled;
+      if (payEnabled.value) { paying.value = true; await startZibalPay(); }
+    }
   } finally { paying.value = false; }
 }
 </script>
