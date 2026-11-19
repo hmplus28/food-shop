@@ -1899,6 +1899,14 @@ def _front_base(request):
     """ریشهٔ فرانت برای بازگشت از درگاه — همان دامنهٔ درخواست جاری (بدون زیرمسیر بک‌اند)"""
     if settings.ZIBAL_CALLBACK_URL:
         return settings.ZIBAL_CALLBACK_URL.rstrip('/')
+    # API معمولاً روی ساب‌دامین (api.دامنه) است ولی زیبال فقط دامنهٔ ثبت‌شدهٔ سایت را می‌پذیرد (کد ۱۰۶)؛
+    # پس دامنهٔ فرانت: Origin درخواست (مرورگر) ← SHOP_URL (اگر GitHub Pages نیست) ← هاست درخواست
+    origin = (request.headers.get('Origin') or '').rstrip('/')
+    if origin.startswith(('http://', 'https://')):
+        return origin
+    shop = (settings.SHOP_URL or '').rstrip('/')
+    if shop and 'github.io' not in shop:
+        return shop
     https = request.is_secure() or request.headers.get('X-Forwarded-Proto') == 'https'
     return ('https' if https else 'http') + '://' + request.get_host()
 
