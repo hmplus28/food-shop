@@ -599,7 +599,8 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .f-badge .icon{width:26px;height:26px;color:var(--brand)}
 /* نماد اعتماد الکترونیکی (اینماد) — کارت واقعی با تصویر رسمی و لینک تأیید */
 a.f-badge-enamad{text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
-.f-badge-enamad img{height:40px;width:auto;max-width:72px;object-fit:contain}
+.f-badge-enamad{padding:8px 10px}
+.f-badge-enamad img{height:96px;width:auto;max-width:150px;object-fit:contain}
 a.f-badge-enamad:hover{transform:translateY(-2px);box-shadow:var(--sh-md);color:var(--ink-2)}
 .f-bottom{border-top:1px solid rgba(255,255,255,.09);padding:16px 0 22px;font-size:.76rem;color:#93a483;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .f-bottom b{color:var(--gold)}
@@ -835,6 +836,11 @@ a.f-badge-enamad:hover{transform:translateY(-2px);box-shadow:var(--sh-md);color:
 .fab-wrap{position:fixed;inset-inline-start:14px;bottom:20px;z-index:80;display:flex;flex-direction:column;gap:9px}
 .fab{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;box-shadow:var(--sh-md);transition:var(--tr);background:#fff;color:var(--brand-700);border:1px solid var(--line);position:relative}
 .fab:hover{transform:translateY(-3px)}
+.fab-sup{position:relative}
+.sup-pop{position:absolute;inset-inline-start:58px;bottom:0;min-width:210px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-md);padding:12px;display:flex;flex-direction:column;gap:8px;font-size:.84rem}
+.sup-pop b{color:var(--brand-700)}.sup-pop small{color:var(--ink-3);font-size:.72rem}
+.sup-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--bg-warm);color:var(--ink);font-weight:700;text-decoration:none}
+.sup-row .icon{width:18px;height:18px;color:var(--brand)}
 .fab.gold{background:linear-gradient(135deg,var(--gold),var(--gold-600));color:#fff;border:0}
 .fab.brand{background:var(--brand);color:#fff;border:0}
 .fab .icon{width:22px;height:22px}

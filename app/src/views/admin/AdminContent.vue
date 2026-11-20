@@ -13,6 +13,8 @@
         <div class="fld w"><label>نام فروشگاه</label><input v-model="info.shopName" type="text" maxlength="80"></div>
         <div class="fld w"><label>تلفن (نمایشی، مثلاً ۰۲۱-۹۱۰۹۲۰۰۰)</label><input v-model="info.phone" type="text" maxlength="40"></div>
         <div class="fld w"><label>تلفن برای تماس (فقط عدد انگلیسی)</label><input v-model="info.phoneTel" type="text" dir="ltr" maxlength="20" placeholder="02191092000"></div>
+        <div class="fld w"><label>تلفن پشتیبانی دوم (نمایشی، اختیاری)</label><input v-model="info.phone2" type="text" maxlength="40"></div>
+        <div class="fld w"><label>تلفن پشتیبانی دوم برای تماس (عدد انگلیسی)</label><input v-model="info.phone2Tel" type="text" dir="ltr" maxlength="20" placeholder="09120000000"></div>
         <div class="fld w"><label>واتس‌اپ (با کد کشور، مثلاً 989120000000)</label><input v-model="info.whatsapp" type="text" dir="ltr" maxlength="20"></div>
         <div class="fld w"><label>ایمیل</label><input v-model="info.email" type="text" dir="ltr" maxlength="120"></div>
         <div class="fld w"><label>ساعت پاسخگویی</label><input v-model="info.hours" type="text" maxlength="120"></div>

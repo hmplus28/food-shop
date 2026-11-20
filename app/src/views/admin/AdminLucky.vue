@@ -1,10 +1,11 @@
 <template>
   <div class="admin-card">
     <h3 class="ad-h">کارت شانس</h3>
-    <p class="ad-sub">جایزه روی حساب کاربر و در سرور تعیین می‌شود و به‌صورت یک کد شخصی و یک‌بارمصرف صادر می‌شود. هر کاربر در بازهٔ زیر فقط یک‌بار می‌تواند کارت را باز کند.</p>
+    <p class="ad-sub">جایزه روی حساب کاربر و در سرور تعیین می‌شود و به‌صورت یک کد شخصی و یک‌بارمصرف صادر می‌شود. هر کاربر بعد از هر بار باز کردن، تا پایان «فاصلهٔ بین دو چرخش» صبر می‌کند؛ با «سقف تعداد دفعات» می‌توانید کل دفعات هر کاربر را هم محدود کنید.</p>
     <div class="ad-grid" style="max-width:700px;margin-bottom:16px">
       <label class="chk full"><input v-model="cfg.enabled" type="checkbox"> کارت شانس فعال باشد</label>
-      <div class="fld w"><label>فاصلهٔ بین دو چرخش هر کاربر (ساعت)</label><input v-model.number="cfg.cooldownHours" type="number" min="1" max="2160"></div>
+      <div class="fld w"><label>فاصلهٔ بین دو چرخش هر کاربر (ساعت)</label><input v-model.number="cfg.cooldownHours" type="number" min="0" max="2160"></div>
+      <div class="fld w"><label>سقف تعداد دفعات هر کاربر (۰ = نامحدود)</label><input v-model.number="cfg.maxSpins" type="number" min="0" max="1000"></div>
       <div class="fld w"><label>مهلت استفاده از جایزه (روز)</label><input v-model.number="cfg.validDays" type="number" min="1" max="365"></div>
       <div class="fld w"><button class="btn btn-brand btn-sm" :disabled="busy" @click="saveCfg">ذخیرهٔ تنظیمات</button></div>
     </div>
@@ -81,7 +82,7 @@ import { toast } from '../../stores/ui';
 import { loadShop } from '../../stores/shop';
 import '../../assets/admin.css';
 
-const cfg = reactive({ enabled: true, cooldownHours: 24, validDays: 30 });
+const cfg = reactive({ enabled: true, cooldownHours: 24, validDays: 30, maxSpins: 0 });
 const prizes = ref([]);
 const wins = ref([]);
 const totalWins = ref(0);
@@ -99,7 +100,7 @@ async function load() {
 }
 async function saveCfg() {
   busy.value = true;
-  const r = await apiCall('/admin/lucky', { method: 'PUT', body: { enabled: cfg.enabled, cooldownHours: cfg.cooldownHours, validDays: cfg.validDays } });
+  const r = await apiCall('/admin/lucky', { method: 'PUT', body: { enabled: cfg.enabled, cooldownHours: cfg.cooldownHours, validDays: cfg.validDays, maxSpins: cfg.maxSpins } });
   busy.value = false;
   if (!r.ok) return toast(r.msg, 'err');
   toast('تنظیمات کارت شانس ذخیره شد ✅', 'ok'); loadShop();

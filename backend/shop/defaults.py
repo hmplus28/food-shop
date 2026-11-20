@@ -29,7 +29,7 @@ SHIPPING_METHODS = [
     ('tipax', 'تیپاکس (سراسر کشور)', 99_000, '۱ تا ۳ روز کاری', '۱ تا ۳ روز کاری، بسته‌های حجیم'),
 ]
 
-LUCKY_SETTINGS = {'enabled': True, 'cooldownHours': 24, 'validDays': 30}
+LUCKY_SETTINGS = {'enabled': True, 'cooldownHours': 24, 'validDays': 30, 'maxSpins': 0}
 
 LUCKY_PRIZES = [
     # title, desc, kind, value, min_total, weight, icon

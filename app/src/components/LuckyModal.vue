@@ -8,10 +8,11 @@
         <p v-if="!lucky.enabled">کارت شانس فعلاً غیرفعال است.</p>
         <p v-else-if="!auth.user">کارت شانس روی حساب کاربری شما ثبت می‌شود؛ برای باز کردن آن وارد شوید یا ثبت‌نام کنید.</p>
         <p v-else-if="lucky.canSpin">روی کارت بزنید و جایزه‌تان را ببینید؛ جایزه یک کد شخصی و یک‌بارمصرف است که روی حساب شما می‌ماند.</p>
-        <p v-else>شما اخیراً کارت شانس را باز کرده‌اید. نوبت بعدی: <b>{{ nextText }}</b></p>
+        <p v-else-if="lucky.nextAt">شما اخیراً کارت شانس را باز کرده‌اید. نوبت بعدی: <b>{{ nextText }}</b></p>
+        <p v-else>سقف دفعات استفادهٔ شما از کارت شانس تمام شده است.</p>
       </div>
       <div class="lucky-stage">
-        <div class="lc-inner" :class="{ locked: !canFlip }" tabindex="0" role="button" :aria-disabled="!canFlip" aria-label="باز کردن کارت شانس" @click="flip" @keydown.enter="flip">
+        <div class="lc-inner" :class="{ locked: !canFlip && !flipped }" tabindex="0" role="button" :aria-disabled="!canFlip" aria-label="باز کردن کارت شانس" @click="flip" @keydown.enter="flip">
           <div class="lc-face lc-front">
             <div class="lc-shine"></div>
             <span class="q">{{ busy ? '⏳' : canFlip ? '🎁' : '🔒' }}</span>
@@ -64,7 +65,7 @@ const nextText = computed(() => (lucky.nextAt ? jDateTime(lucky.nextAt) : 'به�
 async function flip() {
   if (!canFlip.value) {
     if (!auth.user && lucky.enabled) toast('برای باز کردن کارت شانس ابتدا وارد حساب کاربری شوید', 'err');
-    else if (auth.user && !lucky.canSpin) toast('نوبت بعدی کارت شانس شما: ' + nextText.value, 'err');
+    else if (auth.user && !lucky.canSpin) toast(lucky.nextAt ? 'نوبت بعدی کارت شانس شما: ' + nextText.value : 'سقف دفعات کارت شانس شما تمام شده است', 'err');
     return;
   }
   busy.value = true;

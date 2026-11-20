@@ -22,7 +22,7 @@
           <RouterLink to="/track">پیگیری سفارش</RouterLink>
           <RouterLink to="/#consult">مشاوره خرید</RouterLink>
           <RouterLink to="/account">پنل کاربری</RouterLink>
-          <RouterLink v-for="p in aboutPages" :key="p.slug" :to="'/page/' + p.slug">{{ p.title }}</RouterLink>
+          <RouterLink v-for="p in aboutPages.filter(x => x.slug !== 'about')" :key="p.slug" :to="'/page/' + p.slug">{{ p.title }}</RouterLink>
         </div>
         <div class="f-col">
           <h4 class="f-title">تماس با ما</h4>

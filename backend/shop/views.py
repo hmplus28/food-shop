@@ -572,19 +572,31 @@ class AdminLoginView(APIView):
         return fail('نام کاربری یا رمز مدیر اشتباه است')
 
 
+def _sales(qs):
+    """سفارش‌های محسوب در فروش: لغوشده‌ها حذف؛ با درگاه فعال، پرداخت‌نشده‌ها هم حذف"""
+    qs = qs.exclude(status=CANCELLED)
+    if settings.ZIBAL_MERCHANT:
+        qs = qs.filter(pay_status='paid')
+    return qs
+
+
 def _dashboard_extras():
-    """داده‌های نمودار/لیست داشبورد: فروش ۷ روز اخیر، پرفروش‌ها، وضعیت سفارش‌ها، کم‌موجودی‌ها"""
+    """داده‌های نمودار/لیست داشبورد: فروش ۷ روز اخیر، پرفروش‌ها، وضعیت سفارش‌ها، کم‌موجودی‌ها.
+    تجمیع روزانه در پایتون انجام می‌شود (TruncDate/__date روی MariaDB بدون جدول timezone مقدار NULL می‌دهد)"""
     from django.db.models import Count, Sum
-    from django.db.models.functions import TruncDate
     today = timezone.localdate()
     since = today - timezone.timedelta(days=6)
-    rows = {r['d']: r for r in Order.objects.filter(created_at__date__gte=since)
-            .exclude(status=CANCELLED).annotate(d=TruncDate('created_at')).values('d').annotate(n=Count('id'), s=Sum('total'))}
+    start = timezone.make_aware(timezone.datetime.combine(since, timezone.datetime.min.time()))
+    acc = {}
+    for created, total in _sales(Order.objects.filter(created_at__gte=start)).values_list('created_at', 'total'):
+        d = timezone.localtime(created).date()
+        n, t = acc.get(d, (0, 0))
+        acc[d] = (n + 1, t + (total or 0))
     daily = []
     for i in range(7):
         d = since + timezone.timedelta(days=i)
-        r = rows.get(d, {})
-        daily.append({'date': d.isoformat(), 'orders': r.get('n', 0), 'revenue': r.get('s') or 0})
+        n, t = acc.get(d, (0, 0))
+        daily.append({'date': d.isoformat(), 'orders': n, 'revenue': t})
     top = [{'pid': r['pid'], 'name': r['name'], 'qty': r['q'], 'revenue': r['r'] or 0}
            for r in OrderItem.objects.values('pid', 'name').annotate(q=Sum('qty'), r=Sum('cost')).order_by('-q')[:5]]
     by_status = {str(r['status']): r['n'] for r in Order.objects.values('status').annotate(n=Count('id'))}
@@ -600,7 +612,7 @@ class AdminStatsView(APIView):
 
     def get(self, request):
         orders = Order.objects.all()
-        revenue = sum(orders.exclude(status=CANCELLED).values_list('total', flat=True) or [0])
+        revenue = sum(_sales(orders).values_list('total', flat=True) or [0])
         st = provider_status()
         last_sms = SmsLog.objects.first()
         return ok({
@@ -908,9 +920,12 @@ def _lucky_state(user):
     cfg = _setting('lucky', DEFAULT_LUCKY)
     if not cfg.get('enabled'):
         return cfg, False, None
+    mx = int(cfg.get('maxSpins') or 0)                    # 0 = بدون سقف تعداد
+    if user and mx and LuckyWin.objects.filter(user=user).count() >= mx:
+        return cfg, False, None
     last = LuckyWin.objects.filter(user=user).first() if user else None
     if last:
-        nxt = last.created_at + timezone.timedelta(hours=int(cfg.get('cooldownHours') or 24))
+        nxt = last.created_at + timezone.timedelta(hours=int(cfg.get('cooldownHours') if cfg.get('cooldownHours') is not None else 24))
         if timezone.now() < nxt:
             return cfg, False, int(nxt.timestamp() * 1000)
     return cfg, True, None
@@ -923,7 +938,9 @@ class LuckyStatusView(APIView):
         user = request.user if request.user.is_authenticated else None
         cfg, can, nxt = _lucky_state(user)
         return ok({'enabled': bool(cfg.get('enabled')), 'loggedIn': bool(user),
-                   'canSpin': bool(user and can), 'nextAt': nxt, 'cooldownHours': cfg.get('cooldownHours')})
+                   'canSpin': bool(user and can), 'nextAt': nxt, 'cooldownHours': cfg.get('cooldownHours'),
+                   'maxSpins': int(cfg.get('maxSpins') or 0),
+                   'spinsUsed': LuckyWin.objects.filter(user=user).count() if user else 0})
 
 
 class LuckySpinView(APIView):
@@ -938,6 +955,8 @@ class LuckySpinView(APIView):
             if not cfg.get('enabled'):
                 return fail('کارت شانس فعلاً غیرفعال است')
             if not can:
+                if nxt is None:
+                    return fail('سقف دفعات استفادهٔ شما از کارت شانس تمام شده است')
                 return Response({'ok': False, 'msg': 'کارت شانس بعدی شما هنوز فعال نشده است', 'nextAt': nxt})
             prizes = list(LuckyPrize.objects.filter(active=True))
             if not prizes:
@@ -961,7 +980,7 @@ class LuckySpinView(APIView):
             LuckyWin.objects.create(user=user, prize_title=prize.title, coupon=c)
         return ok({'prize': {'title': prize.title, 'desc': prize.desc, 'icon': prize.icon},
                    'code': c.code, 'expiresAt': c.expires_at.isoformat(),
-                   'nextAt': int((timezone.now() + timezone.timedelta(hours=int(cfg.get('cooldownHours') or 24))).timestamp() * 1000)})
+                   'nextAt': int((timezone.now() + timezone.timedelta(hours=int(cfg.get('cooldownHours') if cfg.get('cooldownHours') is not None else 24))).timestamp() * 1000)})
 
 
 class LuckyMineView(APIView):
@@ -980,7 +999,7 @@ class LuckyMineView(APIView):
 
 # ---------------- مدیر: اطلاعات و محتوا ----------------
 
-_INFO_KEYS = {'shopName': 80, 'phone': 40, 'phoneTel': 20, 'whatsapp': 20, 'email': 120, 'address': 300, 'hours': 120,
+_INFO_KEYS = {'shopName': 80, 'phone': 40, 'phoneTel': 20, 'phone2': 40, 'phone2Tel': 20, 'whatsapp': 20, 'email': 120, 'address': 300, 'hours': 120,
               'instagram': 200, 'telegram': 200, 'topbarMsg': 160, 'footerAbout': 600, 'heroTag': 80, 'heroTitle': 120,
               'heroTitleEm': 60, 'heroText': 300, 'consultText': 400, 'returnsNote': 160}
 
@@ -1223,7 +1242,8 @@ class AdminLuckyView(APIView):
     def put(self, request):
         try:
             cfg = {'enabled': bool(request.data.get('enabled', True)),
-                   'cooldownHours': _int(request.data.get('cooldownHours', 24), 1, 24 * 90, 'فاصلهٔ چرخش (ساعت)'),
+                   'cooldownHours': _int(request.data.get('cooldownHours', 24), 0, 24 * 90, 'فاصلهٔ چرخش (ساعت)'),
+                   'maxSpins': _int(request.data.get('maxSpins', 0), 0, 1000, 'سقف دفعات هر کاربر'),
                    'validDays': _int(request.data.get('validDays', 30), 1, 365, 'اعتبار جایزه (روز)')}
         except ValueError as e:
             return fail(str(e), 400)
