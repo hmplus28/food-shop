@@ -48,3 +48,4 @@ tool-results/
 
 # ابزار نصب skill (محلی)
 .clawhub/
+.deploy-domain

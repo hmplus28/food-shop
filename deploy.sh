@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 #  فروشگاه خانم گل — استقرار یکپارچهٔ فرانت + بک‌اند روی cPanel (بدون Node/بیلد روی هاست)
 #
-#  یک دستور:      bash deploy.sh --domain khanomgol.ir
+#  یک دستور:      bash deploy.sh          (خودش git pull می‌گیرد؛ دامنه را فقط بار اول لازم است: --domain khanomgol.ir)
 #
 #  مراحل:
 #    ۱. فرانت: پوشهٔ از پیش‌ساخته‌شدهٔ host-dist/ (commit شده) در یک پوشهٔ موقت کپی و
@@ -18,6 +18,7 @@
 #    --skip-front       فقط بک‌اند
 #    --skip-back        فقط فرانت
 #    --fetch-assets     تصاویر محصولات و لوگوی دایناکد را مستقیم داخل <ریشهٔ وب>/img دانلود می‌کند (بدون Node؛ نیازمند دسترسی هاست به CDN)
+#    --no-pull          git pull خودکار انجام نشود
 #    --check            فقط بررسی و عیب‌یابی (بدون استقرار)
 #    --check-pay        فقط عیب‌یابی درگاه پرداخت زیبال (مرچنت، callback، شبکه، درخواست آزمایشی، تراکنش‌ها)
 #    --insecure         بررسی با http به‌جای https (قبل از نصب SSL)
@@ -33,6 +34,8 @@ if [ -t 1 ]; then G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; B='\033[0;34m'
 say(){ echo -e "${G}✔${O} $*"; }; info(){ echo -e "${B}ℹ${O} $*"; }; warn(){ echo -e "${Y}⚠${O} $*" >&2; }
 die(){ echo -e "${R}✘ خطا:${O} $*" >&2; exit 1; }
 
+ORIG_ARGS=("$@")
+NO_PULL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --domain) [ $# -ge 2 ] || die "--domain نیاز به مقدار دارد"; DOMAIN="$2"; shift 2 ;;
@@ -43,6 +46,7 @@ while [ $# -gt 0 ]; do
     --webroot=*) WEBROOT="${1#*=}"; shift ;;
     --skip-front) DO_FRONT=0; shift ;;
     --skip-back) DO_BACK=0; shift ;;
+    --no-pull) NO_PULL=1; shift ;;
     --check) CHECK_ONLY=1; shift ;;
     --check-pay) CHECK_PAY=1; shift ;;
     --fetch-assets) FETCH=1; shift ;;
@@ -53,6 +57,25 @@ while [ $# -gt 0 ]; do
 done
 [ -n "$WEBROOT" ] && WEBROOT="${WEBROOT/#\~/$HOME}"
 [ -z "$WEBROOT" ] && WEBROOT="$HOME/public_html"
+
+# ── git pull خودکار (یک‌بار؛ اگر خود deploy.sh تغییر کرد با نسخهٔ جدید دوباره اجرا می‌شود) ──
+if [ "$NO_PULL" -eq 0 ] && [ -z "${KG_PULLED:-}" ] && [ -d "$ROOT/.git" ] && command -v git >/dev/null 2>&1; then
+  OLDSUM="$(md5sum "$ROOT/deploy.sh" 2>/dev/null | cut -d' ' -f1)"
+  echo "ℹ git pull ..."
+  if git -C "$ROOT" pull --ff-only 2>&1 | tail -n 3; then :; fi
+  [ "${PIPESTATUS[0]}" -ne 0 ] && echo -e "${Y}⚠${O} git pull کامل نشد (تغییر محلی/شبکه)؛ با نسخهٔ فعلی ادامه می‌دهم." >&2
+  NEWSUM="$(md5sum "$ROOT/deploy.sh" 2>/dev/null | cut -d' ' -f1)"
+  export KG_PULLED=1
+  [ "$OLDSUM" != "$NEWSUM" ] && { echo "ℹ خود deploy.sh به‌روز شد؛ اجرای دوباره با نسخهٔ جدید"; exec bash "$ROOT/deploy.sh" "${ORIG_ARGS[@]}"; }
+fi
+
+# ── دامنه: از آرگومان، یا آخرین دامنهٔ ذخیره‌شده، یا .env ──
+DOMAIN_FILE="$ROOT/.deploy-domain"
+if [ -z "$DOMAIN" ] && [ -f "$DOMAIN_FILE" ]; then DOMAIN="$(head -n1 "$DOMAIN_FILE" | tr -d ' \r\n')"; fi
+if [ -z "$DOMAIN" ] && [ -f "${KHANOMGOL_ENV_FILE:-$ROOT/backend/.env}" ]; then
+  _E="${KHANOMGOL_ENV_FILE:-$ROOT/backend/.env}"
+  DOMAIN="$(grep -E '^(ZIBAL_CALLBACK_URL|SHOP_URL)=' "$_E" | cut -d= -f2- | tr -d ' \r"' | grep -v github.io | head -n1 | sed -E 's#^https?://##; s#/.*##')"
+fi
 
 if [ "$CHECK_PAY" -eq 1 ]; then
   _R="$(cd "$(dirname "$0")" && pwd)"
@@ -80,8 +103,9 @@ if [ -z "$DOMAIN" ] && [ -f "$ENVF" ]; then
   DOMAIN="$(grep -E '^ALLOWED_HOSTS=' "$ENVF" | head -n1 | cut -d= -f2- | tr ',' '\n' | tr -d ' \r"' | grep -vE '^\*$|^\.|^$|^localhost|^127\.' | head -n1)"
 fi
 DOMAIN="${DOMAIN#http://}"; DOMAIN="${DOMAIN#https://}"; DOMAIN="${DOMAIN%%/*}"
-[ -n "$DOMAIN" ] || die "دامنه مشخص نیست. اجرا کنید:  bash deploy.sh --domain دامنه-شما.ir"
+[ -n "$DOMAIN" ] || die "دامنه مشخص نیست (فقط بار اول): bash deploy.sh --domain دامنه-شما.ir — بعدش خودش به خاطر می‌سپارد."
 case "$DOMAIN" in *[!a-zA-Z0-9.:-]*) die "دامنهٔ نامعتبر: $DOMAIN" ;; esac
+printf '%s\n' "$DOMAIN" > "$DOMAIN_FILE" 2>/dev/null
 info "دامنه: $DOMAIN | ریشهٔ وب: $WEBROOT | ریپو: $ROOT"
 
 # ── آدرس API: از پایتون‌اپ ثبت‌شده در cPanel (دامنه/زیردامنه + مسیر) ──
