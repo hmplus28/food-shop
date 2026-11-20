@@ -18,6 +18,7 @@
 #    --skip-front       فقط بک‌اند
 #    --skip-back        فقط فرانت
 #    --fetch-assets     تصاویر محصولات و لوگوی دایناکد را مستقیم داخل <ریشهٔ وب>/img دانلود می‌کند (بدون Node؛ نیازمند دسترسی هاست به CDN)
+#    --manage <...>     اجرای manage.py با پایتون درست هاست؛ مثال: bash deploy.sh --manage seed_shop --purge --purge-content --yes
 #    --no-pull          git pull خودکار انجام نشود
 #    --check            فقط بررسی و عیب‌یابی (بدون استقرار)
 #    --check-pay        فقط عیب‌یابی درگاه پرداخت زیبال (مرچنت، callback، شبکه، درخواست آزمایشی، تراکنش‌ها)
@@ -35,6 +36,7 @@ say(){ echo -e "${G}✔${O} $*"; }; info(){ echo -e "${B}ℹ${O} $*"; }; warn(){
 die(){ echo -e "${R}✘ خطا:${O} $*" >&2; exit 1; }
 
 ORIG_ARGS=("$@")
+MANAGE_ARGS=()
 NO_PULL=0
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -47,6 +49,7 @@ while [ $# -gt 0 ]; do
     --skip-front) DO_FRONT=0; shift ;;
     --skip-back) DO_BACK=0; shift ;;
     --no-pull) NO_PULL=1; shift ;;
+    --manage) shift; MANAGE_ARGS=("$@"); set --; ;;
     --check) CHECK_ONLY=1; shift ;;
     --check-pay) CHECK_PAY=1; shift ;;
     --fetch-assets) FETCH=1; shift ;;
@@ -67,6 +70,14 @@ if [ "$NO_PULL" -eq 0 ] && [ -z "${KG_PULLED:-}" ] && [ -d "$ROOT/.git" ] && com
   NEWSUM="$(md5sum "$ROOT/deploy.sh" 2>/dev/null | cut -d' ' -f1)"
   export KG_PULLED=1
   [ "$OLDSUM" != "$NEWSUM" ] && { echo "ℹ خود deploy.sh به‌روز شد؛ اجرای دوباره با نسخهٔ جدید"; exec bash "$ROOT/deploy.sh" "${ORIG_ARGS[@]}"; }
+fi
+
+if [ "${#MANAGE_ARGS[@]}" -gt 0 ]; then
+  _R="$ROOT"
+  VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | grep -F "$(basename "$_R")" | sort -r | head -n1)"
+  [ -z "$VPY" ] && VPY="$(find "$HOME/virtualenv" -maxdepth 6 \( -type f -o -type l \) -path '*/bin/python' 2>/dev/null | sort -r | head -n1)"
+  [ -z "$VPY" ] && VPY="python3"
+  cd "$_R/backend" && exec "$VPY" manage.py "${MANAGE_ARGS[@]}"
 fi
 
 # ── دامنه: از آرگومان، یا آخرین دامنهٔ ذخیره‌شده، یا .env ──
