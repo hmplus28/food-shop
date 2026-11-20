@@ -11,7 +11,7 @@ import sys
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from shop.seed import purge_all_products, seed_all
+from shop.seed import purge_all_products, purge_demo_content, seed_all
 
 
 class Command(BaseCommand):
@@ -20,6 +20,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--fake', action='store_true', help='درج ۲۸ محصول نمونه و محتوای نمونهٔ صفحهٔ اصلی (فقط توسعه/دمو)')
         parser.add_argument('--purge', action='store_true', help='حذف همهٔ محصولات از دیتابیس (سفارش‌های قبلی سالم می‌مانند)')
+        parser.add_argument('--purge-content', action='store_true', help='حذف بنرها، پک‌ها و خرید اطمینان نمونهٔ صفحهٔ اصلی')
+        parser.add_argument('--purge-orders', action='store_true', help='حذف همهٔ سفارش‌ها (آزمایشی) — برگشت‌ناپذیر')
         parser.add_argument('--yes', action='store_true', help='با --purge: بدون پرسش تأیید (برای اسکریپت/SSH)')
 
     def handle(self, *args, **options):
@@ -31,6 +33,12 @@ class Command(BaseCommand):
                     raise CommandError('تأیید نشد؛ انصراف.')
             n = purge_all_products()
             self.stdout.write(self.style.SUCCESS(f'{n} محصول از دیتابیس حذف شد.'))
+        if options['purge_content'] or options['purge_orders']:
+            if not options['yes'] and sys.stdin is not None and sys.stdin.isatty():
+                if input('تأیید: بنویسید «حذف»: ').strip() != 'حذف':
+                    raise CommandError('تأیید نشد؛ انصراف.')
+            n = purge_demo_content(orders=options['purge_orders'])
+            self.stdout.write(self.style.SUCCESS(f'{n} ردیف محتوای نمونه/سفارش حذف شد.'))
         if options['fake']:
             os.environ['SEED_FAKE'] = '1'                       # فقط برای همین اجرا؛ فایل .env را تغییر نمی‌دهد
             settings.SEED_FAKE = True

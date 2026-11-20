@@ -428,6 +428,40 @@ class MyOrdersView(APIView):
         return ok({'count': qs.count(), 'results': OrderOutSerializer(qs[:200], many=True).data})
 
 
+def _restore_stock(o):
+    for it in o.items.all():                                   # بازگرداندن موجودی و آمار فروش
+        Product.objects.filter(id=it.pid).update(stock=F('stock') + it.qty)
+        Product.objects.filter(id=it.pid, sold__gte=it.qty).update(sold=F('sold') - it.qty)
+
+
+class OrderCancelView(APIView):
+    """POST /orders/<code>/cancel — لغو توسط خود مشتری؛ فقط سفارشِ «ثبت‌شده» (هنوز در آماده‌سازی نیست) و پرداخت‌نشده.
+    سفارش پرداخت‌شده باید با پشتیبانی هماهنگ شود (بازگشت وجه دستی)."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, code):
+        o = Order.objects.filter(code=(code or '').strip().upper()).first()
+        if not o or (o.user_id != request.user.id and o.a_phone != request.user.phone):
+            return fail('سفارشی با این کد پیدا نشد', 404)
+        if o.status == CANCELLED:
+            return fail('این سفارش قبلاً لغو شده است')
+        if o.status != 0:
+            return fail('سفارش وارد مرحلهٔ آماده‌سازی/ارسال شده و دیگر قابل لغو نیست؛ با پشتیبانی تماس بگیرید')
+        if o.pay_status == 'paid':
+            return fail('این سفارش پرداخت شده است؛ برای لغو و بازگشت وجه با پشتیبانی تماس بگیرید')
+        with transaction.atomic():
+            o = Order.objects.select_for_update().get(pk=o.pk)
+            if o.status != 0:
+                return fail('وضعیت سفارش تغییر کرده است؛ صفحه را تازه کنید')
+            _restore_stock(o)
+            o.status = CANCELLED
+            if o.pay_status in ('pending', 'failed'):
+                o.pay_status = 'failed'
+            o.save(update_fields=['status', 'pay_status', 'updated_at'])
+            OrderEvent.objects.create(order=o, status=CANCELLED, note='لغو توسط مشتری', by=request.user.phone)
+        return ok({'code': o.code, 'status': o.status, 'status_label': STATUS_LABELS[o.status]})
+
+
 class OrderTrackPatchView(APIView):
     """GET: پیگیری عمومی با کد | PATCH: تغییر وضعیت (مدیر) + پیامک به مشتری"""
     permission_classes = [AllowAny]
@@ -466,9 +500,7 @@ class OrderTrackPatchView(APIView):
             return fail('تغییری ارسال نشد', 400)
         with transaction.atomic():
             if new_status == CANCELLED and o.status != CANCELLED:
-                for it in o.items.all():                       # بازگرداندن موجودی و آمار فروش
-                    Product.objects.filter(id=it.pid).update(stock=F('stock') + it.qty)
-                    Product.objects.filter(id=it.pid, sold__gte=it.qty).update(sold=F('sold') - it.qty)
+                _restore_stock(o)
             changed = new_status != o.status
             o.status, o.tracking = new_status, tracking
             o.save(update_fields=['status', 'tracking', 'updated_at'])

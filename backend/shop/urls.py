@@ -47,6 +47,7 @@ urlpatterns = [
     # سفارش‌ها (mine قبل از <code> باشد)
     path('orders', views.OrderCreateListView.as_view()),
     path('orders/mine', views.MyOrdersView.as_view()),
+    path('orders/<str:code>/cancel', views.OrderCancelView.as_view()),
     path('orders/<str:code>', views.OrderTrackPatchView.as_view()),
 
     # مدیر فروشگاه

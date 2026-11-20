@@ -16,6 +16,7 @@
       <span class="oc-total">{{ money(o.total) }} <small>تومان</small></span>
       <div class="oc-actions">
         <RouterLink class="btn btn-light btn-sm" :to="{ path: '/track', query: { code: o.code } }">پیگیری</RouterLink>
+        <button v-if="canCancel" class="btn btn-light btn-sm" :disabled="cancelBusy" @click="cancelNow">لغو سفارش</button>
         <button v-if="needPay" class="btn btn-brand btn-sm" :disabled="payBusy" @click="payNow">پرداخت آنلاین</button>
         <button class="btn btn-gold btn-sm" @click="reorder">سفارش مجدد</button>
       </div>
@@ -25,7 +26,7 @@
 
 <script setup>
 import { computed, ref } from 'vue';
-import { payStartApi } from '../services/api';
+import { payStartApi, cancelOrderApi } from '../services/api';
 import { toFa, money, weightLabel, faDate } from '../data/site';
 import { prod } from '../data/catalog';
 import { orderStep, STATUS } from '../stores/orders';
@@ -36,6 +37,16 @@ const props = defineProps({ o: { type: Object, required: true } });
 const step = computed(() => orderStep(props.o));
 const itemsLine = computed(() => props.o.items.map(c => `${prod(c.pid)?.name || ''} (${weightLabel(c.w)} × ${toFa(c.qty)})`).join(' + '));
 const needPay = computed(() => ['pending', 'failed', 'unpaid'].includes(props.o.pay_status) && step.value !== 4);
+const cancelBusy = ref(false);
+const canCancel = computed(() => props.o.fromServer && step.value === 0 && props.o.pay_status !== 'paid');
+async function cancelNow() {
+  if (!window.confirm('سفارش لغو شود؟ این کار قابل بازگشت نیست.')) return;
+  cancelBusy.value = true;
+  const r = await cancelOrderApi(props.o.code);
+  cancelBusy.value = false;
+  if (!r.ok) return alert(r.msg || 'لغو سفارش انجام نشد');
+  props.o.status = 4;
+}
 const payBusy = ref(false);
 async function payNow() {
   payBusy.value = true;

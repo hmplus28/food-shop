@@ -364,6 +364,7 @@ export const createOrderStrict = body => apiCall('/orders', { method: 'POST', bo
  */
 export const payConfigApi = () => apiCall('/pay/status');
 export const payStartApi = code => apiCall('/pay/start', { method: 'POST', body: { code } });
+export const cancelOrderApi = code => apiCall('/orders/' + encodeURIComponent(code) + '/cancel', { method: 'POST' });
 export const payVerifyApi = (code, trackId) => apiCall('/pay/verify', { method: 'POST', body: { code, trackId } });
 
 /* ---- کد تخفیف (فقط بعد از ورود): قاعدهٔ کد از سرور ---- */

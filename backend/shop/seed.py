@@ -148,6 +148,17 @@ def purge_all_products():
     return n
 
 
+def purge_demo_content(orders=False):
+    """حذف بنر/پک/خرید اطمینان (و محصولات مجازی‌شان) و در صورت درخواست همهٔ سفارش‌ها (مثلاً سفارش‌های آزمایشی)"""
+    from .models import Banner, Order, Pack, TrustItem
+    n = 0
+    for M in (Banner, Pack, TrustItem):
+        n += M.objects.all().delete()[0]
+    if orders:
+        n += Order.objects.all().delete()[0]
+    return n
+
+
 def seed_all():
     """دستور مدیریتی: محصول (فقط با --fake/SEED_FAKE=1) + مدیر + منو + گزارش"""
     p = seed_products()
