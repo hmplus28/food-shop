@@ -329,6 +329,7 @@
             <div class="fld w"><label>کد رهگیری مرسوله</label><input v-model="ost.tracking" type="text" dir="ltr" maxlength="60" placeholder="مثلاً ۲۴۰۱۲۳۴۵۶۷۸۹"></div>
             <div class="fld w full"><label>توضیح برای مشتری (در پیامک و پیگیری دیده می‌شود، اختیاری)</label><input v-model="ost.note" type="text" maxlength="200" placeholder="مثلاً بسته به پست تحویل داده شد"></div>
           </div>
+          <button class="btn btn-light btn-sm del-ord" style="margin-inline-end:8px;color:var(--red);border-color:#f7cdc9" @click="deleteOrder">حذف سفارش</button>
           <button class="btn btn-brand btn-sm" :disabled="ost.busy || (detail.status === 4)" @click="saveOrderStatus">{{ ost.busy ? 'در حال ثبت…' : 'ثبت وضعیت' }}</button>
           <span v-if="detail.status === 4" class="badge-hide">سفارش لغو شده و قابل تغییر نیست</span>
           <div v-if="detail.events && detail.events.length" class="ord-hist">
@@ -363,7 +364,12 @@
             <select v-model="editing.cat"><option v-for="c in CATS" :key="c.id" :value="c.id">{{ c.name }}</option></select>
           </div>
           <div class="fld w"><label>درجه</label><input v-model="editing.grade" type="text"></div>
-          <div class="fld w"><label>قیمت پایه هر کیلو (تومان) *</label><input v-model.number="editing.price" type="number" min="0" step="10000"></div>
+          <div class="fld w"><label>واحد فروش</label>
+            <select v-model="editing.unit"><option value="kg">کیلوگرم / گرم (وزنی)</option><option value="piece">عدد</option><option value="pack">بسته</option></select>
+          </div>
+          <div class="fld w"><label>{{ editing.unit === 'kg' ? 'قیمت پایه هر کیلو (تومان) *' : (editing.unit === 'pack' ? 'قیمت هر بسته (تومان) *' : 'قیمت هر عدد (تومان) *') }}</label><input v-model.number="editing.price" type="number" min="0" :step="editing.unit === 'kg' ? 10000 : 500"></div>
+          <div v-if="editing.unit === 'kg'" class="fld w" style="grid-column:1/-1"><label>وزن‌های قابل انتخاب (گرم، با ویرگول؛ مثلاً ۲۵۰، ۵۰۰، ۱۰۰۰، ۲۰۰۰)</label><input v-model="weightsText" type="text" dir="ltr" placeholder="250, 500, 1000, 2000"></div>
+          <p v-else class="ad-sub" style="grid-column:1/-1;margin:0">مشتری تعداد را خودش در سبد انتخاب می‌کند؛ نیازی به تعیین وزن نیست.</p>
           <div class="fld w"><label>تخفیف (٪)</label><input v-model.number="editing.disc" type="number" min="0" max="90"></div>
           <div class="fld w"><label>موجودی</label><input v-model.number="editing.stock" type="number" min="0"></div>
           <div class="fld w"><label>امتیاز (۰ تا ۵)</label><input v-model.number="editing.rate" type="number" min="0" max="5" step="0.1"></div>
@@ -456,17 +462,23 @@ async function loadProducts() {
 async function afterChange() { await Promise.all([loadProducts(), loadStats(), Promise.all([loadShop(), syncCatalog()]).then(pruneCart)]); }
 
 function startNew() {
-  editing.value = { id: 0, name: '', cat: 'ajil', img: IMG + '66fd0cba7ee8.jpg', price: 1000000, weights: [250, 500, 1000, 2000], stock: 20, disc: 0, grade: 'درجه یک', rate: 4.5, sold: 0, tags: [], sec: [], desc: '', hide: false };
-  tagsText.value = '';
+  editing.value = { id: 0, name: '', cat: 'ajil', img: IMG + '66fd0cba7ee8.jpg', price: 1000000, unit: 'kg', weights: [250, 500, 1000, 2000], stock: 20, disc: 0, grade: 'درجه یک', rate: 4.5, sold: 0, tags: [], sec: [], desc: '', hide: false };
+  tagsText.value = ''; weightsText.value = '250, 500, 1000, 2000';
 }
 const tagsText = ref('');
-function startEdit(p) { editing.value = { ...p, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; tagsText.value = p.tags.join('، '); }
+const weightsText = ref('');
+function startEdit(p) { editing.value = { ...p, unit: p.unit || 'kg', tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; tagsText.value = p.tags.join('، '); weightsText.value = p.weights.join(', '); }
 
 async function save() {
   const e = editing.value;
   if (!e.name.trim()) return toast('نام محصول را وارد کنید', 'err');
   if (!e.price || e.price <= 0) return toast('قیمت پایه معتبر وارد کنید', 'err');
   if (e.disc < 0 || e.disc > 90) return toast('تخفیف باید بین ۰ تا ۹۰ باشد', 'err');
+  if (e.unit === 'kg') {
+    const ws = [...new Set(toEn(weightsText.value).split(/[،,\s]+/).map(x => parseInt(x, 10)).filter(x => x > 0 && x <= 50000))].sort((a, b) => a - b);
+    if (!ws.length) return toast('حداقل یک وزن معتبر (گرم) وارد کنید؛ مثلاً ۵۰۰، ۱۰۰۰', 'err');
+    e.weights = ws;
+  } else e.weights = [1];
   e.tags = tagsText.value.split(/[،,]/).map(x => x.trim()).filter(Boolean).slice(0, 8);
   const res = e.id ? await productUpdateApi(e.id, e) : await productCreateApi(e);
   if (!res) return toast('ذخیرهٔ محصول روی سرور انجام نشد؛ دوباره وارد شوید یا اتصال را بررسی کنید', 'err');
@@ -506,6 +518,16 @@ async function loadOrders() {
 /* ---- مدیریت وضعیت سفارش (وضعیت + کد رهگیری + توضیح؛ تاریخچه و پیامک) ---- */
 const ost = reactive({ status: 0, note: '', tracking: '', busy: false });
 watch(detail, d => { if (d) { ost.status = d.status; ost.note = ''; ost.tracking = d.tracking || ''; } });
+async function deleteOrder() {
+  const d = detail.value;
+  if (!window.confirm(`سفارش ${d.code} برای همیشه حذف شود؟ این کار قابل بازگشت نیست.${d.status !== 4 ? ' (موجودی کالاها به انبار برمی‌گردد)' : ''}`)) return;
+  if (window.prompt('برای تأیید نهایی، کد سفارش را بنویسید: ' + d.code) !== d.code) return toast('کد وارد‌شده با کد سفارش یکی نیست؛ حذف انجام نشد', 'err');
+  const r = await apiCall('/orders/' + encodeURIComponent(d.code), { method: 'DELETE' });
+  if (!r.ok) return toast(r.msg || 'حذف سفارش انجام نشد', 'err');
+  toast(`سفارش ${d.code} حذف شد`, 'ok');
+  detail.value = null;
+  await loadOrders(); loadStats();
+}
 async function saveOrderStatus() {
   const d = detail.value;
   if (ost.status === 4 && d.status !== 4 && !window.confirm('با لغو سفارش، موجودی کالاها برمی‌گردد و این کار قابل بازگشت نیست. ادامه می‌دهید؟')) return;

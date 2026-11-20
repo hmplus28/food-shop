@@ -34,12 +34,19 @@ def js_round(x):
     return int(math.floor(x + 0.5))
 
 
+def base_price(product, w):
+    """قیمت بدون تخفیف: کیلویی = قیمت هر کیلو × وزن(گرم) ÷ ۱۰۰۰ ؛ عدد/بسته = قیمت هر عدد × تعداد (w=۱)"""
+    if getattr(product, 'unit', 'kg') != 'kg':
+        return js_round(product.price * w)
+    return js_round(product.price * w / 1000)
+
+
 def line_unit_price(product, w):
-    """قیمت واحد یک ردیف — همان priceOf فرانت:
-    پایه = قیمت × وزن ÷ ۱۰۰۰ و در صورت تخفیف، گرد به هزار تومان پایین."""
-    base = js_round(product.price * w / 1000)
+    """قیمت واحد یک ردیف — همان priceOf فرانت (با تخفیف: گرد به هزار تومان؛ برای عدد/بسته به صد تومان)."""
+    base = base_price(product, w)
     if product.disc:
-        base = js_round(base * (100 - product.disc) / 100 / 1000) * 1000
+        step = 1000 if getattr(product, 'unit', 'kg') == 'kg' else 100
+        base = js_round(base * (100 - product.disc) / 100 / step) * step
     return base
 
 

@@ -20,7 +20,7 @@
         <span class="sold">{{ toFa(p.sold) }} فروش</span>
       </div>
       <div class="p-weights" role="radiogroup" aria-label="انتخاب وزن">
-        <button v-for="(w, i) in p.weights" :key="w" type="button" class="w-chip" :class="{ on: i === wIdx }" :aria-pressed="i === wIdx" @click="wIdx = i">{{ weightLabel(w) }}</button>
+        <button v-for="(w, i) in p.weights" :key="w" type="button" class="w-chip" :class="{ on: i === wIdx }" :aria-pressed="i === wIdx" @click="wIdx = i">{{ weightLabel(w, p.unit) }}</button>
       </div>
       <p style="font-size:.72rem;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ p.desc }}</p>
       <div class="p-pricewrap">

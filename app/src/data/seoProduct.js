@@ -26,7 +26,7 @@ export function productSeo(p, siteUrl) {
     ogType: 'product',
     image: absImg(p.img, siteUrl),
     product: { price, oldPrice: base > price ? base : 0, inStock },
-    meta: { w, wLabel: weightLabel(w), catName },
+    meta: { w, wLabel: weightLabel(w, p.unit), catName },
     jsonld: [{
       '@context': 'https://schema.org', '@type': 'Product',
       name: p.name, image: [absImg(p.img, siteUrl)], description: desc,

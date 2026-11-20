@@ -35,7 +35,7 @@ import { openCart } from '../stores/ui';
 
 const props = defineProps({ o: { type: Object, required: true } });
 const step = computed(() => orderStep(props.o));
-const itemsLine = computed(() => props.o.items.map(c => `${prod(c.pid)?.name || ''} (${weightLabel(c.w)} × ${toFa(c.qty)})`).join(' + '));
+const itemsLine = computed(() => props.o.items.map(c => `${prod(c.pid)?.name || ''} (${weightLabel(c.w, prod(c.pid)?.unit)} × ${toFa(c.qty)})`).join(' + '));
 const needPay = computed(() => ['pending', 'failed', 'unpaid'].includes(props.o.pay_status) && step.value !== 4);
 const cancelBusy = ref(false);
 const canCancel = computed(() => props.o.fromServer && step.value === 0 && props.o.pay_status !== 'paid');

@@ -22,7 +22,7 @@
           </div>
           <p class="pd-desc">{{ p.desc }}</p>
           <div class="p-weights" role="radiogroup" aria-label="انتخاب وزن">
-            <button v-for="(w, i) in p.weights" :key="w" type="button" class="w-chip" :class="{ on: i === wIdx }" :aria-pressed="i === wIdx" @click="wIdx = i">{{ weightLabel(w) }}</button>
+            <button v-for="(w, i) in p.weights" :key="w" type="button" class="w-chip" :class="{ on: i === wIdx }" :aria-pressed="i === wIdx" @click="wIdx = i">{{ weightLabel(w, p.unit) }}</button>
           </div>
           <div class="pd-pricewrap">
             <div class="p-price">

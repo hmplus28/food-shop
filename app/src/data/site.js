@@ -13,15 +13,17 @@ export const LS = {
   del(k) { try { localStorage.removeItem('asalat_' + k); } catch (e) {} }
 };
 
-export const weightLabel = w =>
-  w === 1 ? 'عدد'
+export const weightLabel = (w, unit) =>
+  w === 1 ? (unit === 'pack' ? 'بسته' : 'عدد')
     : w >= 1000 ? (w % 1000 === 0 ? toFa(w / 1000) + ' کیلوگرم' : toFa((w / 1000).toFixed(1)).replace('.', '٫') + ' کیلوگرم')
       : toFa(w) + ' گرم';
 
 /* قیمت‌گذاری خودکار بر اساس وزن (پایه: قیمت هر کیلوگرم/عدد) */
 export const priceOf = (p, w) => {
-  const base = Math.round(p.price * w / 1000);
-  return p.disc ? Math.round(base * (100 - p.disc) / 100 / 1000) * 1000 : base;
+  const each = p.unit === 'piece' || p.unit === 'pack';           // قیمت هر عدد/بسته (نه کیلویی)
+  const base = each ? Math.round(p.price * w) : Math.round(p.price * w / 1000);
+  const step = each ? 100 : 1000;
+  return p.disc ? Math.round(base * (100 - p.disc) / 100 / step) * step : base;
 };
 
 export const FREE_SHIP = 1500000;      // سقف ارسال رایگان

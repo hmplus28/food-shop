@@ -43,14 +43,14 @@ class LoginSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'cat', 'img', 'price', 'weights', 'stock', 'disc',
+        fields = ['id', 'name', 'cat', 'img', 'price', 'unit', 'weights', 'stock', 'disc',
                   'grade', 'rate', 'sold', 'tags', 'sec', 'desc', 'hide']
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'cat', 'img', 'price', 'weights', 'stock', 'disc',
+        fields = ['name', 'cat', 'img', 'price', 'unit', 'weights', 'stock', 'disc',
                   'grade', 'rate', 'sold', 'tags', 'sec', 'desc', 'hide']
 
     def validate_price(self, v):
@@ -62,6 +62,14 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         if v and not (0 <= v <= 90):
             raise serializers.ValidationError('تخفیف بین ۰ تا ۹۰ درصد است')
         return v or 0
+
+    def validate(self, attrs):
+        unit = attrs.get('unit') or getattr(self.instance, 'unit', 'kg') or 'kg'
+        if unit not in ('kg', 'piece', 'pack'):
+            raise serializers.ValidationError('واحد فروش نامعتبر است')
+        if unit != 'kg':
+            attrs['weights'] = [1]                      # عدد/بسته: تعداد را مشتری با «تعداد» می‌گیرد
+        return attrs
 
     def validate_weights(self, v):
         if not v:

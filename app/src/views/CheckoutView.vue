@@ -63,7 +63,7 @@
         <div class="co-summary">
           <b style="display:block;margin-bottom:8px">فاکتور سفارش شما</b>
           <div v-for="c in cart.items" :key="c.pid + '-' + c.w" style="display:flex;justify-content:space-between;gap:8px;font-size:.82rem;padding:3px 0">
-            <span>{{ prod(c.pid)?.name }} <small style="color:var(--ink-3)">({{ weightLabel(c.w) }} × {{ toFa(c.qty) }})</small></span>
+            <span>{{ prod(c.pid)?.name }} <small style="color:var(--ink-3)">({{ weightLabel(c.w, prod(c.pid)?.unit) }} × {{ toFa(c.qty) }})</small></span>
             <b>{{ money(priceOf(prod(c.pid), c.w) * c.qty) }}</b>
           </div>
           <div style="border-top:1px dashed var(--line);margin:8px 0;padding-top:8px"></div>

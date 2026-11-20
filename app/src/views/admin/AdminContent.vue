@@ -10,6 +10,9 @@
       <p class="ad-sub">این موارد در بالای سایت، فوتر، صفحهٔ اصلی، مشاوره و صفحهٔ «تماس با ما» نمایش داده می‌شوند.</p>
       <h3 class="ad-h">اطلاعات تماس</h3>
       <div class="ad-grid">
+        <div class="fld w full"><label>لوگوی سایت (اختیاری؛ خالی = آیکن پیش‌فرض)</label><ImageField v-model="info.logoImg" /></div>
+        <div class="fld w"><label>عنوان کنار لوگو (هدر)</label><input v-model="info.logoName" type="text" maxlength="40" placeholder="خانم گل"></div>
+        <div class="fld w"><label>زیرعنوان لوگو</label><input v-model="info.logoTag" type="text" maxlength="60" placeholder="خشکبار و محصولات طبیعی"></div>
         <div class="fld w"><label>نام فروشگاه</label><input v-model="info.shopName" type="text" maxlength="80"></div>
         <div class="fld w"><label>تلفن (نمایشی، مثلاً ۰۲۱-۹۱۰۹۲۰۰۰)</label><input v-model="info.phone" type="text" maxlength="40"></div>
         <div class="fld w"><label>تلفن برای تماس (فقط عدد انگلیسی)</label><input v-model="info.phoneTel" type="text" dir="ltr" maxlength="20" placeholder="02191092000"></div>
@@ -92,6 +95,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { apiCall } from '../../services/api';
 import { toast } from '../../stores/ui';
+import ImageField from '../../components/ImageField.vue';
 import { shop, loadShop, DEFAULT_INFO } from '../../stores/shop';
 import { renderRichText } from '../../utils/richtext';
 import '../../assets/admin.css';

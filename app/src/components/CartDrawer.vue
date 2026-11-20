@@ -20,7 +20,7 @@
         <div class="ci-media"><img :src="prod(c.pid)?.img" :alt="prod(c.pid)?.name"></div>
         <div class="ci-info">
           <div class="ci-name">{{ prod(c.pid)?.name }}</div>
-          <span class="ci-w">{{ weightLabel(c.w) }}</span>
+          <span class="ci-w">{{ weightLabel(c.w, prod(c.pid)?.unit) }}</span>
           <div class="ci-row">
             <div class="ci-qty">
               <button aria-label="کاهش" @click="lineQty(i, -1)">−</button>

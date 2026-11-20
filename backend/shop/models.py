@@ -63,7 +63,9 @@ class Product(models.Model):
     cat = models.CharField('دسته', max_length=40, db_index=True)
     img = models.CharField('تصویر (URL)', max_length=500, blank=True, default='')
     price = models.BigIntegerField('قیمت پایه هر کیلو/عدد (تومان)')
-    weights = models.JSONField('وزن‌های مجاز (گرم)', default=list)
+    unit = models.CharField('واحد فروش', max_length=6, default='kg',
+                            choices=[('kg', 'کیلوگرم/گرم'), ('piece', 'عدد'), ('pack', 'بسته')])
+    weights = models.JSONField('وزن‌های مجاز (گرم)؛ برای عدد/بسته [1]', default=list)
     stock = models.IntegerField('موجودی', default=0)
     disc = models.IntegerField('تخفیف ٪', default=0)
     grade = models.CharField('درجه', max_length=60, blank=True, default='درجه یک')

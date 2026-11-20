@@ -21,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import (Banner, ConsultRequest, MediaFile, NavCat, NavLink, OrderEvent, Pack, Payment, TrustItem, Coupon, LuckyPrize, LuckyWin, Order, OrderItem, Page, Product, ShippingMethod,
                      ShopUser, SiteSetting, SmsLog)
 from .permissions import IsShopAdmin
-from .pricing import CANCELLED, STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
+from .pricing import base_price, CANCELLED, STATUS_LABELS, MAX_QTY_PER_LINE, compute_order, js_round, line_unit_price
 from .seed import ensure_seed
 from .serializers import (LoginSerializer, OrderCreateSerializer, OrderOutSerializer,
                           OrderStatusPatchSerializer, OrderTrackSerializer, ProductSerializer, ProductWriteSerializer,
@@ -117,7 +117,7 @@ def torob_item(p, names=None):
     ws = p.weights or [1]
     w = ws[min(1, len(ws) - 1)]
     price = line_unit_price(p, w)
-    old = js_round(p.price * w / 1000) if p.disc else 0
+    old = base_price(p, w) if p.disc else 0
     base = settings.SHOP_URL.rstrip('/')
     img = public_img(p.img)
     return {
@@ -467,7 +467,7 @@ class OrderTrackPatchView(APIView):
     permission_classes = [AllowAny]
 
     def get_permissions(self):
-        if self.request.method == 'PATCH':
+        if self.request.method in ('PATCH', 'DELETE'):
             return [IsShopAdmin()]
         return [AllowAny()]
 
@@ -481,6 +481,21 @@ class OrderTrackPatchView(APIView):
         if not o:
             return fail('سفارشی با این کد پیدا نشد', 404)
         return Response({'ok': True, **OrderTrackSerializer(o).data})
+
+    def delete(self, request, code):
+        """مدیر: حذف کامل سفارش (برای سفارش‌های آزمایشی/تکراری)؛ اگر لغو نشده بود موجودی برمی‌گردد.
+        سفارش پرداخت‌شدهٔ آنلاین حذف نمی‌شود (سابقهٔ مالی)؛ ابتدا باید لغو و تسویه شود."""
+        o = self._find(code)
+        if not o:
+            return fail('سفارشی با این کد پیدا نشد', 404)
+        if o.pay_status == 'paid' and o.status != CANCELLED:
+            return fail('این سفارش پرداخت آنلاین شده است؛ ابتدا آن را لغو کنید (و وجه را به مشتری برگردانید)، سپس حذف کنید', 400)
+        with transaction.atomic():
+            if o.status != CANCELLED:
+                _restore_stock(o)
+            code = o.code
+            o.delete()
+        return ok({'deleted': code})
 
     def patch(self, request, code):
         """مدیر: تغییر وضعیت و/یا ثبت کد رهگیری و توضیح برای مشتری — هر تغییر در تاریخچه می‌ماند؛ لغو، موجودی را برمی‌گرداند"""
@@ -999,7 +1014,7 @@ class LuckyMineView(APIView):
 
 # ---------------- مدیر: اطلاعات و محتوا ----------------
 
-_INFO_KEYS = {'shopName': 80, 'phone': 40, 'phoneTel': 20, 'phone2': 40, 'phone2Tel': 20, 'whatsapp': 20, 'email': 120, 'address': 300, 'hours': 120,
+_INFO_KEYS = {'shopName': 80, 'logoImg': 300, 'logoName': 40, 'logoTag': 60, 'phone': 40, 'phoneTel': 20, 'phone2': 40, 'phone2Tel': 20, 'whatsapp': 20, 'email': 120, 'address': 300, 'hours': 120,
               'instagram': 200, 'telegram': 200, 'topbarMsg': 160, 'footerAbout': 600, 'heroTag': 80, 'heroTitle': 120,
               'heroTitleEm': 60, 'heroText': 300, 'consultText': 400, 'returnsNote': 160}
 

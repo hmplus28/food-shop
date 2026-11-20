@@ -120,6 +120,7 @@ function normalizeProduct(r, i) {
     cat: String(r.cat ?? r.category ?? r.category_id ?? 'ajil'),
     img: localImg(String(r.img ?? r.image ?? r.photo ?? r.url ?? '')),
     price: num(r.price),
+    unit: ['piece', 'pack'].includes(r.unit) ? r.unit : 'kg',
     weights: list(r.weights ?? r.weight_options).length ? list(r.weights ?? r.weight_options) : [500],
     stock: num(r.stock, 0),
     disc: num(r.disc ?? r.discount, 0),
@@ -432,6 +433,7 @@ export async function myOrdersApi() {
 function productPayload(p) {
   return {
     name: p.name, cat: p.cat, img: storeImg(p.img || ''), price: Number(p.price) || 0,
+    unit: ['piece', 'pack'].includes(p.unit) ? p.unit : 'kg',
     weights: Array.isArray(p.weights) ? p.weights : [500],
     stock: Number(p.stock) || 0, disc: Number(p.disc) || 0,
     grade: p.grade || 'درجه یک', rate: Number(p.rate) || 4.5, sold: Number(p.sold) || 0,

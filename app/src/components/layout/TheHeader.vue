@@ -4,8 +4,9 @@
       <div class="hd-inner">
         <button class="burger" aria-label="باز کردن منو" @click="openNav()"><svg class="icon"><use href="#i-menu" /></svg></button>
         <RouterLink class="logo" to="/" aria-label="فروشگاه خانم گل">
-          <span class="logo-mark"><svg class="icon"><use href="#i-nut" /></svg></span>
-          <span class="logo-text"><b>خانم گل</b><small>خشکبار و محصولات طبیعی</small></span>
+          <img v-if="shop.info.logoImg" class="logo-img" :src="imgSrc(shop.info.logoImg)" :alt="shop.info.logoName || shop.info.shopName">
+          <span v-else class="logo-mark"><svg class="icon"><use href="#i-nut" /></svg></span>
+          <span class="logo-text"><b>{{ shop.info.logoName || 'خانم گل' }}</b><small>{{ shop.info.logoTag || 'خشکبار و محصولات طبیعی' }}</small></span>
         </RouterLink>
         <div class="search-wrap">
           <div class="search-box">
@@ -103,6 +104,8 @@ import { cartCount } from '../../stores/cart';
 import { favCount } from '../../stores/fav';
 import { auth } from '../../stores/auth';
 import { addToCart } from '../../stores/cart';
+import { shop } from '../../stores/shop';
+import { imgSrc } from '../../services/api';
 
 const router = useRouter();
 const route = useRoute();
