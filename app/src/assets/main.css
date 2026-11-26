@@ -398,6 +398,10 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .p-add:active{transform:scale(.94)}
 .p-add .icon{width:16px;height:16px}
 .p-add.done{background:var(--gold-600)}
+/* «تماس بگیرید» — محصول بدون قیمت (قیمت ۰): جای قیمت و دکمهٔ خرید */
+.p-price .p-call{display:inline-flex;align-items:center;gap:5px;font-size:.9rem;font-weight:800;color:var(--brand-700)}
+.p-add.p-add-call{background:var(--gold-600);text-decoration:none}
+.p-add.p-add-call:hover{background:var(--gold)}
 @media(min-width:576px){.p-name{font-size:.95rem}}
 
 /* ================= ریل افقی محصولات (موبایل: چپ/راست) ================= */

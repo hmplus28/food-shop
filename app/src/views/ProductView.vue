@@ -26,17 +26,23 @@
           </div>
           <div class="pd-pricewrap">
             <div class="p-price">
-              <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
-              <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+              <span v-if="!p.price" class="p-call">تماس بگیرید</span>
+              <template v-else>
+                <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
+                <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+              </template>
             </div>
-            <div class="qty">
+            <div v-if="p.price" class="qty">
               <button type="button" aria-label="کاهش" @click="qty = Math.max(1, qty - 1)">−</button>
               <span class="qv">{{ toFa(qty) }}</span>
               <button type="button" aria-label="افزایش" @click="qty = Math.min(9, qty + 1)">+</button>
             </div>
           </div>
           <div class="pd-actions">
-            <button class="btn btn-brand btn-lg" :disabled="p.stock === 0" @click="addToCart(p.id, curW, qty)">
+            <a v-if="!p.price" class="btn btn-brand btn-lg p-add-call" :href="telLink">
+              <svg class="icon"><use href="#i-phone" /></svg> تماس برای استعلام قیمت
+            </a>
+            <button v-else class="btn btn-brand btn-lg" :disabled="p.stock === 0" @click="addToCart(p.id, curW, qty)">
               <svg class="icon"><use href="#i-cart" /></svg> افزودن به سبد خرید
             </button>
             <button class="btn btn-light btn-lg" :class="{ 'is-fav': isFav(p.id) }" @click="toggleFav(p.id)">
@@ -72,7 +78,7 @@ import { prod, catOf, visibleProducts } from '../data/catalog';
 import { toFa, money, weightLabel, priceOf } from '../data/site';
 import { useSeo, SITE_URL } from '../composables/useSeo';
 import { productSeo } from '../data/seoProduct';
-import { shop, freeFrom, freeShipOn } from '../stores/shop';
+import { shop, freeFrom, freeShipOn, telLink } from '../stores/shop';
 import { isFav, toggleFav } from '../stores/fav';
 import { addToCart } from '../stores/cart';
 import ProductCard from '../components/ProductCard.vue';

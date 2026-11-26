@@ -472,7 +472,7 @@ function startEdit(p) { editing.value = { ...p, unit: p.unit || 'kg', tags: [...
 async function save() {
   const e = editing.value;
   if (!e.name.trim()) return toast('نام محصول را وارد کنید', 'err');
-  if (!e.price || e.price <= 0) return toast('قیمت پایه معتبر وارد کنید', 'err');
+  if (e.price == null || e.price < 0) return toast('قیمت پایه معتبر وارد کنید (۰ = تماس بگیرید)', 'err');
   if (e.disc < 0 || e.disc > 90) return toast('تخفیف باید بین ۰ تا ۹۰ باشد', 'err');
   if (e.unit === 'kg') {
     const ws = [...new Set(toEn(weightsText.value).split(/[،,\s]+/).map(x => parseInt(x, 10)).filter(x => x > 0 && x <= 50000))].sort((a, b) => a - b);

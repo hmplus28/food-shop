@@ -37,14 +37,19 @@
         <div class="f-grid c2">
           <div class="fld w"><label>نام و نام خانوادگی گیرنده *</label><input v-model="f.name" type="text" placeholder="مثلاً سارا محمدی"></div>
           <div class="fld w"><label>موبایل گیرنده *</label><input v-model="f.phone" type="tel" inputmode="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" dir="rtl"></div>
-          <div class="fld w"><label>استان</label>
-            <select v-model="f.prov">
-              <option>تهران</option><option>البرز</option><option>اصفهان</option><option>فارس</option>
-              <option>خراسان رضوی</option><option>آذربایجان شرقی</option><option>سایر استان‌ها</option>
-            </select>
+          <template v-if="!isPickup">
+            <div class="fld w"><label>استان</label>
+              <select v-model="f.prov">
+                <option>تهران</option><option>البرز</option><option>اصفهان</option><option>فارس</option>
+                <option>خراسان رضوی</option><option>آذربایجان شرقی</option><option>سایر استان‌ها</option>
+              </select>
+            </div>
+            <div class="fld w"><label>شهر *</label><input v-model="f.city" type="text" placeholder="مثلاً تهران"></div>
+            <div class="fld w" style="grid-column:1/-1"><label>آدرس کامل پستی *</label><textarea v-model="f.addr" rows="2" placeholder="خیابان، کوچه، پلاک، واحد…"></textarea></div>
+          </template>
+          <div v-else class="fld w" style="grid-column:1/-1">
+            <div class="id-note ok" style="margin:0">تحویل حضوری: سفارش را از محل فروشگاه تحویل می‌گیرید؛ برای هماهنگی زمان با شما تماس می‌گیریم. 🏬</div>
           </div>
-          <div class="fld w"><label>شهر</label><input v-model="f.city" type="text" placeholder="مثلاً تهران"></div>
-          <div class="fld w" style="grid-column:1/-1"><label>آدرس کامل پستی *</label><textarea v-model="f.addr" rows="2" placeholder="خیابان، کوچه، پلاک، واحد…"></textarea></div>
           <div class="fld w" style="grid-column:1/-1"><label>توضیح سفارش (اختیاری)</label><input v-model="f.note" type="text" maxlength="300" placeholder="مثلاً زمان مناسب تحویل"></div>
         </div>
         <h4 style="margin:16px 0 10px;font-size:.92rem">روش ارسال:</h4>
@@ -74,7 +79,10 @@
             <b>{{ payShipCost === 0 ? 'رایگان 🎉' : money(payShipCost) }}</b>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:1rem;padding-top:8px"><b>قابل پرداخت</b><b style="color:var(--brand-700)">{{ money(payTotal) }} تومان</b></div>
-          <div style="margin-top:10px;font-size:.78rem;color:var(--ink-2)">📍 {{ f.prov }}، {{ f.city }}، {{ f.addr }} — {{ f.name }} ({{ toFa(phoneEn) }})</div>
+          <div style="margin-top:10px;font-size:.78rem;color:var(--ink-2)">
+            <template v-if="!isPickup">📍 {{ f.prov }}، {{ f.city }}، {{ f.addr }} — {{ f.name }} ({{ toFa(phoneEn) }})</template>
+            <template v-else>🏬 تحویل حضوری در فروشگاه — {{ f.name }} ({{ toFa(phoneEn) }})</template>
+          </div>
         </div>
         <!-- کد تخفیف (فقط بعد از ورود) -->
         <div class="coupon-row" style="margin:12px 0">
@@ -209,6 +217,7 @@ onMounted(() => {
 });
 
 const shipOpt = computed(() => shipMethods.value.find(m => m.type === shipType.value) || shipMethods.value[0] || { label: '', days: '', cost: 0 });
+const isPickup = computed(() => shipType.value === 'hadir');
 const phoneEn = computed(() => toEn(f.phone).replace(/\D/g, ''));
 const payShipCost = computed(() => (shipFree.value ? 0 : shipOpt.value.cost));
 const payTotal = computed(() => Math.max(0, cartSub.value - couponVal.value.off + payShipCost.value));
@@ -216,8 +225,10 @@ const payTotal = computed(() => Math.max(0, cartSub.value - couponVal.value.off 
 function next() {
   if (!f.name.trim()) return toast('نام و نام خانوادگی را وارد کنید', 'err');
   if (!/^09\d{9}$/.test(phoneEn.value)) return toast('شماره موبایل معتبر وارد کنید (۰۹…)', 'err');
-  if (!f.city.trim()) return toast('شهر را وارد کنید', 'err');
-  if (f.addr.trim().length < 10) return toast('آدرس کامل پستی را وارد کنید (حداقل ۱۰ نویسه: خیابان، کوچه، پلاک)', 'err');
+  if (!isPickup.value) {
+    if (!f.city.trim()) return toast('شهر را وارد کنید', 'err');
+    if (f.addr.trim().length < 10) return toast('آدرس کامل پستی را وارد کنید (حداقل ۱۰ نویسه: خیابان، کوچه، پلاک)', 'err');
+  }
   if (!shipType.value) return toast('روش ارسال را انتخاب کنید', 'err');
   errMsg.value = '';
   step.value = 2;

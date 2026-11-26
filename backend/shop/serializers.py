@@ -54,8 +54,8 @@ class ProductWriteSerializer(serializers.ModelSerializer):
                   'grade', 'rate', 'sold', 'tags', 'sec', 'desc', 'hide']
 
     def validate_price(self, v):
-        if v is None or v <= 0:
-            raise serializers.ValidationError('قیمت پایه معتبر وارد کنید')
+        if v is None or v < 0:
+            raise serializers.ValidationError('قیمت پایه معتبر وارد کنید (۰ = تماس بگیرید)')
         return v
 
     def validate_disc(self, v):
@@ -103,18 +103,13 @@ class OrderCreateSerializer(serializers.Serializer):
         from .sms import normalize_phone
         name = (v.get('name') or '').strip()
         phone = normalize_phone(v.get('phone'))
-        city = (v.get('city') or '').strip()
-        addr = (v.get('addr') or '').strip()
         if len(name) < 3:
             raise serializers.ValidationError('نام و نام خانوادگی گیرنده را کامل وارد کنید')
         if not phone:
             raise serializers.ValidationError('شماره موبایل گیرنده معتبر نیست (۰۹…)')
-        if not city:
-            raise serializers.ValidationError('شهر را وارد کنید')
-        if len(addr) < 10:
-            raise serializers.ValidationError('آدرس کامل پستی را وارد کنید')
+        # شهر/آدرس فقط برای ارسال پستی الزامی است؛ تحویل حضوری (hadir) در ویو بررسی می‌کند
         return {'name': name, 'phone': phone, 'prov': (v.get('prov') or '').strip(),
-                'city': city, 'addr': addr}
+                'city': (v.get('city') or '').strip(), 'addr': (v.get('addr') or '').strip()}
 
     def validate_items(self, v):
         if not v or len(v) > 30:

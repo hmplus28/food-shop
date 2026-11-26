@@ -31,7 +31,8 @@ export const BASE_SHIP = 89000;        // هزینه پیش‌فرض پیک
 export const SHIP_OPTIONS = [
   { type: 'peyk',  label: 'پیک فوری (تهران)',          days: 'همان روز',        cost: 89000, hint: 'تحویل همان روز، ۲ تا ۵ ساعت کاری' },
   { type: 'post',  label: 'پست پیشتاز (سراسر کشور)',   days: '۲ تا ۴ روز کاری', cost: 59000, hint: '۲ تا ۴ روز کاری' },
-  { type: 'tipax', label: 'تیپاکس (سراسر کشور)',       days: '۱ تا ۳ روز کاری', cost: 99000, hint: '۱ تا ۳ روز کاری، بسته‌های حجیم' }
+  { type: 'tipax', label: 'تیپاکس (سراسر کشور)',       days: '۱ تا ۳ روز کاری', cost: 99000, hint: '۱ تا ۳ روز کاری، بسته‌های حجیم' },
+  { type: 'hadir', label: 'تحویل حضوری در فروشگاه',    days: 'هماهنگی تلفنی',   cost: 0,     hint: 'بدون هزینهٔ ارسال؛ تحویل در محل فروشگاه' }
 ];
 
 export const fmtHMS = ms => {

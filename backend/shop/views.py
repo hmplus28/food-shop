@@ -344,6 +344,8 @@ class OrderCreateListView(APIView):
             p = Product.objects.filter(id=it['pid']).first()
             if not p:
                 return fail(f'محصول شمارهٔ {it["pid"]} یافت نشد')
+            if not p.price:
+                return fail(f'قیمت «{p.name}» هنوز ثبت نشده؛ لطفاً برای خرید تماس بگیرید')
             if it['w'] not in (p.weights or []):
                 return fail(f'وزن انتخابی برای «{p.name}» مجاز نیست')
             if it['qty'] > MAX_QTY_PER_LINE:
@@ -355,6 +357,12 @@ class OrderCreateListView(APIView):
             money = compute_order(pairs, d.get('coupon'), d.get('shipType') or d.get('ship_type'), first_order, request.user)
         except ValueError as e:
             return fail(str(e))
+        # تحویل حضوری (hadir) بدون آدرس؛ بقیهٔ روش‌های ارسال نیازمند شهر و آدرس کامل پستی
+        if money['ship_type'] != 'hadir':
+            if not addr['city']:
+                return fail('شهر را وارد کنید')
+            if len(addr['addr']) < 10:
+                return fail('آدرس کامل پستی را وارد کنید')
 
         client_code = (d.get('client_code') or request.data.get('code') or '').strip().upper()
         user = request.user

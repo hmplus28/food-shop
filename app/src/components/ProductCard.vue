@@ -25,10 +25,13 @@
       <p style="font-size:.72rem;color:var(--ink-3);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ p.desc }}</p>
       <div class="p-pricewrap">
         <div class="p-price">
-          <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
-          <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+          <span v-if="!p.price" class="p-call">تماس بگیرید</span>
+          <template v-else>
+            <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
+            <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+          </template>
         </div>
-        <div class="p-actions">
+        <div v-if="p.price" class="p-actions">
           <div class="qty">
             <button type="button" aria-label="کاهش" @click="qty = Math.max(1, qty - 1)">−</button>
             <span class="qv">{{ toFa(qty) }}</span>
@@ -36,7 +39,8 @@
           </div>
         </div>
       </div>
-      <button type="button" class="p-add" @click="addToCart(p.id, curW, qty)"><svg class="icon"><use href="#i-cart" /></svg> افزودن به سبد</button>
+      <a v-if="!p.price" class="p-add p-add-call" :href="telLink"><svg class="icon"><use href="#i-phone" /></svg> تماس بگیرید</a>
+      <button v-else type="button" class="p-add" @click="addToCart(p.id, curW, qty)"><svg class="icon"><use href="#i-cart" /></svg> افزودن به سبد</button>
     </div>
   </article>
 </template>
@@ -45,6 +49,7 @@
 import { ref, computed } from 'vue';
 import { toFa, weightLabel, priceOf, money } from '../data/site';
 import { catOf } from '../data/catalog';
+import { telLink } from '../stores/shop';
 import { isFav, toggleFav } from '../stores/fav';
 import { addToCart } from '../stores/cart';
 
