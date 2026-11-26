@@ -26,6 +26,11 @@
       <div class="p-pricewrap">
         <div class="p-price">
           <span v-if="!p.price" class="p-call">تماس بگیرید</span>
+          <template v-else-if="consumerOf(p, curW) > priceOf(p, curW)">
+            <span class="p-msrp">قیمت مصرف‌کننده: <s>{{ money(consumerOf(p, curW)) }}</s> تومان</span>
+            <span class="p-now"><span class="p-own">قیمت اختصاصی:</span> <b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+            <span class="p-under"><svg class="icon"><use href="#i-check" /></svg> کمتر از قیمت مصرف‌کننده</span>
+          </template>
           <template v-else>
             <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
             <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
@@ -47,7 +52,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { toFa, weightLabel, priceOf, money } from '../data/site';
+import { toFa, weightLabel, priceOf, money, consumerOf } from '../data/site';
 import { catOf } from '../data/catalog';
 import { telLink } from '../stores/shop';
 import { isFav, toggleFav } from '../stores/fav';

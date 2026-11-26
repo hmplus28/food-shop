@@ -26,6 +26,14 @@ export const priceOf = (p, w) => {
   return p.disc ? Math.round(base * (100 - p.disc) / 100 / step) * step : base;
 };
 
+/* قیمت مصرف‌کننده (هر کیلو/عدد × وزن) — فقط وقتی مدیر گزینهٔ نمایش را فعال کرده باشد؛ ۰ یعنی خاموش.
+   نمایش فقط وقتی معنا دارد که از قیمت فروشِ نهایی بیشتر باشد (قیمت اختصاصی زیر قیمت مصرف‌کننده). */
+export const consumerOf = (p, w) => {
+  if (!p || !p.showConsumer || !p.consumerPrice || p.consumerPrice <= 0) return 0;
+  const each = p.unit === 'piece' || p.unit === 'pack';
+  return each ? Math.round(p.consumerPrice * w) : Math.round(p.consumerPrice * w / 1000);
+};
+
 export const FREE_SHIP = 1500000;      // سقف ارسال رایگان
 export const BASE_SHIP = 89000;        // هزینه پیش‌فرض پیک
 export const SHIP_OPTIONS = [

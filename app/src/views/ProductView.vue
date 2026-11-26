@@ -27,6 +27,11 @@
           <div class="pd-pricewrap">
             <div class="p-price">
               <span v-if="!p.price" class="p-call">تماس بگیرید</span>
+              <template v-else-if="consumerOf(p, curW) > priceOf(p, curW)">
+                <span class="p-msrp">قیمت مصرف‌کننده: <s>{{ money(consumerOf(p, curW)) }}</s> تومان</span>
+                <span class="p-now"><span class="p-own">قیمت اختصاصی:</span> <b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
+                <span class="p-under"><svg class="icon"><use href="#i-check" /></svg> کمتر از قیمت مصرف‌کننده</span>
+              </template>
               <template v-else>
                 <span v-if="p.disc" class="p-old">{{ money(p.price * curW / 1000) }}</span>
                 <span class="p-now"><b class="pv">{{ money(priceOf(p, curW)) }}</b><small>تومان</small></span>
@@ -38,6 +43,9 @@
               <button type="button" aria-label="افزایش" @click="qty = Math.min(9, qty + 1)">+</button>
             </div>
           </div>
+          <p v-if="p.price && consumerOf(p, curW) > priceOf(p, curW)" class="pd-msrp-note">
+            <svg class="icon"><use href="#i-check" /></svg> قیمت درج‌شده، قیمت مصرف‌کنندهٔ بازار است؛ خانم گل همین کالا را به‌صورت اختصاصی، کمتر از قیمت مصرف‌کننده عرضه می‌کند.
+          </p>
           <div class="pd-actions">
             <a v-if="!p.price" class="btn btn-brand btn-lg p-add-call" :href="telLink">
               <svg class="icon"><use href="#i-phone" /></svg> تماس برای استعلام قیمت
@@ -75,7 +83,7 @@
 import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { prod, catOf, visibleProducts } from '../data/catalog';
-import { toFa, money, weightLabel, priceOf } from '../data/site';
+import { toFa, money, weightLabel, priceOf, consumerOf } from '../data/site';
 import { useSeo, SITE_URL } from '../composables/useSeo';
 import { productSeo } from '../data/seoProduct';
 import { shop, freeFrom, freeShipOn, telLink } from '../stores/shop';
@@ -105,6 +113,8 @@ watch(p, pp => { if (pp) useSeo(productSeo(pp, SITE_URL)); }, { immediate: true 
 .pd-title{font-size:clamp(1.2rem,2.6vw,1.7rem);margin:6px 0 10px}
 .pd-desc{color:var(--ink-2);font-size:.92rem;margin:10px 0 16px}
 .pd-pricewrap{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--brand-050);border:1px solid var(--brand-100);border-radius:var(--r-md);padding:14px 16px;margin:14px 0}
+.pd-msrp-note{display:flex;align-items:center;gap:7px;margin:-6px 0 12px;font-size:.78rem;font-weight:600;color:var(--brand-700)}
+.pd-msrp-note .icon{width:14px;height:14px;flex:none}
 .pd-actions{display:flex;gap:10px;flex-wrap:wrap}
 .is-fav{border-color:var(--gold);color:var(--gold-600)}
 .pd-perks{margin-top:16px;display:grid;gap:8px}

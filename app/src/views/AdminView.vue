@@ -372,6 +372,12 @@
           <p v-else class="ad-sub" style="grid-column:1/-1;margin:0">مشتری تعداد را خودش در سبد انتخاب می‌کند؛ نیازی به تعیین وزن نیست.</p>
           <div class="fld w"><label>تخفیف (٪)</label><input v-model.number="editing.disc" type="number" min="0" max="90"></div>
           <div class="fld w"><label>موجودی</label><input v-model.number="editing.stock" type="number" min="0"></div>
+          <label class="chk" style="grid-column:1/-1"><input v-model="editing.showConsumer" type="checkbox"> <b>نمایش قیمت مصرف‌کننده</b> (قیمت فروش به‌صورت «قیمت اختصاصی» زیر قیمت مصرف‌کنندهٔ خط‌خورده نمایش داده می‌شود)</label>
+          <div v-if="editing.showConsumer" class="fld w" style="grid-column:1/-1">
+            <label>قیمت مصرف‌کننده (تومان) *</label>
+            <input v-model.number="editing.consumerPrice" type="number" min="0" :step="editing.unit === 'kg' ? 10000 : 500">
+            <p class="ad-sub">قیمت رسمی بازار را وارد کنید؛ روی سایت با خط خورده و برچسب «قیمت مصرف‌کننده» نمایش داده می‌شود و تیک «کمتر از قیمت مصرف‌کننده» می‌خورد. اگر بیشتر از قیمت فروش نباشد، نمایش داده نمی‌شود.</p>
+          </div>
           <div class="fld w"><label>امتیاز (۰ تا ۵)</label><input v-model.number="editing.rate" type="number" min="0" max="5" step="0.1"></div>
           <div class="fld w" style="grid-column:1/-1"><label>توضیحات</label><textarea v-model="editing.desc" rows="2"></textarea></div>
           <div class="fld w" style="grid-column:1/-1"><label>تصویر محصول</label><ImageField v-model="editing.img" /></div>
@@ -462,18 +468,19 @@ async function loadProducts() {
 async function afterChange() { await Promise.all([loadProducts(), loadStats(), Promise.all([loadShop(), syncCatalog()]).then(pruneCart)]); }
 
 function startNew() {
-  editing.value = { id: 0, name: '', cat: 'ajil', img: IMG + '66fd0cba7ee8.jpg', price: 1000000, unit: 'kg', weights: [250, 500, 1000, 2000], stock: 20, disc: 0, grade: 'درجه یک', rate: 4.5, sold: 0, tags: [], sec: [], desc: '', hide: false };
+  editing.value = { id: 0, name: '', cat: 'ajil', img: IMG + '66fd0cba7ee8.jpg', price: 1000000, unit: 'kg', weights: [250, 500, 1000, 2000], stock: 20, disc: 0, consumerPrice: 0, showConsumer: false, grade: 'درجه یک', rate: 4.5, sold: 0, tags: [], sec: [], desc: '', hide: false };
   tagsText.value = ''; weightsText.value = '250, 500, 1000, 2000';
 }
 const tagsText = ref('');
 const weightsText = ref('');
-function startEdit(p) { editing.value = { ...p, unit: p.unit || 'kg', tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; tagsText.value = p.tags.join('، '); weightsText.value = p.weights.join(', '); }
+function startEdit(p) { editing.value = { ...p, unit: p.unit || 'kg', consumerPrice: Number(p.consumerPrice) || 0, showConsumer: !!p.showConsumer, tags: [...p.tags], sec: [...p.sec], weights: [...p.weights], hide: !!p.hide }; tagsText.value = p.tags.join('، '); weightsText.value = p.weights.join(', '); }
 
 async function save() {
   const e = editing.value;
   if (!e.name.trim()) return toast('نام محصول را وارد کنید', 'err');
   if (e.price == null || e.price < 0) return toast('قیمت پایه معتبر وارد کنید (۰ = تماس بگیرید)', 'err');
   if (e.disc < 0 || e.disc > 90) return toast('تخفیف باید بین ۰ تا ۹۰ باشد', 'err');
+  if (e.showConsumer && (!e.consumerPrice || e.consumerPrice <= 0)) return toast('برای نمایش قیمت مصرف‌کننده، مبلغ آن را وارد کنید', 'err');
   if (e.unit === 'kg') {
     const ws = [...new Set(toEn(weightsText.value).split(/[،,\s]+/).map(x => parseInt(x, 10)).filter(x => x > 0 && x <= 50000))].sort((a, b) => a - b);
     if (!ws.length) return toast('حداقل یک وزن معتبر (گرم) وارد کنید؛ مثلاً ۵۰۰، ۱۰۰۰', 'err');

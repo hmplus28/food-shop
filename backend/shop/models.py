@@ -68,6 +68,10 @@ class Product(models.Model):
     weights = models.JSONField('وزن‌های مجاز (گرم)؛ برای عدد/بسته [1]', default=list)
     stock = models.IntegerField('موجودی', default=0)
     disc = models.IntegerField('تخفیف ٪', default=0)
+    consumer_price = models.BigIntegerField('قیمت مصرف‌کننده (تومان)', default=0,
+                                            help_text='قیمت رسمی بازار؛ ۰ = خاموش. روی سایت با خط خورده نمایش داده می‌شود')
+    show_consumer_price = models.BooleanField('نمایش قیمت مصرف‌کننده', default=False,
+                                              help_text='قیمت فروش به‌صورت «قیمت اختصاصی» زیر قیمت مصرف‌کنندهٔ خط‌خورده نمایش داده می‌شود')
     grade = models.CharField('درجه', max_length=60, blank=True, default='درجه یک')
     rate = models.FloatField('امتیاز', default=4.5)
     sold = models.IntegerField('فروش', default=0)

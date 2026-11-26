@@ -387,6 +387,13 @@ h1,h2,h3,h4{line-height:1.45;font-weight:800}
 .p-price small{font-size:.68rem;color:var(--ink-3);font-weight:500}
 .p-price .p-old{font-size:.76rem;color:var(--ink-3);text-decoration:line-through;display:block;line-height:1.3}
 .p-price .p-now{display:flex;align-items:baseline;gap:4px}
+/* قیمت مصرف‌کنندهٔ خط‌خورده + قیمت اختصاصی (کمتر از قیمت مصرف‌کننده) */
+.p-price .p-msrp{display:block;font-size:.72rem;color:var(--ink-3);line-height:1.5}
+.p-price .p-msrp s{text-decoration:line-through;text-decoration-thickness:1.5px}
+.p-price .p-own{font-size:.72rem;font-weight:700;color:var(--brand-700)}
+.p-price .p-under{display:inline-flex;align-items:center;gap:3px;font-size:.66rem;font-weight:700;color:var(--brand-700);
+  background:var(--brand-050);border:1px solid var(--brand-100);border-radius:99px;padding:1px 7px;margin-top:3px}
+.p-price .p-under .icon{width:11px;height:11px}
 .p-actions{display:flex;gap:7px;align-items:center}
 .qty{display:flex;align-items:center;border:1.5px solid var(--line-2);border-radius:11px;overflow:hidden;background:#fff}
 .qty button{width:30px;height:36px;display:grid;place-items:center;color:var(--brand-700);font-weight:900;font-size:1.05rem}

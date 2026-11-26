@@ -199,7 +199,8 @@ st, r = req('POST', '/orders', {**order_body, 'shipType': 'drone'})
 check('orders POST ارسال نامعتبر: پیام فارسی', r.get('ok') is False
       and 'ارسال' in (r.get('msg') or ''), r)
 st, r = req('POST', '/orders', {**order_body, 'addr': {**order_body['addr'], 'addr': 'کوتاه'}})
-check('orders POST آدرس ناقص: کد ۴۰۰', st == 400 and r.get('ok') is False, f'{st} {r}')
+check('orders POST آدرس ناقص: پیام فارسی (قرارداد ۲۰۰+ok:false)', st == 200 and r.get('ok') is False
+      and 'آدرس' in (r.get('msg') or ''), f'{st} {r}')
 
 # ---------------- ۶) پیگیری عمومی ----------------
 st, r = req('GET', f'/orders/{ORDER_CODE}')
@@ -298,8 +299,10 @@ st, pub = req('GET', '/products')
 check('محصول مخفی در فهرست عمومی نیست', all(p['id'] != NEW_ID for p in pub), NEW_ID)
 st, r = req('GET', '/products?all=1', token=ADMIN_TOKEN)
 check('محصول مخفی با ?all=1 برای مدیر هست', any(p['id'] == NEW_ID for p in r), NEW_ID)
-st, r = req('POST', '/products', {**newp, 'price': 0}, token=ADMIN_TOKEN)
+st, r = req('POST', '/products', {**newp, 'price': -1}, token=ADMIN_TOKEN)
 check('products POST قیمت نامعتبر: کد ۴۰۰', st == 400 and r.get('ok') is False, f'{st} {r}')
+st, r = req('POST', '/products', {**newp, 'price': 0, 'show_consumer_price': True, 'consumer_price': 0}, token=ADMIN_TOKEN)
+check('products POST نمایش قیمت مصرف‌کننده بدون مبلغ: کد ۴۰۰', st == 400 and r.get('ok') is False, f'{st} {r}')
 st, r = req('DELETE', f'/products/{NEW_ID}', token=ADMIN_TOKEN)
 check('products DELETE مدیر: ok و deleted', st == 200 and r.get('ok') and r.get('deleted') == NEW_ID, f'{st} {r}')
 st, r = req('GET', f'/products/{NEW_ID}')

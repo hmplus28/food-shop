@@ -14,8 +14,8 @@ class ShopUserAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'thumb', 'name', 'cat', 'price', 'disc', 'stock', 'hide')
-    list_editable = ('price', 'stock', 'disc', 'hide')
+    list_display = ('id', 'thumb', 'name', 'cat', 'price', 'consumer_price', 'disc', 'stock', 'hide')
+    list_editable = ('price', 'consumer_price', 'stock', 'disc', 'hide')
     list_filter = ('cat', 'hide')
     search_fields = ('name',)
 
