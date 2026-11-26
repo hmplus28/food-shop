@@ -8,6 +8,7 @@
   ۱۲هگزِ قطعی (مشتق از نام فایل) و ردیف MediaFile هم ساخته می‌شود تا از
   /api/v1/media/<name> سرو شود و پنل ادمین هم در کتابخانهٔ تصاویر ببیندش.
 - قیمت ۰ یعنی «تماس بگیرید» — فرانت برای این محصولات دکمهٔ خرید را به تماس تبدیل می‌کند.
+- محصولات در ریل «پرفروش‌ترین‌ها» صفحهٔ اصلی هم نمایش داده می‌شوند (sec=best).
 - روش ارسال «تحویل حضوری» (hadir) هم اگر نبود ساخته می‌شود (هزینهٔ صفر).
 """
 import shutil
@@ -93,17 +94,22 @@ def ensure_categories() -> dict:
 
 
 def ensure_products() -> dict:
-    out = {'new': [], 'kept': 0}
+    out = {'new': [], 'kept': 0, 'home_updated': 0}
     for slug, name, cat, price, unit, desc in GROCERY_PRODUCTS:
         img = 'media/' + _hex12(slug) + '.jpg'
-        if Product.objects.filter(name=name).exists():
+        p = Product.objects.filter(name=name).first()
+        if p:
             out['kept'] += 1
+            if 'best' not in (p.sec or []):        # نمایش در ریل «پرفروش‌ترین‌ها» صفحهٔ اصلی
+                p.sec = list(p.sec or []) + ['best']
+                p.save(update_fields=['sec'])
+                out['home_updated'] += 1
             continue
         Product.objects.create(
             name=name, cat=cat, img=img, price=price, unit=unit,
             weights=[1] if unit != 'kg' else [250, 500, 1000],
             stock=30, disc=0, grade='درجه یک', rate=4.6, sold=0,
-            tags=['خواربار'], sec=[], desc=desc, hide=False)
+            tags=['خواربار'], sec=['best'], desc=desc, hide=False)
         out['new'].append(name)
     return out
 

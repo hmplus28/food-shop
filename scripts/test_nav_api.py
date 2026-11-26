@@ -31,10 +31,14 @@ r = c.get('/api/v1/site')
 assert r.status_code == 200, r.status_code
 d = r.json()
 cats, menu = d.get('cats'), d.get('menu')
-assert isinstance(cats, list) and len(cats) == 13, f'cats={len(cats or [])}'
+assert isinstance(cats, list) and len(cats) == 12, f'cats={len(cats or [])}'
+with_prod = set(Product.objects.filter(hide=False).values_list('cat', flat=True))
+expect = [c.slug for c in NavCat.objects.filter(active=True) if c.slug in with_prod]
+assert [x['id'] for x in cats] == expect, f'cats={[x["id"] for x in cats]} expect={expect}'
+assert 'giftbox' not in [x['id'] for x in cats], 'دستهٔ بدون محصول باید از هدر حذف شود'
 assert cats[0]['id'] == 'ajil' and cats[0]['name'] == 'آجیل و مغزها', cats[0]
 assert cats[0]['icon'] == 'i-nut' and cats[0]['subs'], cats[0]
-assert cats[12]['hot'] is True and cats[12]['feat']['img'], cats[12]
+assert cats[-1]['id'] == 'tea', cats[-1]
 assert menu and menu[0]['label'] == 'مشاوره خرید' and menu[1]['link'] == '/track', menu
 print(f"OK /site → cats={len(cats)}, menu={len(menu)}")
 
@@ -115,8 +119,8 @@ r = c.put(f'/api/v1/admin/cats/{pid}', {'slug': 'pistachio', 'name': 'پسته',
           content_type='application/json', **H)
 assert r.status_code == 200
 cats2 = c.get('/api/v1/site').json()['cats']
-assert len(cats2) == 12 and all(x['id'] != 'pistachio' for x in cats2)
-print("OK hide cat → /site cats=12 (بدون pistachio)")
+assert len(cats2) == 11 and all(x['id'] != 'pistachio' for x in cats2)
+print("OK hide cat → /site cats=11 (بدون pistachio)")
 
 # 12) دسترسی بدون توکن → 401/403
 r = c.get('/api/v1/admin/cats')

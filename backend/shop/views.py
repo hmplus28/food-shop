@@ -879,8 +879,11 @@ def _shipping_public():
 
 
 def _cats_public():
-    """دسته‌های فعال منو (هدر و منوی موبایل) — از دادهٔ مدیریتی NavCat"""
-    return [c.public for c in NavCat.objects.filter(active=True)]
+    """دسته‌های فعال منو (هدر و منوی موبایل) — از دادهٔ مدیریتی NavCat؛
+    دسته‌ای که هیچ محصول نمایانی ندارد از هدر و منوی موبایل حذف می‌شود
+    (مثلاً بعد از پاک‌سازی محصولات، دسته‌های خالی به‌صورت خودکار خاموش می‌شوند)."""
+    with_products = set(Product.objects.filter(hide=False).values_list('cat', flat=True))
+    return [c.public for c in NavCat.objects.filter(active=True) if c.slug in with_products]
 
 
 def _menu_public():

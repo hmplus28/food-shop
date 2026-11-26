@@ -24,7 +24,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"محصولات جدید ({len(r['products']['new'])}):"))
             for n in r['products']['new']:
                 self.stdout.write(f'  + {n}')
-        self.stdout.write(self.style.SUCCESS(f"محصولات از قبل بوده: {r['products']['kept']}"))
+        self.stdout.write(self.style.SUCCESS(f"محصولات از قبل بوده: {r['products']['kept']}"
+                                             + (f" — برچسب صفحهٔ اصلی (best) برای {r['products']['home_updated']} مورد اضافه شد" if r['products'].get('home_updated') else '')))
         self.stdout.write(self.style.SUCCESS(
             'روش ارسال «تحویل حضوری»: ' + ('ساخته شد' if r['hadir_created'] else 'از قبل بوده')))
         self.stdout.write(self.style.SUCCESS(f"جمع محصولات فروشگاه: {r['products_total']}"))
